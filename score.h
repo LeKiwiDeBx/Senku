@@ -13,7 +13,7 @@ typedef struct s_Score {
 	int 	idScore ;
 	char 	namePlayer[MAX_CAR_NAME];
 	int    	remainingPeg ;
-	double 	timeGame ;
+	double 	bonusElapseTime ;
 	double 	scoreGame ;
 } score;
 typedef score *pScore ;
@@ -21,4 +21,8 @@ typedef score *pScore ;
 void scoreAdd() ;
 void scoreNew() ;
 void scoreTest() ;
+void scoreSetTimeGame(int ) ;
+void scoreSetCalculateBonusElapseTimer(double ) ;
+int  scoreGetBonusTimeScore() ;
+void scoreSetRemainingPeg(int );
 #endif

@@ -45,6 +45,9 @@ __displayPlayAgain() ;
 static void
 __displayTimer(double , double ) ;
 
+static void
+__displayBonusTimeScore() ;
+
 int
 boardInit(){
 	do {
@@ -54,8 +57,8 @@ boardInit(){
 		__displayHeader() ;
 		__displayMenu()  ;
 		/* DEBUG +++++++++++++++++++++++++++++++*/
-		scoreTest();
-		exit(EXIT_SUCCESS);
+		//~ scoreTest();
+		//~ exit(EXIT_SUCCESS);
 		/* END OF DEBUG +++++++++++++++++++++++++++++++*/
 		while(!matrixLoad(__getMenuChoice() ) );
 		boardPlay();
@@ -65,8 +68,9 @@ boardInit(){
 
 int
 boardPlay(){
-	int row = 0, column = 0, nbMove = 0 ;
+	int row = 0, column = 0, nbMove = 0, remainingPeg = 0 ;
 	int *pRow = &row , *pColumn = &column;
+	double elapseTimer, totalTimer ;
 	timerSetStartTimer();
 	timerSetElapseTimer() ;
 		while( matrixCanMovePeg() ){
@@ -77,10 +81,16 @@ boardPlay(){
 			if(nbMove){
 				matrixUpdate(__displaySetCoordToMove());
 			}
-			__displayTimer(timerGetElapseTimer(), timerGetTotalTimer() );
+			elapseTimer = timerGetElapseTimer() ;
+			scoreSetCalculateBonusElapseTimer(elapseTimer);
+			totalTimer = timerGetTotalTimer() ;
+			__displayTimer(elapseTimer , totalTimer );
+			__displayBonusTimeScore() ;
 		}
 	timerSetStopTimer();
-	__displayResult( matrixCountRemainPeg() );
+	remainingPeg = matrixCountRemainPeg() ;
+	scoreSetRemainingPeg(remainingPeg);
+	__displayResult(remainingPeg );
 	return 1;
 }
 
@@ -184,6 +194,12 @@ __displayTimer(double elapseTimer, double totalTimer){
 	printf(" /_\\  Total Time: %2.fmin %02.fsec\n",timerGetMktime(totalTimer)->mkt_min, timerGetMktime(totalTimer)->mkt_sec);
 }
 
+static void
+__displayBonusTimeScore(){
+	printf("\n");
+	printf("[@]  Extra Bonus Time: %d\n",scoreGetBonusTimeScore());
+}
+
 void
 __displayResult(int remainingPegs){
 	printf("|------------------------------------------------|\n");
@@ -202,8 +218,8 @@ __displayResult(int remainingPegs){
 int
 __displayPlayAgain(){
 	char buffer[] = {'\0'} ;
-	printf("\n|----------------------------------------|\n");
-	printf("  Play again [Yes|No]? : ");
+	printf("|------------------------------------------------|\n");
+	printf("| Play again [Yes|No]? : ");
 	if (!scanf("%s", buffer)) {
 		int c;
 		printf("Erreur de saisie !  Press Enter\n");
