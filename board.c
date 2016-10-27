@@ -50,6 +50,8 @@ __displayBonusTimeScore() ;
 
 int
 boardInit(){
+
+	scoreInit();
 	do {
 	#ifdef _LINUX_
 		system("clear");
@@ -62,6 +64,7 @@ boardInit(){
 		/* END OF DEBUG +++++++++++++++++++++++++++++++*/
 		while(!matrixLoad(__getMenuChoice() ) );
 		boardPlay();
+		scoreNew();
 	}while ( __displayPlayAgain() ) ;
 	return 1 ;
 }
@@ -73,6 +76,7 @@ boardPlay(){
 	double elapseTimer, totalTimer ;
 	timerSetStartTimer();
 	timerSetElapseTimer() ;
+	scoreResetBonusTimeScore() ;
 		while( matrixCanMovePeg() ){
 			timerSetElapseTimer() ;
 			__displaySetCoordToSelect(pRow, pColumn) ;
@@ -197,7 +201,9 @@ __displayTimer(double elapseTimer, double totalTimer){
 static void
 __displayBonusTimeScore(){
 	printf("\n");
-	printf("[@]  Extra Bonus Time: %d\n",scoreGetBonusTimeScore());
+	printf("  ~~~\n");
+	printf(" |@ @| Extra Bonus Time: %d\n",scoreGetBonusTimeScore());
+	printf("  (o)\n");
 }
 
 void

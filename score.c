@@ -38,127 +38,59 @@ static int 		__insertRecord(score *) ;
 static void 	__setRemainingPeg(int ) ;
 static void 	__setNamePlayer(int ) ;
 static void 	__setBonusElapseTime(int) ;
-static void 	__clean(const char *buffer, FILE *fp);
+static void		__setIdScore(int ) ;
+static void		__setScoreGame(int ) ;
+static void 	__clean(const char *buffer, FILE *fp) ;
+static void		__displaySortScore() ;
 
 void
-scoreTest(){
-	int i ;
-	scoreNew();
+scoreNew(){
+	static int id = 0 ;
+	inputScore.idScore = ++id;
+	if( __insertRecord(&inputScore) )
+		__displaySortScore() ;
 
-		//~ inputScore.idScore = 1;
-		//~ strcpy(inputScore.namePlayer, "Annus");
-		//~ inputScore.remainingPeg = 	2 ;
-		//~ inputScore.bonusElapseTime = 		350 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 2;
-		//~ strcpy(inputScore.namePlayer, "Elezor");
-		//~ inputScore.remainingPeg = 1 ;
-		//~ inputScore.bonusElapseTime = 150 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 3;
-		//~ strcpy(inputScore.namePlayer, "Promethan");
-		//~ inputScore.remainingPeg = 4 ;
-		//~ inputScore.bonusElapseTime = 125 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 4;
-		//~ strcpy(inputScore.namePlayer, "Lexithium");
-		//~ inputScore.remainingPeg = 3 ;
-		//~ inputScore.bonusElapseTime = 100 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 5;
-		//~ strcpy(inputScore.namePlayer, "BarKoff");
-		//~ inputScore.remainingPeg = 3 ;
-		//~ inputScore.bonusElapseTime = 115;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 6;
-		//~ strcpy(inputScore.namePlayer, "Ka Bahl Sung");
-		//~ inputScore.remainingPeg = 	2 ;
-		//~ inputScore.bonusElapseTime = 260 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 7;
-		//~ strcpy(inputScore.namePlayer, "Zikazou");
-		//~ inputScore.remainingPeg = 1 ;
-		//~ inputScore.bonusElapseTime = 260 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 8;
-		//~ strcpy(inputScore.namePlayer, "Gie Hun Han");
-		//~ inputScore.remainingPeg = 4 ;
-		//~ inputScore.bonusElapseTime = 125 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 9;
-		//~ strcpy(inputScore.namePlayer, "Salbruth");
-		//~ inputScore.remainingPeg = 3 ;
-		//~ inputScore.bonusElapseTime = 115 ;
-	//~ __insertRecord(&inputScore) ;
-
-		//~ inputScore.idScore = 10;
-		//~ strcpy(inputScore.namePlayer, "Fedoria");
-		//~ inputScore.remainingPeg = 3 ;
-		//~ inputScore.bonusElapseTime = 100 ;
-	//~ __insertRecord(&inputScore) ;
-
-for (i = 0; i < SCORE_BEST_OF; i++)
-	{
-		printf("namePlayer:%s\tpegRemain:%d\tscoreGame:%.f\n",tabSortScore[i].namePlayer, tabSortScore[i].remainingPeg, tabSortScore[i].scoreGame);
-	}
-
-		inputScore.idScore = 11;
-		strncpy(inputScore.namePlayer, "#Name12Chars",MAX_CAR_NAME-1);
-		inputScore.namePlayer[MAX_CAR_NAME] = '\0' ;
-		inputScore.remainingPeg = 11 ;
-		inputScore.bonusElapseTime = 325 ;
-
-	if( !__insertRecord(&inputScore) )
-		printf("DEBUG:: NOT INSERT %s\n", inputScore.namePlayer) ;
-
-
-	printf("\ninputScore of %s with score %.f\n",cursorScore->namePlayer, cursorScore->scoreGame);
-PRN ;
-	for (i = 0; i < SCORE_BEST_OF; i++)
-	{
-printf("namePlayer:%s\tpegRemain:%d\tscoreGame:%.f\n",tabSortScore[i].namePlayer, tabSortScore[i].remainingPeg, tabSortScore[i].scoreGame);
-	}
+}
+static void
+__displaySortScore(){
+	int i;
+		printf("\nCongratulations! You are in TOP SCORE %s with a score %.f\n",cursorScore->namePlayer, cursorScore->scoreGame);
+	PRN ;
+		printf("%*s\t%-*s\t%*s\t%*s\n",5,"ORDER",12,"   PLAYER   ",3,"PEG",5,"SCORE");
+		for (i = 0; i < SCORE_BEST_OF; i++)
+		{
+	printf("%d\t%-12s\t%-3d\t%.f\n",i+1,tabSortScore[i].namePlayer, tabSortScore[i].remainingPeg, tabSortScore[i].scoreGame);
+		}
 }
 
 static int
 __insertRecord(score *inputScore){
-	int i ;
+	int i, scoreGame ;
 	__updateCursorScore(inputScore);
-	//~ printf("namePlayer:%s\tpegRemain:%d\ttimeGame:%.f\n",inputScore->namePlayer,inputScore->remainingPeg,inputScore->bonusElapseTime) ;
-	cursorScore->scoreGame = __calculateScore(inputScore->remainingPeg, inputScore->bonusElapseTime ) ;
+	__setRemainingPeg(remainingPeg) ;
+	__setBonusElapseTime(bonusTimeScore) ;
+	scoreGame = __calculateScore(cursorScore->remainingPeg, cursorScore->bonusElapseTime ) ;
+	__setScoreGame(scoreGame);
+	__setIdScore(inputScore->idScore);
 	if(cursorScore->scoreGame > tabSortScore[0].scoreGame){
-		printf("__addBegin\n");
+		//~ printf("__addBegin\n");
 		__setNamePlayer(0);
-		__setRemainingPeg(remainingPeg) ;
-		__setBonusElapseTime(bonusTimeScore) ;
 		__addBegin();
 		return 1 ;
 	}
-	else if(cursorScore->scoreGame < tabSortScore[SCORE_BEST_OF-2].scoreGame
-			&& cursorScore->scoreGame > tabSortScore[SCORE_BEST_OF-1].scoreGame){
-		printf("__addEnd\n");
-		__setBonusElapseTime(bonusTimeScore) ;
-		__setRemainingPeg(remainingPeg) ;
+	else if(cursorScore->scoreGame < tabSortScore[SCORE_BEST_OF-2].scoreGame &&
+			cursorScore->scoreGame > tabSortScore[SCORE_BEST_OF-1].scoreGame){
+		//~ printf("__addEnd\n");
 		__setNamePlayer( __addEnd() );
 		return 1 ;
 	}
 	else{
 		for (i = 0; i < SCORE_BEST_OF-1 ; i++){
-			if(cursorScore->scoreGame <= tabSortScore[i].scoreGame
-			   && cursorScore->scoreGame > tabSortScore[i+1].scoreGame ){
-				 printf("__addInside %d\n", i+1);
+			if(cursorScore->scoreGame <= tabSortScore[i].scoreGame &&
+			   cursorScore->scoreGame > tabSortScore[i+1].scoreGame ){
+				 //~ printf("__addInside %d\n", i+1);
 				 __setNamePlayer(i);
-				 __setBonusElapseTime(bonusTimeScore) ;
-				 __setRemainingPeg(remainingPeg) ;
-				__addInside(i+1);
+				 __addInside(i+1);
 				return 1 ;
 			}
 		}
@@ -171,6 +103,7 @@ scoreSetCalculateBonusElapseTimer(double elapseTimer){
 	/* cast sauvage !!!! :(*/
 	int i;
 	i = (int) elapseTimer ;
+	/*TODO formule des points BTS= (9-i)*5 */
 	switch(i){
 		case 7:bonusTimeScore+=10;printf("Bonus: + %d points!\n",10);break ;
 		case 6:bonusTimeScore+=15;printf("Bonus: + %d points!\n",15);break ;
@@ -187,10 +120,20 @@ scoreGetBonusTimeScore(){
 	return bonusTimeScore ;
 }
 
+void scoreResetBonusTimeScore(){
+	bonusTimeScore = 0 ;
+}
+
 void
 scoreSetRemainingPeg(int number){
 	/*TODO test de l'affectation du cursorScore->remainingPeg */
 	remainingPeg = number ;
+}
+
+static void
+__setIdScore(int idScore){
+	if(idScore)
+		cursorScore->idScore = idScore;
 }
 
 static void
@@ -203,6 +146,12 @@ static void
 __setRemainingPeg(int remainPeg){
 	if(remainPeg)
 		cursorScore->remainingPeg = remainPeg ;
+}
+
+static void
+__setScoreGame(int scoreGame){
+	if(scoreGame)
+		cursorScore->scoreGame = scoreGame ;
 }
 
 static void
@@ -236,10 +185,10 @@ __calculateScore(int remainPeg, double timeBonus){
 }
 
 void
-scoreNew(){
+scoreInit(){
 	int i ;
 	for(i = 0; i < SCORE_BEST_OF; i++){
-		tabSortScore[i].idScore = i + 1;
+		tabSortScore[i].idScore = 0 ;
 		strcpy(tabSortScore[i].namePlayer,"Unknown") ;
 		tabSortScore[i].remainingPeg = 0;
 		tabSortScore[i].scoreGame = 0 ;

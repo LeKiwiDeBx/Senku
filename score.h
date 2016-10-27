@@ -19,10 +19,11 @@ typedef struct s_Score {
 typedef score *pScore ;
 
 void scoreAdd() ;
+void scoreInit() ;
 void scoreNew() ;
-void scoreTest() ;
 void scoreSetTimeGame(int ) ;
 void scoreSetCalculateBonusElapseTimer(double ) ;
 int  scoreGetBonusTimeScore() ;
+void scoreResetBonusTimeScore() ;
 void scoreSetRemainingPeg(int );
 #endif
