@@ -69,6 +69,7 @@ int
 boardPlay(){
 	int row = 0, column = 0, nbMove = 0, remainingPeg = 0 ;
 	int *pRow = &row , *pColumn = &column;
+	int canDisplayBonusTimeScore = 0 ;
 	double elapseTimer, totalTimer ;
 	timerSetStartTimer();
 	timerSetElapseTimer() ;
@@ -79,13 +80,18 @@ boardPlay(){
 			timerSetElapseTimer() ;
 			nbMove = matrixSelectPeg(*pRow, *pColumn) ;
 			if(nbMove){
-				matrixUpdate(__displaySetCoordToMove());
+				if(matrixUpdate(__displaySetCoordToMove()) ){
+					canDisplayBonusTimeScore = 1;
+				}
 			}
 			elapseTimer = timerGetElapseTimer() ;
-			scoreSetCalculateBonusElapseTimer(elapseTimer);
 			totalTimer = timerGetTotalTimer() ;
 			__displayTimer(elapseTimer , totalTimer );
-			__displayBonusTimeScore() ;
+			if(canDisplayBonusTimeScore){
+				scoreSetCalculateBonusElapseTimer(elapseTimer);
+				__displayBonusTimeScore() ;
+			}
+			canDisplayBonusTimeScore = 0 ;
 		}
 	timerSetStopTimer();
 	remainingPeg = matrixCountRemainPeg() ;
@@ -220,7 +226,7 @@ __displayResult(int remainingPegs){
 int
 __displayPlayAgain(){
 	char buffer[] = {'\0'} ;
-	printf("|-------------------------------------------------|\n");
+	printf("\n|-------------------------------------------------|\n");
 	printf("| Play again [Yes|No]? : ");
 	if (!scanf("%s", buffer)) {
 		int c;

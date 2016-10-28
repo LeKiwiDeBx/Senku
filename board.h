@@ -9,7 +9,7 @@
 #define _BOARD_H_
 #include "matrix.h"
 typedef struct s_Board
-{
+{ /*TODO test pour le même matrix pour le tableau de score faire en gros Board->set = MatrixLoad */
 	Matrix	*set;
 } Board;
 

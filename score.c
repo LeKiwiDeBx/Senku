@@ -41,6 +41,8 @@ static void		__setIdScore(int ) ;
 static void		__setScoreGame(int ) ;
 static void 	__clean(const char *buffer, FILE *fp) ;
 static void		__displaySortScore() ;
+static void		__displaySetNamePlayer() ;
+static void		__displaySetCalculateBonusElapseTimer(int bonus) ;
 
 void
 scoreNew(){
@@ -98,10 +100,17 @@ void
 scoreSetCalculateBonusElapseTimer(double elapseTimer){
 	/* cast sauvage !!!! :(*/
 	int i = (int) elapseTimer ;
+	int bonus = 0 ;
 	if(i>= MIN_SEC_BONUS && i<= MAX_SEC_BONUS){
-			bonusTimeScore += 5*(9-i) ;
-			printf("\n Yep! Bonus: + %d points!\n", 5*(9-i)) ;
+		bonus = 5*(9-i) ;
+		bonusTimeScore += bonus ;
+		__displaySetCalculateBonusElapseTimer(bonus) ;
 	}
+}
+
+static void
+__displaySetCalculateBonusElapseTimer(int bonus){
+	printf("\n Yep! Bonus: + %d points!\n", bonus) ;
 }
 
 int
@@ -144,10 +153,15 @@ __setScoreGame(int scoreGame){
 static void
 __setNamePlayer(int pos){
 	char chaine[MAX_CAR_NAME] = "";
-	printf("What is your name ?\n");
+	__displaySetNamePlayer() ;
 	fgets(chaine, sizeof(chaine), stdin);
     __clean(chaine, stdin);
 	strncpy(cursorScore->namePlayer, chaine, MAX_CAR_NAME);
+}
+
+static void
+__displaySetNamePlayer(){
+	printf("\nWho is the happiest person in this world?\nYour name, please: ");
 }
 
 static void

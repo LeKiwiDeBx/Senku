@@ -7,32 +7,30 @@ CFLAGS = -Wall -Wextra -o
 
 OBJECTS = main.o board.o peg.o matrix.o timer.o score.o
 
-PKG_CONFIG = pkg-config --cflags --libs gtk+-2.0
-
 install: all
 
 all: $(PROG)
 
 $(PROG): $(OBJECTS)
-	$(CC) $(CFLAGS) $(PROG) $(OBJECTS) $(shell $(PKG_CONFIG))
+	$(CC) $(CFLAGS) $(PROG) $(OBJECTS)
 
 board.o: board.c board.h matrix.h timer.h score.h
-	$(CC) $(CFLAGS) board.o -c board.c $(shell $(PKG_CONFIG))
+	$(CC) $(CFLAGS) board.o -c board.c
 
 main.o: main.c board.h matrix.h
-	$(CC) $(CFLAGS) main.o -c main.c $(shell $(PKG_CONFIG))
+	$(CC) $(CFLAGS) main.o -c main.c
 
 matrix.o: matrix.c matrix.h peg.h
-	$(CC) $(CFLAGS) matrix.o -c matrix.c $(shell $(PKG_CONFIG))
+	$(CC) $(CFLAGS) matrix.o -c matrix.c
 
 peg.o: peg.c peg.h
-	$(CC) $(CFLAGS) peg.o -c peg.c $(shell $(PKG_CONFIG))
+	$(CC) $(CFLAGS) peg.o -c peg.c
 
 score.o: score.c score.h
-	$(CC) $(CFLAGS) score.o -c score.c $(shell $(PKG_CONFIG))
+	$(CC) $(CFLAGS) score.o -c score.c
 
 timer.o: timer.c timer.h
-	$(CC) $(CFLAGS) timer.o -c timer.c $(shell $(PKG_CONFIG))
+	$(CC) $(CFLAGS) timer.o -c timer.c
 
 .PHONY: clean
 clean:
