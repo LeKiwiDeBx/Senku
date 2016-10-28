@@ -24,11 +24,10 @@ typedef score tabScore[SCORE_BEST_OF] ;
 static tabScore tabSortScore ;
 static score cursorCurrentScore ;
 static pScore cursorScore ;
-static score inputScore ;  /* ONLY TEST */
+static score inputScore ;
 static int bonusTimeScore = 0 ;
 static int remainingPeg = 0 ;
 
-static int 		__compareScoreGame (void const* , void const* ) ;
 static void 	__addBegin() ;
 static int 		__addEnd() ;
 static void 	__addInside(int ) ;
@@ -54,7 +53,7 @@ scoreNew(){
 static void
 __displaySortScore(){
 	int i;
-		printf("\nCongratulations! You are in TOP SCORE %s with a score %.f\n",cursorScore->namePlayer, cursorScore->scoreGame);
+		printf("\nCongratulations! You are in TOP %d SCORE %s with a score %.f\n",SCORE_BEST_OF,cursorScore->namePlayer, cursorScore->scoreGame);
 	PRN ;
 		printf("%*s\t%-*s\t%*s\t%*s\n",5,"ORDER",12,"   PLAYER   ",3,"PEG",5,"SCORE");
 		for (i = 0; i < SCORE_BEST_OF; i++)
@@ -73,14 +72,12 @@ __insertRecord(score *inputScore){
 	__setScoreGame(scoreGame);
 	__setIdScore(inputScore->idScore);
 	if(cursorScore->scoreGame > tabSortScore[0].scoreGame){
-		//~ printf("__addBegin\n");
 		__setNamePlayer(0);
 		__addBegin();
 		return 1 ;
 	}
 	else if(cursorScore->scoreGame < tabSortScore[SCORE_BEST_OF-2].scoreGame &&
 			cursorScore->scoreGame > tabSortScore[SCORE_BEST_OF-1].scoreGame){
-		//~ printf("__addEnd\n");
 		__setNamePlayer( __addEnd() );
 		return 1 ;
 	}
@@ -88,7 +85,6 @@ __insertRecord(score *inputScore){
 		for (i = 0; i < SCORE_BEST_OF-1 ; i++){
 			if(cursorScore->scoreGame <= tabSortScore[i].scoreGame &&
 			   cursorScore->scoreGame > tabSortScore[i+1].scoreGame ){
-				 //~ printf("__addInside %d\n", i+1);
 				 __setNamePlayer(i);
 				 __addInside(i+1);
 				return 1 ;
@@ -101,17 +97,10 @@ return 0 ;
 void
 scoreSetCalculateBonusElapseTimer(double elapseTimer){
 	/* cast sauvage !!!! :(*/
-	int i;
-	i = (int) elapseTimer ;
-	/*TODO formule des points BTS= (9-i)*5 */
-	switch(i){
-		case 7:bonusTimeScore+=10;printf("Bonus: + %d points!\n",10);break ;
-		case 6:bonusTimeScore+=15;printf("Bonus: + %d points!\n",15);break ;
-		case 5:bonusTimeScore+=20;printf("Bonus: + %d points!\n",20);break ;
-		case 4:bonusTimeScore+=25;printf("Bonus: + %d points!\n",25);break ;
-		case 3:bonusTimeScore+=30;printf("Bonus: + %d points!\n",30);break ;
-		case 2:bonusTimeScore+=35;printf("Bonus: + %d points!\n",35);break ;
-		default:;
+	int i = (int) elapseTimer ;
+	if(i>= MIN_SEC_BONUS && i<= MAX_SEC_BONUS){
+			bonusTimeScore += 5*(9-i) ;
+			printf("\n Yep! Bonus: + %d points!\n", 5*(9-i)) ;
 	}
 }
 
@@ -126,7 +115,6 @@ void scoreResetBonusTimeScore(){
 
 void
 scoreSetRemainingPeg(int number){
-	/*TODO test de l'affectation du cursorScore->remainingPeg */
 	remainingPeg = number ;
 }
 
@@ -139,7 +127,6 @@ __setIdScore(int idScore){
 static void
 __setBonusElapseTime(int bonus){
 	cursorScore->bonusElapseTime = bonus ;
-	printf("Bonus  %d\n", bonus);
 }
 
 static void
@@ -157,7 +144,7 @@ __setScoreGame(int scoreGame){
 static void
 __setNamePlayer(int pos){
 	char chaine[MAX_CAR_NAME] = "";
-	printf("DEBUG:: What's Your Fucking name in pos=%d, guy?\n", pos);
+	printf("What is your name ?\n");
 	fgets(chaine, sizeof(chaine), stdin);
     __clean(chaine, stdin);
 	strncpy(cursorScore->namePlayer, chaine, MAX_CAR_NAME);
@@ -261,9 +248,3 @@ __updateCursorScore(score const* inputScore){
 	cursorScore = memcpy(&cursorCurrentScore, inputScore, sizeof(score) );
 }
 
-static int
-__compareScoreGame(void const *a, void const *b){
-   score const *pa = a;
-   score const *pb = b;
-   return pb->scoreGame - pa->scoreGame;
-}

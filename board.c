@@ -58,10 +58,6 @@ boardInit(){
 	#endif
 		__displayHeader() ;
 		__displayMenu()  ;
-		/* DEBUG +++++++++++++++++++++++++++++++*/
-		//~ scoreTest();
-		//~ exit(EXIT_SUCCESS);
-		/* END OF DEBUG +++++++++++++++++++++++++++++++*/
 		while(!matrixLoad(__getMenuChoice() ) );
 		boardPlay();
 		scoreNew();
@@ -111,7 +107,7 @@ printf("\t      \\__ \\/ _ \\/ __ \\/ //_/ / / /\n");
 printf("\t     ___/ /  __/ / / / ,< / /_/ /\n");
 printf("\t    /____/\\___/_/ /_/_/|_|\\__,_/     (c) 2016\n");
 printf("\t\n");
-printf("!==  Senku ver Beta 1.1	   	    (c) 2016   Le KiWi  ==!\n\n");
+printf("!==  Senku ver Beta 1.2	   	    (c) 2016   Le KiWi  ==!\n\n");
 printf("\n");
 
 }
@@ -208,23 +204,23 @@ __displayBonusTimeScore(){
 
 void
 __displayResult(int remainingPegs){
-	printf("|------------------------------------------------|\n");
+	printf("|-------------------------------------------------|\n");
 
 	if(remainingPegs > 2)
-	printf("  /!\\ NO MORE MOVE :( Try again... /!\\\n");
+	printf("  /!\\ NO MORE MOVE Try again... /!\\\n");
 	else if(remainingPegs == 2)
-	printf("  /!\\ NO MORE MOVE :/ The victory is imminent! /!\\\n");
+	printf("  /!\\ NO MORE MOVE The victory is imminent! /!\\\n");
 	else
-	printf(" Oo. Oh Yeaah! You WIN, you are a real Senku :)) .oO\n");
+	printf("  Oo. Oh Yeaah! You WIN, you are a real Senku .oO\n");
 
-	printf("   ==> Score is remaining Pegs : %d <==\n",remainingPegs);
-	printf("|------------------------------------------------|\n");
+	printf("     Remaining Pegs : %d\n",remainingPegs);
+	printf("|-------------------------------------------------|\n");
 }
 
 int
 __displayPlayAgain(){
 	char buffer[] = {'\0'} ;
-	printf("|------------------------------------------------|\n");
+	printf("|-------------------------------------------------|\n");
 	printf("| Play again [Yes|No]? : ");
 	if (!scanf("%s", buffer)) {
 		int c;

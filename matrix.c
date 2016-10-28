@@ -112,7 +112,7 @@ int matrixLoad(int choice){
 			memcpy(matrixCopy,matrixDiamond,HOR_MAX*VER_MAX*sizeof(int));
 			break;
 			case 4 :
-			printf("\nGood bye! ;)" );
+			printf("\n Good bye! ;)" );
 			exit(EXIT_SUCCESS);
 			break;
 			default:

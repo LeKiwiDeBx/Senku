@@ -22,13 +22,11 @@ static int uniqInstance = 1 ;
 
 int
 timerStartClock(){
-	//~ printf("*start %lf\n", (double)startClock);
-		return ( (startClock=clock()) != -1)? 1 : 0;
+	return ( (startClock=clock()) != -1)? 1 : 0;
 }
 
 int
 timerStopClock(){
-	//~ printf("*stop %lf\n", (double)stopClock);
 	return  ( (stopClock=clock()) != -1)? 1 : 0;
 }
 
