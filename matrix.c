@@ -99,29 +99,37 @@ __displayPegFromTo(int, int, int, Peg_Direction, int);
  *
  */
 int matrixLoad(int choice){
+    char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
 	if(choice >= 0 && choice <= 4 ){
 		switch (choice)
 		{
 			case 1 :
+/*
 			currentMatrixOfBoard.name = "Shape English" ;
+*/
 			currentMatrixOfBoard.pShape = &matrixEnglish ;
 			break;
 			case 2 :
+/*
 			currentMatrixOfBoard.name = "Shape German" ;
+*/
 			currentMatrixOfBoard.pShape = &matrixGerman ;
 			break;
 			case 3 :
+/*
 			currentMatrixOfBoard.name = "Shape Diamond" ;
+*/
 			currentMatrixOfBoard.pShape = &matrixDiamond ;
 			break;
 			case 4 :
-			printf("\n Good bye! ;)" );
+			printf("\n Thank you, Good bye! ;)" );
 			exit(EXIT_SUCCESS);
 			break;
 			default:
 			currentMatrixOfBoard.name = "\nGAASP! Can not loading an unknown shape :(" ;
 			return 0 ;
 		}
+                currentMatrixOfBoard.name = nameShape[choice] ;
 		__displayLoadChoice(currentMatrixOfBoard.name) ;
 		currentMatrixOfBoard.id = choice ;
 		memcpy(matrixCopy,currentMatrixOfBoard.pShape,HOR_MAX*VER_MAX*sizeof(int));
