@@ -41,7 +41,6 @@ pegFirstPeg(int row, int column){
 
 int
 pegBuildPeg(int row, int column, Peg_Direction direction){
-	//ecrit la structure Peg
 	int i ;
 	for(i = 1; i < MAX_STRUCT_PEG; i++){
 		if(tab_Peg[i].direction == NONE){

@@ -9,6 +9,7 @@
 #define _PEG_H_
 
 #define MAX_STRUCT_PEG 5  //struct peg North/Est/South/West + celle qui est selectionnée
+
 typedef struct s_Peg_Coord
 {
 	int row;
@@ -23,8 +24,6 @@ typedef enum e_Peg_Direction
 	WEST,	/* 4 					*/
 	DEFAULT,/* 5 emplacement par defaut */
 	NONE = 666	/* 666 Devil Number =:> Peg pas (encore) initialisé */
-
-
 } Peg_Direction;
 
 typedef struct s_Peg

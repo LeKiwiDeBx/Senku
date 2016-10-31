@@ -48,9 +48,12 @@ __displayTimer(double , double ) ;
 static void
 __displayBonusTimeScore() ;
 
+Board onlyOneBoard ;
+//~ extern matrixOfBoard currentMatrixOfBoard ;
+
 int
 boardInit(){
-
+	int num = 0 ;
 	scoreInit();
 	do {
 	#ifdef _LINUX_
@@ -58,7 +61,8 @@ boardInit(){
 	#endif
 		__displayHeader() ;
 		__displayMenu()  ;
-		while(!matrixLoad(__getMenuChoice() ) );
+		while(!matrixLoad( num = __getMenuChoice() ) );
+		onlyOneBoard.set = &currentMatrixOfBoard ;
 		boardPlay();
 		scoreNew();
 	}while ( __displayPlayAgain() ) ;
@@ -133,10 +137,10 @@ __displayMenu(){
 int
 __getMenuChoice(){
 	int num = 0;int c;
-	printf("\nYour choice: ");
+	printf("Enter a number between 1 and 4\n");
+	printf("Type your choice: ");
 		if (!scanf(" %2d[1-4]", &num)) {
 			while ( ((c = getchar()) != '\n') && c != EOF);
-			printf("\nEnter a number between 1 and 4! try again");
 		}
 	scanf("%*[^\n]");
 	getchar();  // enleve '\n' restant
@@ -211,15 +215,13 @@ __displayBonusTimeScore(){
 void
 __displayResult(int remainingPegs){
 	printf("|-------------------------------------------------|\n");
-
 	if(remainingPegs > 2)
-	printf("  /!\\ NO MORE MOVE Try again... /!\\\n");
+		printf("  /!\\ NO MORE MOVE Try again... /!\\\n");
 	else if(remainingPegs == 2)
-	printf("  /!\\ NO MORE MOVE The victory is imminent! /!\\\n");
+		printf("  /!\\ NO MORE MOVE The victory is imminent! /!\\\n");
 	else
-	printf("  Oo. Oh Yeaah! You WIN, you are a real Senku .oO\n");
-
-	printf("     Remaining Pegs : %d\n",remainingPegs);
+		printf("  Oo. Oh Yeaah! You WIN, you are a real Senku .oO\n");
+	printf("  Remaining Pegs: %d\n",remainingPegs);
 	printf("|-------------------------------------------------|\n");
 }
 
@@ -237,3 +239,35 @@ __displayPlayAgain(){
 	return ( !strncmp(buffer,"Y",1 )  || !strncmp(buffer,"y",1 )  )? 1:0;
 }
 
+//~ char* trim(char* input) {
+    //~ char* start = input;
+    //~ while (isSpace(*start)) { //trim left
+        //~ start++;
+    //~ }
+
+    //~ char* ptr = start;
+    //~ char* end = start;
+    //~ while (*ptr++ != '\0') { //trim right
+        //~ if (!isSpace(*ptr)) { //only move end pointer if char isn't a space
+            //~ end = ptr;
+        //~ }
+    //~ }
+
+    //~ *end = '\0'; //terminate the trimmed string with a null
+    //~ return start;
+//~ }
+
+//~ int isSpace(char c) {
+    //~ switch (c) {
+        //~ case ' ':
+        //~ case '\n':
+        //~ case '\t':
+        //~ case '\f':
+        //~ case '\r':
+            //~ return 1;
+            //~ break;
+        //~ default:
+            //~ return 0;
+            //~ break;
+    //~ }
+//~ }

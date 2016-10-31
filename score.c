@@ -31,8 +31,8 @@ static int remainingPeg = 0 ;
 static void 	__addBegin() ;
 static int 		__addEnd() ;
 static void 	__addInside(int ) ;
-static void 	__updateCursorScore(score const* ) ;
-static double 	__calculateScore(int, double ) ;
+static void 	__updateCursorScore(const score * ) ;
+static double 	__calculateScore(const int, const double ) ;
 static int 		__insertRecord(score *) ;
 static void 	__setRemainingPeg(int ) ;
 static void 	__setNamePlayer(int ) ;
@@ -40,22 +40,25 @@ static void 	__setBonusElapseTime(int) ;
 static void		__setIdScore(int ) ;
 static void		__setScoreGame(int ) ;
 static void 	__clean(const char *buffer, FILE *fp) ;
-static void		__displaySortScore() ;
+static void		__displaySortScore(int ) ;
 static void		__displaySetNamePlayer() ;
 static void		__displaySetCalculateBonusElapseTimer(int bonus) ;
 
 void
 scoreNew(){
-	static int id = 0 ;
+	static int id = 0, ret = 0 ;
 	inputScore.idScore = ++id;
-	if( __insertRecord(&inputScore) )
-		__displaySortScore() ;
-
+	ret = __insertRecord(&inputScore) ;
+	__displaySortScore(ret) ;
 }
+
 static void
-__displaySortScore(){
+__displaySortScore(int topScore){
 	int i;
+	if(topScore)
 		printf("\nCongratulations! You are in TOP %d SCORE %s with a score %.f\n",SCORE_BEST_OF,cursorScore->namePlayer, cursorScore->scoreGame);
+	else
+		printf("\nCongratulations! Your score is %.f\n",cursorScore->scoreGame);
 	PRN ;
 		printf("%*s\t%-*s\t%*s\t%*s\n",5,"ORDER",12,"   PLAYER   ",3,"PEG",5,"SCORE");
 		for (i = 0; i < SCORE_BEST_OF; i++)
@@ -81,7 +84,7 @@ __insertRecord(score *inputScore){
 	else if(cursorScore->scoreGame < tabSortScore[SCORE_BEST_OF-2].scoreGame &&
 			cursorScore->scoreGame > tabSortScore[SCORE_BEST_OF-1].scoreGame){
 		__setNamePlayer( __addEnd() );
-		return 1 ;
+		return 2 ;
 	}
 	else{
 		for (i = 0; i < SCORE_BEST_OF-1 ; i++){
@@ -89,7 +92,7 @@ __insertRecord(score *inputScore){
 			   cursorScore->scoreGame > tabSortScore[i+1].scoreGame ){
 				 __setNamePlayer(i);
 				 __addInside(i+1);
-				return 1 ;
+				return 3 ;
 			}
 		}
 	}
@@ -152,10 +155,10 @@ __setScoreGame(int scoreGame){
 
 static void
 __setNamePlayer(int pos){
-	char chaine[MAX_CAR_NAME] = "";
+	char chaine[MAX_CAR_NAME] = "\0";
 	__displaySetNamePlayer() ;
 	fgets(chaine, sizeof(chaine), stdin);
-    __clean(chaine, stdin);
+	__clean(chaine, stdin);
 	strncpy(cursorScore->namePlayer, chaine, MAX_CAR_NAME);
 }
 
@@ -175,12 +178,11 @@ __clean(const char *buffer, FILE *fp){
     }
 }
 
-
 static double
-__calculateScore(int remainPeg, double timeBonus){
-	int pegFloorToCalc = 7 ;
+__calculateScore(const int  remainPeg, const double  timeBonus){
+	const int  pegFloorToCalc = 7, pointFactor = 1000 ;
 	if(remainPeg < pegFloorToCalc)
-		return ((double)1000*(6 -remainPeg) + timeBonus) ;
+		return ((double)pointFactor*((pegFloorToCalc-1) -remainPeg) + timeBonus) ;
 	else
 		return timeBonus ;
 }
@@ -258,7 +260,7 @@ __addInside(int posInsert){
  * met à jour le curseur (data et adresse) sur le record courant
  */
 static void
-__updateCursorScore(score const* inputScore){
+__updateCursorScore(const score * inputScore){
 	cursorScore = memcpy(&cursorCurrentScore, inputScore, sizeof(score) );
 }
 

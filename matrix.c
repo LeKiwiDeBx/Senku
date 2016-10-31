@@ -15,17 +15,17 @@
 
 //~ Matrix matrixEnglish = {  // TEST TEST TEST
 	//~ //0  0  2  3  4  5  6  7  8  9  00
-	//~ {-0,-0,-0,-0,-0,-0,-0,-0,-0,-0,-0}, //0
-	//~ {-0,-0,-0,-0,-0,-0,-0,-0,-0,-0,-0},	//0
-	//~ {-0,-0,-0,-0, 0, 0, 0,-0,-0,-0,-0},	//2
-	//~ {-0,-0,-0,-0, 0, 0, 0,-0,-0,-0,-0},	//3
-    //~ {-0,-0, 0, 0, 0, 1, 1, 0, 0,-0,-0},	//4
-    //~ {-0,-0, 0, 0, 0, 1, 1, 0, 0,-0,-0},	//5
-    //~ {-0,-0, 0, 0, 0, 0, 0, 0, 0,-0,-0},	//6
-    //~ {-0,-0,-0,-0, 0, 0, 0,-0,-0,-0,-0},	//7
-	//~ {-0,-0,-0,-0, 0, 0, 0,-0,-0,-0,-0},	//8
-	//~ {-0,-0,-0,-0,-0,-0,-0,-0,-0,-0,-0},	//9
-	//~ {-0,-0,-0,-0,-0,-0,-0,-0,-0,-0,-0}	//00
+	//~ {0,0,0,0,0,0,0,0,0,0,0},    //0
+	//~ {0,0,0,0,0,0,0,0,0,0,0},	//1
+	//~ {0,0,0,0,0,1,0,0,0,0,0},	//2
+	//~ {0,0,0,0,0,1,0,0,0,0,0},	//3
+    //~ {0,0,0,0,0,0,0,0,0,0,0},	//4
+    //~ {0,0,0,0,0,0,0,0,0,0,0},	//5
+    //~ {0,0,0,0,0,0,0,0,0,0,0},	//6
+    //~ {0,0,0,0,0,0,0,0,0,0,0},	//7
+	//~ {0,0,0,0,0,0,0,0,0,0,0},	//8
+	//~ {0,0,0,0,0,0,0,0,0,0,0},	//9
+	//~ {0,0,0,0,0,0,0,0,0,0,0}	    //10
 //~ } ;
 
 Matrix matrixEnglish = {
@@ -75,6 +75,7 @@ Matrix matrixDiamond = {
 
 Matrix matrixCopy ;
 
+
 static void
 __displayMatrix(Matrix) ;
 
@@ -82,7 +83,7 @@ static char
 *__selectItem(int) ;
 
 static void
-__displayLoadChoice(int) ;
+__displayLoadChoice(const char *) ;
 
 static int
 __getCoordPegWhereWeGo(int)  ;
@@ -99,25 +100,31 @@ __displayPegFromTo(int, int, int, Peg_Direction, int);
  */
 int matrixLoad(int choice){
 	if(choice >= 0 && choice <= 4 ){
-		__displayLoadChoice(choice) ;
 		switch (choice)
 		{
 			case 1 :
-			memcpy(matrixCopy,matrixEnglish,HOR_MAX*VER_MAX*sizeof(int));
+			currentMatrixOfBoard.name = "Shape English" ;
+			currentMatrixOfBoard.pShape = &matrixEnglish ;
 			break;
 			case 2 :
-			memcpy(matrixCopy,matrixGerman,HOR_MAX*VER_MAX*sizeof(int));
+			currentMatrixOfBoard.name = "Shape German" ;
+			currentMatrixOfBoard.pShape = &matrixGerman ;
 			break;
 			case 3 :
-			memcpy(matrixCopy,matrixDiamond,HOR_MAX*VER_MAX*sizeof(int));
+			currentMatrixOfBoard.name = "Shape Diamond" ;
+			currentMatrixOfBoard.pShape = &matrixDiamond ;
 			break;
 			case 4 :
 			printf("\n Good bye! ;)" );
 			exit(EXIT_SUCCESS);
 			break;
 			default:
+			currentMatrixOfBoard.name = "\nGAASP! Can not loading an unknown shape :(" ;
 			return 0 ;
 		}
+		__displayLoadChoice(currentMatrixOfBoard.name) ;
+		currentMatrixOfBoard.id = choice ;
+		memcpy(matrixCopy,currentMatrixOfBoard.pShape,HOR_MAX*VER_MAX*sizeof(int));
 		pMatrixLoad = matrixCopy ;
 		__displayMatrix(matrixCopy) ;
 		return 1 ;
@@ -284,23 +291,24 @@ __getCoordPegWhereWeGo(int where){
 }
 
 void
-__displayLoadChoice(int choice){
-	switch (choice){
-		case 1:
-		printf("Loading English\n");
-		break;
-		case 2:
-		printf("Loading German\n");
-		break;
-		case 3:
-		printf("Loading Diamond\n");
-		break;
-		case 4:
-		printf("Quit !\n");
-		break;
-		default:
-		printf("\nGAASP! Can't load shape :(");
-	}
+__displayLoadChoice(const char * shapeName){
+	printf("Loading %s...\n", shapeName);
+	//~ switch (choice){
+		//~ case 1:
+		//~ printf("Loading English\n");
+		//~ break;
+		//~ case 2:
+		//~ printf("Loading German\n");
+		//~ break;
+		//~ case 3:
+		//~ printf("Loading Diamond\n");
+		//~ break;
+		//~ case 4:
+		//~ printf("Quit !\n");
+		//~ break;
+		//~ default:
+		//~ printf("\nGAASP! Can't load shape :(");
+	//~ }
 }
 
 void

@@ -1,5 +1,4 @@
 # makefile de senku
-# edite par JT
 PROG = senku
 
 CC = gcc
