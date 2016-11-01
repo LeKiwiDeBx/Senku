@@ -40,7 +40,7 @@
 int main(int argc, char **argv)
 {
 	if( boardInit() ){
-		printf("\nGood bye! Thanks for playing the game ;)\n" );
+		printf("\nGood bye! Thanks for playing this game ;)\n" );
 	}
 	else
 		printf("\nSorry but Init game Senku FAILURE :( \n");

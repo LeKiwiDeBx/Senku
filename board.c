@@ -49,7 +49,6 @@ static void
 __displayBonusTimeScore() ;
 
 Board onlyOneBoard ;
-//~ extern matrixOfBoard currentMatrixOfBoard ;
 
 int
 boardInit(){

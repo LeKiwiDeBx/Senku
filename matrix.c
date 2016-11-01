@@ -291,22 +291,6 @@ __getCoordPegWhereWeGo(int where){
 void
 __displayLoadChoice(const char * shapeName){
 	printf("Loading %s...\n", shapeName);
-	//~ switch (choice){
-		//~ case 1:
-		//~ printf("Loading English\n");
-		//~ break;
-		//~ case 2:
-		//~ printf("Loading German\n");
-		//~ break;
-		//~ case 3:
-		//~ printf("Loading Diamond\n");
-		//~ break;
-		//~ case 4:
-		//~ printf("Quit !\n");
-		//~ break;
-		//~ default:
-		//~ printf("\nGAASP! Can't load shape :(");
-	//~ }
 }
 
 void
@@ -336,7 +320,7 @@ char
 	switch (item)
 	{
 		case -1:
-		ret = "___";
+		ret = "   ";
 			break;
 		case 0:
 		ret = " . ";
@@ -344,7 +328,7 @@ char
 		case 1:
 		sprintf(buff, "<%2d>", num++);
 		ret = buff ;
-		ret = "_O_" ;
+		ret = " O " ;
 			break ;
 		case 2:
 		ret = "<0>" ;
