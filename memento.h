@@ -22,7 +22,6 @@ typedef struct s_memento{
     mvt mvtStart ;          //coord depart du mouvement
     mvt mvtEnd ;            //coord arrivée du mouvement
  } memento ;
- 
 typedef memento* pMemento ;
 void mementoNew(mvt , mvt) ;
 pMemento mementoGetSaveState() ;
