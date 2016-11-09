@@ -18,7 +18,7 @@
  * @param m
  * @return void
  * 
- * @usage ajoute un memento a la liste 
+ * @usage ajoute un memento à la liste 
  */
 void caretakerAddMemento(pMemento m)
 {
