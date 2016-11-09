@@ -4,23 +4,23 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   memento.c
  * Author: Administrateur
- * 
+ *
  * Created on 6 novembre 2016, 19:06
  */
 
 #include "memento.h"
 
 /**
- *  
+ * @brief ajoute un memento à la liste
+ *
  * @param m
  * @return void
- * 
- * @usage ajoute un memento à la liste 
+ *
  */
-void caretakerAddMemento(pMemento m)
-{
+void
+caretakerAddMemento(pMemento m){
 
 }
