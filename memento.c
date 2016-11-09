@@ -12,3 +12,15 @@
  */
 
 #include "memento.h"
+
+/**
+ *  
+ * @param m
+ * @return void
+ * 
+ * @usage ajoute un memento a la liste 
+ */
+void caretakerAddMemento(pMemento m)
+{
+
+}
