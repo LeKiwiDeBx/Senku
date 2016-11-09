@@ -86,8 +86,8 @@ timerGetTotalTimer(){
 pfmtTime
 timerGetMktime(double rawTime){
 	fmtTime sfmtTime = {
-							0, //0 min
-							0  //0 sec
+							0, //0 minute
+							0  //0 seconde
 						};
 	pfmtTime pfm = &sfmtTime;
 	double x,fp, ip ;

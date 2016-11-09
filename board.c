@@ -116,7 +116,7 @@ printf("\t      \\__ \\/ _ \\/ __ \\/ //_/ / / /\n");
 printf("\t     ___/ /  __/ / / / ,< / /_/ /\n");
 printf("\t    /____/\\___/_/ /_/_/|_|\\__,_/     (c) 2016\n");
 printf("\t\n");
-printf("!==  Senku ver Beta 1.2	   	    (c) 2016   Le KiWi  ==!\n\n");
+printf("!==  Senku ver Beta 1.2a   	    (c) 2016   Le KiWi  ==!\n\n");
 printf("\n");
 
 }
