@@ -5,7 +5,7 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -o
 
-OBJECTS = main.o board.o peg.o matrix.o timer.o score.o
+OBJECTS = main.o board.o peg.o matrix.o timer.o score.o memento.o
 
 install: all
 
@@ -32,6 +32,9 @@ score.o: score.c score.h
 timer.o: timer.c timer.h
 	$(CC) $(CFLAGS) timer.o -c timer.c
 
+memento.o: memento.c memento.h
+	$(CC) $(CFLAGS) memento.o -c memento.c
+	
 .PHONY: clean
 clean:
 	rm *.o
