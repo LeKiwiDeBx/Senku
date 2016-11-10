@@ -1,13 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * File:   memento.h
+ *  * File:   memento.h
  * Author: Administrateur
- *
  * Created on 6 novembre 2016, 19:06
  */
 
@@ -19,7 +12,7 @@
 typedef struct s_mvt {
     int row ;
     int column ;
-}mvt;
+} mvt;
 
 typedef struct s_memento{
     int idRollback ;        // identifiant du mouvement
