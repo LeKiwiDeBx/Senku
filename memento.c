@@ -7,6 +7,9 @@
  */
 
 #include "memento.h"
+#include "peg.h"
+
+static Peg statePeg ;
 
 /**
  * @brief ajoute un memento à la liste
@@ -30,6 +33,13 @@ caretakerGetMemento(int){
     pMemento m ;
     return m;
 }
+/**
+ * @brief positionne la variable static de l'etat à sauver
+ * @param state Peg à sauver
+ */
+void originatorSet(Peg state){
+    statePeg = state ;
+}
 
 /**
  * @brief demande à memento une reference sur le dernier sauvegardé
@@ -37,6 +47,9 @@ caretakerGetMemento(int){
  */
 pMemento originatorSaveToMemento(){
     mvt mvtStart, mvtEnd ;
+    mvtEnd.row = statePeg.coord.row ;
+    mvtEnd.column = statePeg.coord.column ;
+    //@TODO implementer le mvtEnd
     return mementoNew(mvtStart , mvtEnd) ;
 }
 
