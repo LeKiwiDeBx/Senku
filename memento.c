@@ -7,22 +7,38 @@
  */
 
 #include "memento.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-
-static Peg statePeg ;
-
+static Peg_Memento statePeg ;
+static pMemento pm ;
+static mementoArrayList mArrayList ; //tableau de pointeur de memo 
 /**
  * @brief ajoute un memento à la liste
  * @param m
  * @return void
  */
 void
-caretakerAddMemento(pMemento pm){
+caretakerAddMemento(pMemento pmArray){
     static int i = 0;
-    mementoArrayList mArrayList ;
-    mArrayList[i] = pm ;
+    mArrayList[i] = pmArray ; 
+    if(i < NB_UNDO){
+        mArrayList[i] = pmArray ; 
+        i++ ;
+    } 
+    else {
+        i = NB_UNDO - 1;
+        //decalage vers la gauche du tableau --> FIFO
+        memmove(mArrayList, mArrayList + 1, (NB_UNDO-1)*sizeof(mementoArrayList));
+        mArrayList[i] = pmArray ; 
+    }
+    /* ---> DEBUG     <--- */
+     printf("DEBUG caretaker:%d\n",i);
+    //exit(0);
+    /* END OF DEBUG */
 }
-
+ 
 /**
  * @brief renvoi le memento a un indice donné du UNDO
  * @param indice de memento en général 1 cad un retour arriere immediat
@@ -37,7 +53,7 @@ caretakerGetMemento(int index){
  * @brief positionne la variable static de l'etat à sauver
  * @param state Peg à sauver
  */
-void originatorSet(Peg state){
+void originatorSet(Peg_Memento state){
     statePeg = state ;
 }
 
@@ -45,18 +61,12 @@ void originatorSet(Peg state){
  * @brief demande à memento une reference sur le dernier sauvegardé
  * @return un pointeur sur le memento
  */
-pMemento originatorSaveToMemento(const int row, const int column){
+pMemento originatorSaveToMemento(){
     mvt mvtStart, mvtEnd ;
-    mvtEnd.row = statePeg.coord.row ;
-    mvtEnd.column = statePeg.coord.column ;
-    //@TODO implementer le mvtEnd et hop
-	mvtStart.row = row ;
-	mvtStart.column = column ;
-	/* ---> DEBUG     <--- */
-	printf("DEBUG mvtStart.row:%d mvtStart.column:%d  mvtEnd.row:%d  mvtEnd.column:%d\n",
-	mvtStart.row,mvtStart.column,mvtEnd.row,mvtEnd.column);
-	exit(0);
-	/* ---> FIN DEBUG <--- */
+    mvtEnd.row = statePeg.coordEnd.row ;
+    mvtEnd.column = statePeg.coordEnd.column ;
+    mvtStart.row = statePeg.coordStart.row ;
+    mvtStart.column = statePeg.coordStart.column ;
     return mementoNew(mvtStart , mvtEnd) ;
 }
 
@@ -86,6 +96,16 @@ mementoGetSaveState(){
  */
 pMemento
 mementoNew(mvt mvtStart, mvt mvtEnd){
-	pMemento pm ;
+    static mvtId = 1 ;
+    pm  = (pMemento) malloc(sizeof(memento)) ;
+    if(pm != NULL){
+        pm->idRollback = mvtId ;
+        pm->mvtStart = mvtStart ;
+        pm->mvtEnd = mvtEnd ;
+        mvtId++ ;
+    } else {
+        printf("/nAlloc crash !!!!!!!!!!!!!!!!/n");
+        exit(EXIT_FAILURE) ;
+    }
     return pm;
 }
