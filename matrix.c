@@ -217,9 +217,9 @@ matrixUpdate(Peg_Direction where){
 	pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
 	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//erase
 	pMatrixLoad[row][column] = 1 ;
-	//mecanisme memento UNDO
-	originatorSet(tab_Peg[i]);
-	caretakerAddMemento(originatorSaveToMemento(row + 2*coefRow, column + 2*coefColumn));
+	//@TODO mecanisme memento UNDO
+	originatorSet();
+	caretakerAddMemento(originatorSaveToMemento());
 	__displayMatrix(pMatrixLoad);
 	return 1 ;
 }
