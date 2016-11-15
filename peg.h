@@ -33,6 +33,11 @@ typedef struct s_Peg
 	int bydefault;
 } Peg ;
 
+typedef struct s_Peg_Memento{
+	Peg_Coord coordStart;
+	Peg_Coord coordEnd;
+}Peg_Memento;
+
 extern Peg tab_Peg[MAX_STRUCT_PEG] ;
 void 	pegFlushPeg() ;
 void 	pegFirstPeg(int, int) ;

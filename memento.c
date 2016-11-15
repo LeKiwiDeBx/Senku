@@ -13,7 +13,7 @@
 
 static Peg_Memento statePeg ;
 static pMemento pm ;
-static mementoArrayList mArrayList ; //tableau de pointeur de memo 
+static mementoArrayList mArrayList ; //tableau de pointeur de memo
 /**
  * @brief ajoute un memento à la liste
  * @param m
@@ -22,23 +22,23 @@ static mementoArrayList mArrayList ; //tableau de pointeur de memo
 void
 caretakerAddMemento(pMemento pmArray){
     static int i = 0;
-    mArrayList[i] = pmArray ; 
+    mArrayList[i] = pmArray ;
     if(i < NB_UNDO){
-        mArrayList[i] = pmArray ; 
+        mArrayList[i] = pmArray ;
         i++ ;
-    } 
+    }
     else {
         i = NB_UNDO - 1;
         //decalage vers la gauche du tableau --> FIFO
         memmove(mArrayList, mArrayList + 1, (NB_UNDO-1)*sizeof(mementoArrayList));
-        mArrayList[i] = pmArray ; 
+        mArrayList[i] = pmArray ;
     }
     /* ---> DEBUG     <--- */
      printf("DEBUG caretaker:%d\n",i);
     //exit(0);
     /* END OF DEBUG */
 }
- 
+
 /**
  * @brief renvoi le memento a un indice donné du UNDO
  * @param indice de memento en général 1 cad un retour arriere immediat
