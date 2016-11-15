@@ -7,7 +7,7 @@
  */
 
 #include "memento.h"
-#include "peg.h"
+
 
 static Peg statePeg ;
 
@@ -17,19 +17,19 @@ static Peg statePeg ;
  * @return void
  */
 void
-caretakerAddMemento(pMemento m){
+caretakerAddMemento(pMemento pm){
     static int i = 0;
     mementoArrayList mArrayList ;
-    mArrayList[i] = m ;
+    mArrayList[i] = pm ;
 }
-            
+
 /**
  * @brief renvoi le memento a un indice donné du UNDO
  * @param indice de memento en général 1 cad un retour arriere immediat
  * @return un pointeur sur le memento
  */
 pMemento
-caretakerGetMemento(int){
+caretakerGetMemento(int index){
     pMemento m ;
     return m;
 }
@@ -45,11 +45,18 @@ void originatorSet(Peg state){
  * @brief demande à memento une reference sur le dernier sauvegardé
  * @return un pointeur sur le memento
  */
-pMemento originatorSaveToMemento(){
+pMemento originatorSaveToMemento(const int row, const int column){
     mvt mvtStart, mvtEnd ;
     mvtEnd.row = statePeg.coord.row ;
     mvtEnd.column = statePeg.coord.column ;
-    //@TODO implementer le mvtEnd
+    //@TODO implementer le mvtEnd et hop
+	mvtStart.row = row ;
+	mvtStart.column = column ;
+	/* ---> DEBUG     <--- */
+	printf("DEBUG mvtStart.row:%d mvtStart.column:%d  mvtEnd.row:%d  mvtEnd.column:%d\n",
+	mvtStart.row,mvtStart.column,mvtEnd.row,mvtEnd.column);
+	exit(0);
+	/* ---> FIN DEBUG <--- */
     return mementoNew(mvtStart , mvtEnd) ;
 }
 
@@ -58,10 +65,10 @@ pMemento originatorSaveToMemento(){
  * @param le memento à restaurer
  */
 void
-originatorRestoreFromMemento(pMemento){
+originatorRestoreFromMemento(pMemento pm){
     mementoGetSaveState() ;
     //@TODO: ecrire la matrice
-} 
+}
 
 /**
  * @brief calcul les mvt precedent
@@ -73,11 +80,12 @@ mementoGetSaveState(){
     return saveState ;
 }
 /**
- * @brief le emento à créer 
- * @param 1 mvt de depart 
+ * @brief le emento à créer
+ * @param 1 mvt de depart
  * @param 2 mvt de fin
  */
-void 
+pMemento
 mementoNew(mvt mvtStart, mvt mvtEnd){
-    ;
+	pMemento pm ;
+    return pm;
 }

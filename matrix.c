@@ -12,6 +12,7 @@
 #include <string.h> /* memcpy() */
 #include "matrix.h"
 #include "peg.h"
+#include "memento.h"
 
 //~ Matrix matrixEnglish = {  // TEST TEST TEST
 	//~ //0  0  2  3  4  5  6  7  8  9  00
@@ -216,6 +217,9 @@ matrixUpdate(Peg_Direction where){
 	pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
 	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//erase
 	pMatrixLoad[row][column] = 1 ;
+	//mecanisme memento UNDO
+	originatorSet(tab_Peg[i]);
+	caretakerAddMemento(originatorSaveToMemento(row + 2*coefRow, column + 2*coefColumn));
 	__displayMatrix(pMatrixLoad);
 	return 1 ;
 }

@@ -20,7 +20,7 @@ board.o: board.c board.h matrix.h timer.h score.h
 main.o: main.c board.h matrix.h
 	$(CC) $(CFLAGS) main.o -c main.c
 
-matrix.o: matrix.c matrix.h peg.h
+matrix.o: matrix.c matrix.h peg.h memento.h
 	$(CC) $(CFLAGS) matrix.o -c matrix.c
 
 peg.o: peg.c peg.h
@@ -32,9 +32,9 @@ score.o: score.c score.h
 timer.o: timer.c timer.h
 	$(CC) $(CFLAGS) timer.o -c timer.c
 
-memento.o: memento.c memento.h
+memento.o: memento.c memento.h peg.h
 	$(CC) $(CFLAGS) memento.o -c memento.c
-	
+
 .PHONY: clean
 clean:
 	rm *.o

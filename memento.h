@@ -7,6 +7,8 @@
 #ifndef MEMENTO_H
 #define MEMENTO_H
 
+#include "peg.h"
+
 #define NB_UNDO 5	//nombre max de undo géré
 
 typedef struct s_mvt {
@@ -24,14 +26,15 @@ typedef memento* pMemento ;
 
 typedef pMemento mementoArrayList[NB_UNDO] ;
 
-void mementoNew(mvt , mvt) ; 		// ecrit la structure
+pMemento mementoNew(mvt , mvt) ; 		// ecrit la structure
 pMemento mementoGetSaveState() ;	// calcul les mvt precedent
 
-pMemento originatorSaveToMemento() ; 		// appel mementoNew qui ecrit la struct
-void originatorRestoreFromMemento(pMemento) // appel mementoGetSaveState à l'indice caretakerGetMemento(int)
+pMemento originatorSaveToMemento(int, int) ; 		// appel mementoNew qui ecrit la struct
+void originatorSet(Peg) ;
+void originatorRestoreFromMemento(pMemento pm) ;// appel mementoGetSaveState à l'indice caretakerGetMemento(int)
 											// et modifie la matrice
 
-void caretakerAddMemento(pMemento) ; // ajoute un pointeur dans mementoArrayList
+void caretakerAddMemento(pMemento pm) ; // ajoute un pointeur dans mementoArrayList
 pMemento caretakerGetMemento(int) ;  // retourne pointeur memento à l'indice donné
 									 // faudra gérer la Liste en detruisant juste après le numero UNDO?
 
