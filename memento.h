@@ -30,7 +30,7 @@ pMemento mementoNew(mvt , mvt) ; 		// ecrit la structure
 pMemento mementoGetSaveState() ;	// calcul les mvt precedent
 
 pMemento originatorSaveToMemento() ; 		// appel mementoNew qui ecrit la struct
-void originatorSet(Peg_Memento) ;
+void originatorSet(Peg_Memento pegMemento) ;
 void originatorRestoreFromMemento(pMemento pm) ;// appel mementoGetSaveState à l'indice caretakerGetMemento(int)
 											// et modifie la matrice
 
