@@ -14,6 +14,7 @@
 static Peg_Memento statePeg ;
 static pMemento pm ;
 static mementoArrayList mArrayList ; //tableau de pointeur de memo
+
 /**
  * @brief ajoute un memento à la liste
  * @param m
@@ -28,14 +29,21 @@ caretakerAddMemento(pMemento pmArray){
         i++ ;
     }
     else {
-        i = NB_UNDO - 1;
         //decalage vers la gauche du tableau --> FIFO
-        memmove(mArrayList, mArrayList + 1, (NB_UNDO-1)*sizeof(mementoArrayList));
-        mArrayList[i] = pmArray ;
+        printf("FIFO\n") ;
+        memmove(mArrayList, mArrayList + 1, (NB_UNDO-1)*sizeof(pMemento));
+        mArrayList[NB_UNDO - 1] = pmArray ;
+        i = NB_UNDO ;
     }
     /* ---> DEBUG     <--- */
-     printf("DEBUG caretaker:%d\n",i);
-    //exit(0);
+    int k ;
+    for(k=0;k<i;k++){
+        printf("DEBUG caretaker:%d %d %d %d %d\n",i,
+                mArrayList[k]->mvtStart.row,
+                mArrayList[k]->mvtStart.column,
+                mArrayList[k]->mvtEnd.row,
+                mArrayList[k]->mvtEnd.column);
+    }
     /* END OF DEBUG */
 }
 
@@ -46,14 +54,15 @@ caretakerAddMemento(pMemento pmArray){
  */
 pMemento
 caretakerGetMemento(int index){
-    pMemento m ;
-    return m;
+    return pm = mArrayList[index] ;
 }
+
 /**
  * @brief positionne la variable static de l'etat à sauver
  * @param state Peg à sauver
  */
-void originatorSet(Peg_Memento state){
+void 
+originatorSet(Peg_Memento state){
     statePeg = state ;
 }
 
@@ -61,7 +70,8 @@ void originatorSet(Peg_Memento state){
  * @brief demande à memento une reference sur le dernier sauvegardé
  * @return un pointeur sur le memento
  */
-pMemento originatorSaveToMemento(){
+pMemento 
+originatorSaveToMemento(){
     mvt mvtStart, mvtEnd ;
     mvtEnd.row = statePeg.coordEnd.row ;
     mvtEnd.column = statePeg.coordEnd.column ;
@@ -77,6 +87,13 @@ pMemento originatorSaveToMemento(){
 void
 originatorRestoreFromMemento(pMemento pm){
     mementoGetSaveState() ;
+/*
+    statePeg.coordStart.row = pm->mvtStart.row ;
+    statePeg.coordStart.column = pm->mvtStart.column ;
+    statePeg.coordEnd.row = pm->mvtEnd.row ;
+    statePeg.coordEnd.column = pm->mvtEnd.column ;
+*/
+    
     //@TODO: ecrire la matrice
 }
 
@@ -86,17 +103,20 @@ originatorRestoreFromMemento(pMemento pm){
  */
 pMemento
 mementoGetSaveState(){
-    pMemento saveState ;
-    return saveState ;
+    statePeg.coordStart.row = pm->mvtStart.row ;
+    statePeg.coordStart.column = pm->mvtStart.column ;
+    statePeg.coordEnd.row = pm->mvtEnd.row ;
+    statePeg.coordEnd.column = pm->mvtEnd.column ;
 }
+
 /**
- * @brief le emento à créer
+ * @brief le memento à créer
  * @param 1 mvt de depart
  * @param 2 mvt de fin
  */
 pMemento
 mementoNew(mvt mvtStart, mvt mvtEnd){
-    static mvtId = 1 ;
+    static int mvtId = 1 ;
     pm  = (pMemento) malloc(sizeof(memento)) ;
     if(pm != NULL){
         pm->idRollback = mvtId ;
@@ -104,7 +124,6 @@ mementoNew(mvt mvtStart, mvt mvtEnd){
         pm->mvtEnd = mvtEnd ;
         mvtId++ ;
     } else {
-        printf("/nAlloc crash !!!!!!!!!!!!!!!!/n");
         exit(EXIT_FAILURE) ;
     }
     return pm;
