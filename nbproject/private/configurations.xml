@@ -7,6 +7,8 @@
       <in>main.c</in>
       <in>matrix.c</in>
       <in>matrix.h</in>
+      <in>memento.c</in>
+      <in>memento.h</in>
       <in>peg.c</in>
       <in>peg.h</in>
       <in>score.c</in>

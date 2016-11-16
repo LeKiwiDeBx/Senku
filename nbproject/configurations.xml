@@ -5,6 +5,7 @@
       <in>board.c</in>
       <in>main.c</in>
       <in>matrix.c</in>
+      <in>memento.c</in>
       <in>peg.c</in>
       <in>score.c</in>
       <in>timer.c</in>
@@ -54,11 +55,13 @@
       </item>
       <item path="matrix.c" ex="false" tool="0" flavor2="0">
       </item>
+      <item path="memento.c" ex="false" tool="0" flavor2="2">
+      </item>
       <item path="peg.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="score.c" ex="false" tool="0" flavor2="0">
+      <item path="score.c" ex="false" tool="0" flavor2="2">
       </item>
-      <item path="timer.c" ex="false" tool="0" flavor2="0">
+      <item path="timer.c" ex="false" tool="0" flavor2="2">
       </item>
     </conf>
   </confs>
