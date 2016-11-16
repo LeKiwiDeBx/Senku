@@ -35,7 +35,7 @@ void originatorRestoreFromMemento(pMemento pm) ;// appel mementoGetSaveState à 
 											// et modifie la matrice
 
 void caretakerAddMemento(pMemento pm) ; // ajoute un pointeur dans mementoArrayList
-pMemento caretakerGetMemento(int) ;  // retourne pointeur memento à l'indice donné
-									 // faudra gérer la Liste en detruisant juste après le numero UNDO?
+pMemento caretakerGetMemento(int) ;     // retourne pointeur memento à l'indice donné
+                                        // faudra gérer la Liste en detruisant juste après le numero UNDO?
 
 #endif /* MEMENTO_H */
