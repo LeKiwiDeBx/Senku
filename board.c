@@ -156,10 +156,15 @@ __displaySetCoordToSelect(int *numX, int *numY){
 		printf("Erreur de saisie ! try again\n");
 		printf("Select a peg's row and column number format like Xrow Ycol: ");
 	}
+        if(*numX == -1 || *numY == -1) printf("You ask [UNDO] the last move!\n") ;
 	scanf("%*[^\n]");
 	getchar();  // enleve '\n' restant
 }
 
+/**
+ * 
+ * @return retourne le texte de la direction
+ */
 int
 __displaySetCoordToMove(){
 	char *sDir[] = {"","NORTH","EAST","SOUTH","WEST","the first BY DEFAULT", "unknown!"} ;
