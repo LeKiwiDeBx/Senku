@@ -22,12 +22,12 @@ static int uniqInstance = 1 ;
 
 int
 timerStartClock(){
-	return ( (startClock=clock()) != -1)? 1 : 0;
+	return ( (signed int)(startClock=clock()) != -1)? 1 : 0;
 }
 
 int
 timerStopClock(){
-	return  ( (stopClock=clock()) != -1)? 1 : 0;
+	return  ( (signed int)(stopClock=clock()) != -1)? 1 : 0;
 }
 
 double
