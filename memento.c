@@ -86,7 +86,8 @@ originatorSaveToMemento(){
  */
 void
 originatorRestoreFromMemento(pMemento pm){
-    mementoGetSaveState() ;
+    if(pm != NULL)
+        mementoGetSaveState() ;
 /*
     statePeg.coordStart.row = pm->mvtStart.row ;
     statePeg.coordStart.column = pm->mvtStart.column ;
@@ -107,6 +108,7 @@ mementoGetSaveState(){
     statePeg.coordStart.column = pm->mvtStart.column ;
     statePeg.coordEnd.row = pm->mvtEnd.row ;
     statePeg.coordEnd.column = pm->mvtEnd.column ;
+    return pm ;
 }
 
 /**
