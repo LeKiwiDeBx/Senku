@@ -196,6 +196,7 @@ matrixUpdate(Peg_Direction where){
 	}
 	int coefRow = 0, coefColumn = 0;
 	int row, column ;
+        Peg_Memento pegMemento;
 	row = tab_Peg[i].coord.row ;
 	column = tab_Peg[i].coord.column ;
 	switch (where){
@@ -218,8 +219,12 @@ matrixUpdate(Peg_Direction where){
 	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//erase
 	pMatrixLoad[row][column] = 1 ;
 	//mecanisme memento UNDO
-	originatorSet(tab_Peg[i]);
-	caretakerAddMemento(originatorSaveToMemento(row + 2*coefRow, column + 2*coefColumn));
+        pegMemento.coordStart.row = row + 2*coefRow ;
+        pegMemento.coordStart.column = column + 2*coefColumn ;
+        pegMemento.coordEnd.row = row ;
+        pegMemento.coordEnd.column = column ;
+	originatorSet(pegMemento);
+	caretakerAddMemento(originatorSaveToMemento());
 	__displayMatrix(pMatrixLoad);
 	return 1 ;
 }
