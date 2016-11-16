@@ -218,13 +218,14 @@ matrixUpdate(Peg_Direction where){
 	pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
 	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//erase
 	pMatrixLoad[row][column] = 1 ;
-	//mecanisme memento UNDO
+	//mecanisme memento UNDO:: memeorisation
         pegMemento.coordStart.row = row + 2*coefRow ;
         pegMemento.coordStart.column = column + 2*coefColumn ;
         pegMemento.coordEnd.row = row ;
         pegMemento.coordEnd.column = column ;
 	originatorSet(pegMemento);
 	caretakerAddMemento(originatorSaveToMemento());
+        //fin memento UNDO
 	__displayMatrix(pMatrixLoad);
 	return 1 ;
 }
