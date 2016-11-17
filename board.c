@@ -16,6 +16,7 @@
 #include "matrix.h"
 #include "timer.h"
 #include "score.h"
+#include "memento.h"
 
 #ifndef _LINUX_
 #define _LINUX_   /* execution de system clear */
@@ -156,7 +157,12 @@ __displaySetCoordToSelect(int *numX, int *numY){
 		printf("Erreur de saisie ! try again\n");
 		printf("Select a peg's row and column number format like Xrow Ycol: ");
 	}
-        if(*numX == -1 || *numY == -1) printf("You ask [UNDO] the last move!\n") ;
+    /* DEBUG Appel de UNDO pour dernier mouvement
+     */
+    if(*numX == -1 || *numY == -1) printf("You ask [UNDO] the last move!\n") ;
+    originatorRestoreFromMemento(caretakerGetMemento(1)) ;
+    /*
+     */
 	scanf("%*[^\n]");
 	getchar();  // enleve '\n' restant
 }
