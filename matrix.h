@@ -20,13 +20,13 @@
 typedef int Matrix[HOR_MAX][VER_MAX] ;
 int (*pMatrixLoad)[VER_MAX] ; //pointeur sur le tableau Matrix multidimensionnel
 
-
 typedef struct s_matrixOfBoard{
 	int id ;
 	char *name ;
 	Matrix *pShape ;
 } matrixOfBoard;
 matrixOfBoard currentMatrixOfBoard ;
+
 /*
  *	Functions
 */

@@ -19,6 +19,7 @@ typedef struct s_mvt {
 typedef struct s_memento{
     int idRollback ;        // identifiant du mouvement
     mvt mvtStart ;          // coord depart du mouvement
+    mvt mvtBetween ;        // coord intermediaire du mouvement
     mvt mvtEnd ;            // coord arrivée du mouvement
  } memento ;
 
@@ -26,8 +27,8 @@ typedef memento* pMemento ;
 
 typedef pMemento mementoArrayList[NB_UNDO] ;
 
-pMemento mementoNew(mvt , mvt) ; 		// ecrit la structure
-pMemento mementoGetSaveState() ;	// calcul les mvt precedent
+pMemento mementoNew(mvt, mvt, mvt) ; 		// ecrit la structure
+Peg_Memento mementoGetSaveState(pMemento pm) ;	// calcul les mvt precedent
 
 pMemento originatorSaveToMemento() ; 		// appel mementoNew qui ecrit la struct
 void originatorSet(Peg_Memento pegMemento) ;

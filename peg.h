@@ -40,6 +40,7 @@ typedef struct s_Peg
 typedef struct s_Peg_Memento
 {
     Peg_Coord coordStart;
+    Peg_Coord coordBetween;
     Peg_Coord coordEnd;
 } Peg_Memento;
 

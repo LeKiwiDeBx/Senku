@@ -7,6 +7,7 @@
  */
 
 #include "memento.h"
+#include "matrix.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -72,12 +73,14 @@ originatorSet(Peg_Memento state){
  */
 pMemento 
 originatorSaveToMemento(){
-    mvt mvtStart, mvtEnd ;
+    mvt mvtStart, mvtEnd, mvtBetween ;
     mvtEnd.row = statePeg.coordEnd.row ;
     mvtEnd.column = statePeg.coordEnd.column ;
+    mvtBetween.row = statePeg.coordBetween.row ;
+    mvtBetween.column = statePeg.coordBetween.column ;
     mvtStart.row = statePeg.coordStart.row ;
     mvtStart.column = statePeg.coordStart.column ;
-    return mementoNew(mvtStart , mvtEnd) ;
+    return mementoNew(mvtStart ,mvtBetween, mvtEnd) ;
 }
 
 /**
@@ -86,29 +89,29 @@ originatorSaveToMemento(){
  */
 void
 originatorRestoreFromMemento(pMemento pm){
-    if(pm != NULL)
-        mementoGetSaveState() ;
-/*
-    statePeg.coordStart.row = pm->mvtStart.row ;
-    statePeg.coordStart.column = pm->mvtStart.column ;
-    statePeg.coordEnd.row = pm->mvtEnd.row ;
-    statePeg.coordEnd.column = pm->mvtEnd.column ;
-*/
-    
-    //@TODO: ecrire la matrice
+    Peg_Memento state ;
+    if(pm != NULL){
+        state = mementoGetSaveState(pm);
+    //@TODO: tester l'ecriture de la matrice
+    pMatrixLoad[state.coordStart.row][state.coordStart.column] = 1;
+    pMatrixLoad[state.coordBetween.row][state.coordBetween.column] = 1;
+    pMatrixLoad[state.coordEnd.row][state.coordEnd.column] = 0;
+    } 
 }
 
 /**
  * @brief calcul les mvt precedent
  * @return un memento que l'on vient de sauver
  */
-pMemento
-mementoGetSaveState(){
+Peg_Memento
+mementoGetSaveState(pMemento pm){
     statePeg.coordStart.row = pm->mvtStart.row ;
     statePeg.coordStart.column = pm->mvtStart.column ;
+    statePeg.coordBetween.row = pm->mvtBetween.row ;
+    statePeg.coordBetween.column = pm->mvtBetween.column ;
     statePeg.coordEnd.row = pm->mvtEnd.row ;
     statePeg.coordEnd.column = pm->mvtEnd.column ;
-    return pm ;
+    return statePeg ;
 }
 
 /**
@@ -117,12 +120,13 @@ mementoGetSaveState(){
  * @param 2 mvt de fin
  */
 pMemento
-mementoNew(mvt mvtStart, mvt mvtEnd){
+mementoNew(mvt mvtStart,mvt mvtBetween, mvt mvtEnd){
     static int mvtId = 1 ;
     pm  = (pMemento) malloc(sizeof(memento)) ;
     if(pm != NULL){
         pm->idRollback = mvtId ;
         pm->mvtStart = mvtStart ;
+        pm->mvtBetween = mvtBetween ;
         pm->mvtEnd = mvtEnd ;
         mvtId++ ;
     } else {
