@@ -52,34 +52,38 @@ caretakerAddMemento(pMemento pmArray){
 
 /**
  * @brief renvoi le memento a un indice donné du UNDO
- * @param indice de memento en général 1 cad un retour arriere immediat
+ * @param un undo cad un retour arriere immediat
  * @return un pointeur sur le memento
  */
 pMemento
-caretakerGetMemento(int level){
-        level = (level<0)? NB_UNDO-1-level: NB_UNDO-1;
-        int nbMemento = (int) SIZE_TAB(mArrayList) ;
+caretakerGetMemento(int undo) {
+    int j;
+    if (undo) {
+
+        for (j = 0; j < NB_UNDO; j++) {
+            //tableau en cours de remplissage
+            if (mArrayList[j] == NULL && j != 0) return pm = mArrayList[j - 1];
+            //tableau plein
+            if(j == NB_UNDO -1) return pm = mArrayList[NB_UNDO - 1];
+        }
+
+        /* ---> DEBUG     <--- */
+        int nbMemento = (int) SIZE_TAB(mArrayList);
         printf("nbMemento : %d\n", nbMemento);
-         /* ---> DEBUG     <--- */
-    int k ;
-    for(k=0;k < NB_UNDO;k++){
-        if(mArrayList[k]!= NULL){
-            printf("DEBUG caretaker:%d %d %d %d %d\n",k,
-                    mArrayList[k]->mvtStart.row,
-                    mArrayList[k]->mvtStart.column,
-                    mArrayList[k]->mvtEnd.row,
-                    mArrayList[k]->mvtEnd.column);
-         }
+        int k;
+        for (k = 0; k < NB_UNDO; k++) {
+            if (mArrayList[k] != NULL) {
+                printf("DEBUG caretaker:level:%d srow:%d scolumn:%d erow:%d ecolumn:%d\n", k,
+                        mArrayList[k]->mvtStart.row,
+                        mArrayList[k]->mvtStart.column,
+                        mArrayList[k]->mvtEnd.row,
+                        mArrayList[k]->mvtEnd.column);
+                ;
+            }
+        }
     }
- /*
-        printf("DEBUG caretakerGetMemento: srow:%d scolumn:%d erow:%d ecolumn:%d level:%d\n",
-                    mArrayList[level]->mvtStart.row,
-                    mArrayList[level]->mvtStart.column,
-                    mArrayList[level]->mvtEnd.row,
-                    mArrayList[level]->mvtEnd.column,
-                    level);
-*/
-    return pm = mArrayList[0] ;
+    /* ---> END DEBUG     <--- */
+    return pm = mArrayList[0];
 }
 
 /**

@@ -84,7 +84,7 @@ boardPlay(){
             /* DEBUG Appel de UNDO pour dernier mouvement */
             if(*pRow == -1 || *pColumn == -1) {
                 printf("You ask [UNDO] the last move!\n") ;
-                originatorRestoreFromMemento(caretakerGetMemento(-1)) ;
+                originatorRestoreFromMemento(caretakerGetMemento(1)) ;
                 matrixUpdate(UNDO) ;
             }
             /*  */
