@@ -161,7 +161,7 @@ matrixSelectPeg(int row, int column){
 				if(pMatrixLoad[row][column+1] == 1 && pMatrixLoad[row][column+2] == 0)
 					column_arrival = column + 2 ;
 				break;
-				case DEFAULT:case CENTER:case NONE:
+				case DEFAULT:case CENTER:case UNDO:
 				default:
 				;
 				break;
@@ -186,6 +186,10 @@ matrixUpdate(Peg_Direction where){
 		i = pegReturnDefaultPeg();
 		where = tab_Peg[i].direction ;
 	}
+    else if(where == UNDO){
+        __displayMatrix(pMatrixLoad);
+        return 0;
+    }
 	else{
 		i = __getCoordPegWhereWeGo(where) ;
 		if(!i)	{
@@ -218,7 +222,7 @@ matrixUpdate(Peg_Direction where){
 	pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
 	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//erase
 	pMatrixLoad[row][column] = 1 ;
-	//mecanisme memento UNDO:: memeorisation
+	//mecanisme memento UNDO:: memorisation
         pegMemento.coordStart.row = row + 2*coefRow ;
         pegMemento.coordStart.column = column + 2*coefColumn ;
         pegMemento.coordBetween.row = row + coefRow ;
@@ -257,7 +261,7 @@ matrixCanMovePeg(){
 						if(pMatrixLoad[row][column+1] == 1 && pMatrixLoad[row][column+2] == 0)
 							return 1 ;
 						break;
-						case DEFAULT:case CENTER:case NONE:
+						case DEFAULT:case CENTER:case UNDO:
 						default:
 						;
 						break;

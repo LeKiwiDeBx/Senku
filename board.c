@@ -81,6 +81,13 @@ boardPlay(){
 		while( matrixCanMovePeg() ){
 			timerSetElapseTimer() ;
 			__displaySetCoordToSelect(pRow, pColumn) ;
+            /* DEBUG Appel de UNDO pour dernier mouvement */
+            if(*pRow == -1 || *pColumn == -1) {
+                printf("You ask [UNDO] the last move!\n") ;
+                originatorRestoreFromMemento(caretakerGetMemento(-1)) ;
+                matrixUpdate(UNDO) ;
+            }
+            /*  */
 			timerSetElapseTimer() ;
 			nbMove = matrixSelectPeg(*pRow, *pColumn) ;
 			if(nbMove){
@@ -136,7 +143,7 @@ __displayMenu(){
 
 int
 __getMenuChoice(){
-	int num = 0;int c;
+	int num  = 0, c;
 	printf("Enter a number between 1 and 4\n");
 	printf("Type your choice: ");
 		if (!scanf(" %2d[1-4]", &num)) {
@@ -157,12 +164,6 @@ __displaySetCoordToSelect(int *numX, int *numY){
 		printf("Erreur de saisie ! try again\n");
 		printf("Select a peg's row and column number format like Xrow Ycol: ");
 	}
-    /* DEBUG Appel de UNDO pour dernier mouvement
-     */
-    if(*numX == -1 || *numY == -1) printf("You ask [UNDO] the last move!\n") ;
-    originatorRestoreFromMemento(caretakerGetMemento(1)) ;
-    /*
-     */
 	scanf("%*[^\n]");
 	getchar();  // enleve '\n' restant
 }
