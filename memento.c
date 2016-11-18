@@ -12,9 +12,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#define SIZE_TAB(array) (sizeof(array)/sizeof(array[0]))
+
 static Peg_Memento statePeg ;
 static pMemento pm ;
-static mementoArrayList mArrayList ; //tableau de pointeur de memo
+static mementoArrayList mArrayList = {NULL} ; //tableau de pointeur de memo
 
 /**
  * @brief ajoute un memento à la liste
@@ -54,8 +56,30 @@ caretakerAddMemento(pMemento pmArray){
  * @return un pointeur sur le memento
  */
 pMemento
-caretakerGetMemento(int index){
-    return pm = mArrayList[index] ;
+caretakerGetMemento(int level){
+        level = (level<0)? NB_UNDO-1-level: NB_UNDO-1;
+        int nbMemento = (int) SIZE_TAB(mArrayList) ;
+        printf("nbMemento : %d\n", nbMemento);
+         /* ---> DEBUG     <--- */
+    int k ;
+    for(k=0;k < NB_UNDO;k++){
+        if(mArrayList[k]!= NULL){
+            printf("DEBUG caretaker:%d %d %d %d %d\n",k,
+                    mArrayList[k]->mvtStart.row,
+                    mArrayList[k]->mvtStart.column,
+                    mArrayList[k]->mvtEnd.row,
+                    mArrayList[k]->mvtEnd.column);
+         }
+    }
+ /*
+        printf("DEBUG caretakerGetMemento: srow:%d scolumn:%d erow:%d ecolumn:%d level:%d\n",
+                    mArrayList[level]->mvtStart.row,
+                    mArrayList[level]->mvtStart.column,
+                    mArrayList[level]->mvtEnd.row,
+                    mArrayList[level]->mvtEnd.column,
+                    level);
+*/
+    return pm = mArrayList[0] ;
 }
 
 /**
