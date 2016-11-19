@@ -86,6 +86,7 @@ boardPlay(){
                 printf("You ask [UNDO] the last move!\n") ;
                 originatorRestoreFromMemento(caretakerGetMemento(1)) ;
                 matrixUpdate(UNDO) ;
+                continue ;
             }
             /*  */
 			timerSetElapseTimer() ;

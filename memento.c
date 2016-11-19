@@ -24,29 +24,30 @@ static mementoArrayList mArrayList = {NULL} ; //tableau de pointeur de memo
  * @return void
  */
 void
-caretakerAddMemento(pMemento pmArray){
-    static int i = 0;
-    mArrayList[i] = pmArray ;
-    mArrayList[NB_UNDO-1] = NULL ; //sentinelle
-    if(i < NB_UNDO-1){
-        mArrayList[i] = pmArray ;
-        i++ ;
-    }
-    else {
-        //decalage vers la gauche du tableau --> FIFO
-        printf("FIFO\n") ;
-        memmove(mArrayList, mArrayList + 1, (NB_UNDO-2)*sizeof(pMemento));
-        mArrayList[NB_UNDO - 2] = pmArray ;
-        i = NB_UNDO-1 ;
+caretakerAddMemento( pMemento pmArray ) {
+    int i ;
+    mArrayList[NB_UNDO - 1] = NULL ; //sentinelle
+
+    for (i = 0 ; i < NB_UNDO - 1 ; i++) {
+        if (mArrayList[i] == NULL) {
+            mArrayList[i] = pmArray ;
+            break ;
+        }
+        else if(i == NB_UNDO -2) {
+            //decalage vers la gauche du tableau --> FIFO
+            printf( "FIFO\n" ) ;
+            memmove( mArrayList, mArrayList + 1, (NB_UNDO - 2) * sizeof (pMemento) ) ;
+            mArrayList[NB_UNDO - 2] = pmArray ;
+        }
     }
     /* ---> DEBUG     <--- */
     int k ;
-    for(k=0;k<i;k++){
-        printf("DEBUG caretaker:%d %d %d %d %d\n",i,
+    for (k = 0 ; k < i ; k++) {
+        printf( "DEBUG caretaker:%d %d %d %d %d\n", i,
                 mArrayList[k]->mvtStart.row,
                 mArrayList[k]->mvtStart.column,
                 mArrayList[k]->mvtEnd.row,
-                mArrayList[k]->mvtEnd.column);
+                mArrayList[k]->mvtEnd.column ) ;
     }
     /* END OF DEBUG */
 }
@@ -57,45 +58,44 @@ caretakerAddMemento(pMemento pmArray){
  * @return un pointeur sur le memento
  */
 pMemento
-caretakerGetMemento(int undo) {
-    int j;
+caretakerGetMemento( int undo ) {
+    int j ;
     if (undo) {
 
-        for (j = 0; j < NB_UNDO; j++) {
+        for (j = 0 ; j < NB_UNDO ; j++) {
             //tableau en cours de remplissage
-            if ( (mArrayList[j] == NULL && j != 0) || (j == NB_UNDO-1) ) {
-                if(memcpy(pm,mArrayList[j-1],(size_t)sizeof(pMemento)) != NULL){
-                mArrayList[j-1] = NULL ;
-                return pm ;
+            if (mArrayList[j] == NULL && j != 0)  {
+                if (memcpy( pm, mArrayList[j - 1], (size_t)sizeof (pMemento) ) != NULL) {
+                    mArrayList[j - 1] = NULL ;
+                    return pm ;
                 }
             }
         }
-
         /* ---> DEBUG     <--- */
-        int nbMemento = (int) SIZE_TAB(mArrayList);
-        printf("nbMemento : %d\n", nbMemento);
-        int k;
-        for (k = 0; k < NB_UNDO; k++) {
+        int nbMemento = (int) SIZE_TAB( mArrayList ) ;
+        printf( "nbMemento : %d\n", nbMemento ) ;
+        int k ;
+        for (k = 0 ; k < NB_UNDO ; k++) {
             if (mArrayList[k] != NULL) {
-                printf("DEBUG caretaker:level:%d srow:%d scolumn:%d erow:%d ecolumn:%d\n", k,
+                printf( "DEBUG caretaker:level:%d srow:%d scolumn:%d erow:%d ecolumn:%d\n", k,
                         mArrayList[k]->mvtStart.row,
                         mArrayList[k]->mvtStart.column,
                         mArrayList[k]->mvtEnd.row,
-                        mArrayList[k]->mvtEnd.column);
+                        mArrayList[k]->mvtEnd.column ) ;
                 ;
             }
         }
     }
     /* ---> END DEBUG     <--- */
-    return pm = mArrayList[0];
+    return pm = mArrayList[0] ;
 }
 
 /**
  * @brief positionne la variable static de l'etat à sauver
  * @param state Peg à sauver
  */
-void 
-originatorSet(Peg_Memento state){
+void
+originatorSet( Peg_Memento state ) {
     statePeg = state ;
 }
 
@@ -103,8 +103,8 @@ originatorSet(Peg_Memento state){
  * @brief demande à memento une reference sur le dernier sauvegardé
  * @return un pointeur sur le memento
  */
-pMemento 
-originatorSaveToMemento(){
+pMemento
+originatorSaveToMemento( ) {
     mvt mvtStart, mvtEnd, mvtBetween ;
     mvtEnd.row = statePeg.coordEnd.row ;
     mvtEnd.column = statePeg.coordEnd.column ;
@@ -112,7 +112,7 @@ originatorSaveToMemento(){
     mvtBetween.column = statePeg.coordBetween.column ;
     mvtStart.row = statePeg.coordStart.row ;
     mvtStart.column = statePeg.coordStart.column ;
-    return mementoNew(mvtStart ,mvtBetween, mvtEnd) ;
+    return mementoNew( mvtStart, mvtBetween, mvtEnd ) ;
 }
 
 /**
@@ -120,15 +120,15 @@ originatorSaveToMemento(){
  * @param le memento à restaurer
  */
 void
-originatorRestoreFromMemento(pMemento pm){
+originatorRestoreFromMemento( pMemento pm ) {
     Peg_Memento state ;
-    if(pm != NULL){
-        state = mementoGetSaveState(pm);
-    //@TODO: tester l'ecriture de la matrice
-    pMatrixLoad[state.coordStart.row][state.coordStart.column] = 1;
-    pMatrixLoad[state.coordBetween.row][state.coordBetween.column] = 1;
-    pMatrixLoad[state.coordEnd.row][state.coordEnd.column] = 0;
-    } 
+    if (pm != NULL) {
+        state = mementoGetSaveState( pm ) ;
+        //@TODO: tester l'ecriture de la matrice
+        pMatrixLoad[state.coordStart.row][state.coordStart.column] = 1 ;
+        pMatrixLoad[state.coordBetween.row][state.coordBetween.column] = 1 ;
+        pMatrixLoad[state.coordEnd.row][state.coordEnd.column] = 0 ;
+    }
 }
 
 /**
@@ -136,7 +136,7 @@ originatorRestoreFromMemento(pMemento pm){
  * @return un memento que l'on vient de sauver
  */
 Peg_Memento
-mementoGetSaveState(pMemento pm){
+mementoGetSaveState( pMemento pm ) {
     statePeg.coordStart.row = pm->mvtStart.row ;
     statePeg.coordStart.column = pm->mvtStart.column ;
     statePeg.coordBetween.row = pm->mvtBetween.row ;
@@ -152,17 +152,18 @@ mementoGetSaveState(pMemento pm){
  * @param 2 mvt de fin
  */
 pMemento
-mementoNew(mvt mvtStart,mvt mvtBetween, mvt mvtEnd){
+mementoNew( mvt mvtStart, mvt mvtBetween, mvt mvtEnd ) {
     static int mvtId = 1 ;
-    pm  = (pMemento) malloc(sizeof(memento)) ;
-    if(pm != NULL){
+    pm = (pMemento) malloc( sizeof (memento) ) ;
+    if (pm != NULL) {
         pm->idRollback = mvtId ;
         pm->mvtStart = mvtStart ;
         pm->mvtBetween = mvtBetween ;
         pm->mvtEnd = mvtEnd ;
         mvtId++ ;
-    } else {
-        exit(EXIT_FAILURE) ;
     }
-    return pm;
+    else {
+        exit( EXIT_FAILURE ) ;
+    }
+    return pm ;
 }
