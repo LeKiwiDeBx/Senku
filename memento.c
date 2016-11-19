@@ -27,16 +27,17 @@ void
 caretakerAddMemento(pMemento pmArray){
     static int i = 0;
     mArrayList[i] = pmArray ;
-    if(i < NB_UNDO){
+    mArrayList[NB_UNDO-1] = NULL ; //sentinelle
+    if(i < NB_UNDO-1){
         mArrayList[i] = pmArray ;
         i++ ;
     }
     else {
         //decalage vers la gauche du tableau --> FIFO
         printf("FIFO\n") ;
-        memmove(mArrayList, mArrayList + 1, (NB_UNDO-1)*sizeof(pMemento));
-        mArrayList[NB_UNDO - 1] = pmArray ;
-        i = NB_UNDO ;
+        memmove(mArrayList, mArrayList + 1, (NB_UNDO-2)*sizeof(pMemento));
+        mArrayList[NB_UNDO - 2] = pmArray ;
+        i = NB_UNDO-1 ;
     }
     /* ---> DEBUG     <--- */
     int k ;
@@ -62,9 +63,12 @@ caretakerGetMemento(int undo) {
 
         for (j = 0; j < NB_UNDO; j++) {
             //tableau en cours de remplissage
-            if (mArrayList[j] == NULL && j != 0) return pm = mArrayList[j - 1];
-            //tableau plein
-            if(j == NB_UNDO -1) return pm = mArrayList[NB_UNDO - 1];
+            if ( (mArrayList[j] == NULL && j != 0) || (j == NB_UNDO-1) ) {
+                if(memcpy(pm,mArrayList[j-1],(size_t)sizeof(pMemento)) != NULL){
+                mArrayList[j-1] = NULL ;
+                return pm ;
+                }
+            }
         }
 
         /* ---> DEBUG     <--- */
