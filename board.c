@@ -81,21 +81,24 @@ boardPlay(){
 		while( matrixCanMovePeg() ){
 			timerSetElapseTimer() ;
 			__displaySetCoordToSelect(pRow, pColumn) ;
-            /* DEBUG Appel de UNDO pour dernier mouvement */
+            /* Appel de UNDO pour dernier mouvement */
             if(*pRow == -1 || *pColumn == -1) {
+                timerSetElapseTimer() ;
                 printf("You ask [UNDO] the last move!\n") ;
                 originatorRestoreFromMemento(caretakerGetMemento(1)) ;
                 matrixUpdate(UNDO) ;
-                continue ;
+                canDisplayBonusTimeScore = 1;
             }
-            /*  */
-			timerSetElapseTimer() ;
-			nbMove = matrixSelectPeg(*pRow, *pColumn) ;
-			if(nbMove){
-				if(matrixUpdate(__displaySetCoordToMove()) ){
-					canDisplayBonusTimeScore = 1;
-				}
-			}
+            /* selection normale */
+            else {
+                timerSetElapseTimer() ;
+                nbMove = matrixSelectPeg(*pRow, *pColumn) ;
+                if(nbMove){
+                    if(matrixUpdate(__displaySetCoordToMove()) ){
+                        canDisplayBonusTimeScore = 1;
+                    }
+                }
+            }
 			elapseTimer = timerGetElapseTimer() ;
 			totalTimer = timerGetTotalTimer() ;
 			__displayTimer(elapseTimer , totalTimer );
@@ -104,7 +107,7 @@ boardPlay(){
 				__displayBonusTimeScore() ;
 			}
 			canDisplayBonusTimeScore = 0 ;
-		}
+		}/* while() */
 	timerSetStopTimer();
 	remainingPeg = matrixCountRemainPeg() ;
 	scoreSetRemainingPeg(remainingPeg);
