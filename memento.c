@@ -29,6 +29,7 @@ caretakerAddMemento( pMemento pmArray ) {
     mArrayList[NB_UNDO - 1] = NULL ; //sentinelle
 
     for (i = 0 ; i < NB_UNDO - 1 ; i++) {
+        
         if (mArrayList[i] == NULL) {
             mArrayList[i] = pmArray ;
             break ;
@@ -38,17 +39,20 @@ caretakerAddMemento( pMemento pmArray ) {
             printf( "FIFO\n" ) ;
             memmove( mArrayList, mArrayList + 1, (NB_UNDO - 2) * sizeof (pMemento) ) ;
             mArrayList[NB_UNDO - 2] = pmArray ;
+            break;
         }
     }
     /* ---> DEBUG     <--- */
+/*
     int k ;
-    for (k = 0 ; k < i ; k++) {
-        printf( "DEBUG caretaker:%d %d %d %d %d\n", i,
+    for (k = 0 ; k < NB_UNDO -2 && mArrayList[k]!= NULL; k++) {
+        printf( "DEBUG caretakerAddMemento:%d %d %d %d %d\n", k,
                 mArrayList[k]->mvtStart.row,
                 mArrayList[k]->mvtStart.column,
                 mArrayList[k]->mvtEnd.row,
                 mArrayList[k]->mvtEnd.column ) ;
     }
+*/
     /* END OF DEBUG */
 }
 
@@ -61,32 +65,33 @@ pMemento
 caretakerGetMemento( int undo ) {
     int j ;
     if (undo) {
-
+        /* ---> DEBUG     <--- */
+        /*
+                int nbMemento = (int) SIZE_TAB( mArrayList ) ;
+                printf( "nbMemento : %d\n", nbMemento ) ;
+        */
+/*
+            int k ;
+            for (k = 0 ; k < NB_UNDO ; k++) {
+                if (mArrayList[k] == NULL) {
+                    printf( "DEBUG caretaker:level:%d srow:%d scolumn:%d erow:%d ecolumn:%d\n", k-1,
+                            mArrayList[k-1]->mvtStart.row,
+                            mArrayList[k-1]->mvtStart.column,
+                            mArrayList[k-1]->mvtEnd.row,
+                            mArrayList[k-1]->mvtEnd.column ) ;
+                }
+            }
+*/
+    /* ---> END DEBUG     <--- */
         for (j = 0 ; j < NB_UNDO ; j++) {
-            //tableau en cours de remplissage
             if (mArrayList[j] == NULL && j != 0)  {
-                if (memcpy( pm, mArrayList[j - 1], (size_t)sizeof (pMemento) ) != NULL) {
+                if (memcpy( pm, mArrayList[j - 1], (size_t) sizeof (pMemento) ) != NULL) {
                     mArrayList[j - 1] = NULL ;
                     return pm ;
                 }
             }
         }
-        /* ---> DEBUG     <--- */
-        int nbMemento = (int) SIZE_TAB( mArrayList ) ;
-        printf( "nbMemento : %d\n", nbMemento ) ;
-        int k ;
-        for (k = 0 ; k < NB_UNDO ; k++) {
-            if (mArrayList[k] != NULL) {
-                printf( "DEBUG caretaker:level:%d srow:%d scolumn:%d erow:%d ecolumn:%d\n", k,
-                        mArrayList[k]->mvtStart.row,
-                        mArrayList[k]->mvtStart.column,
-                        mArrayList[k]->mvtEnd.row,
-                        mArrayList[k]->mvtEnd.column ) ;
-                ;
-            }
-        }
-    }
-    /* ---> END DEBUG     <--- */
+    }   
     return pm = mArrayList[0] ;
 }
 
@@ -122,13 +127,11 @@ originatorSaveToMemento( ) {
 void
 originatorRestoreFromMemento( pMemento pm ) {
     Peg_Memento state ;
-    if (pm != NULL) {
         state = mementoGetSaveState( pm ) ;
         //@TODO: tester l'ecriture de la matrice
         pMatrixLoad[state.coordStart.row][state.coordStart.column] = 1 ;
         pMatrixLoad[state.coordBetween.row][state.coordBetween.column] = 1 ;
         pMatrixLoad[state.coordEnd.row][state.coordEnd.column] = 0 ;
-    }
 }
 
 /**
@@ -137,6 +140,7 @@ originatorRestoreFromMemento( pMemento pm ) {
  */
 Peg_Memento
 mementoGetSaveState( pMemento pm ) {
+    printf( "mementoGetSaveState %d %d %d %d\n",pm->mvtStart.row,  pm->mvtStart.column, pm->mvtEnd.row,  pm->mvtEnd.column ) ;
     statePeg.coordStart.row = pm->mvtStart.row ;
     statePeg.coordStart.column = pm->mvtStart.column ;
     statePeg.coordBetween.row = pm->mvtBetween.row ;
