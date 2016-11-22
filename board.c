@@ -78,27 +78,27 @@ boardPlay(){
 	timerSetStartTimer();
 	timerSetElapseTimer() ;
 	scoreResetBonusTimeScore() ;
+    caretakerNew() ;
 		while( matrixCanMovePeg() ){
 			timerSetElapseTimer() ;
 			__displaySetCoordToSelect(pRow, pColumn) ;
             /* Appel de UNDO pour dernier mouvement */
             if (*pRow == -1 || *pColumn == -1) {
-            timerSetElapseTimer( ) ;
-            printf( "You ask [UNDO] the last move!\n" ) ;
-                if (originatorRestoreFromMemento( caretakerGetMemento( 1 ) ))
+                timerSetElapseTimer( ) ;
+                if (originatorRestoreFromMemento( caretakerGetMemento( 1 ) )) {
+                    printf( "You ask [UNDO] the last move!\n" ) ;
                     matrixUpdate( UNDO ) ;
-                else
-                    printf( "There is no action to [UNDO] :( \n" ) ;
-            canDisplayBonusTimeScore = 0 ;
-            }
+                }
+                else printf( "There is no action to [UNDO] :( \n" ) ;
+                canDisplayBonusTimeScore = 0 ;
+                }
             /* selection normale */
             else {
                 timerSetElapseTimer() ;
                 nbMove = matrixSelectPeg(*pRow, *pColumn) ;
                 if(nbMove){
-                    if(matrixUpdate(__displaySetCoordToMove()) ){
+                    if(matrixUpdate(__displaySetCoordToMove()) )
                         canDisplayBonusTimeScore = 1;
-                    }
                 }
             }
 			elapseTimer = timerGetElapseTimer() ;
@@ -163,7 +163,7 @@ __getMenuChoice(){
 void
 __displaySetCoordToSelect(int *numX, int *numY){
 	int c;
-	printf("\nSelect a peg's row and column number format like Xrow Ycol: ");
+	printf("\nSelect a peg's row and column number format like Xrow Ycol or -1 -1 to UNDO: ");
 	while ( scanf(" %2i %2i", numX, numY)!=2 || *numX > 9 || *numY > 9) {
 		while ( ((c = getchar()) != '\n') && c != EOF) ;
 		*numX = 0 ; *numY = 0 ;

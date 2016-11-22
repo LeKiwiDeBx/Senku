@@ -19,6 +19,16 @@ static pMemento pm ;
 static mementoArrayList mArrayList = {NULL} ; //tableau de pointeur de memento
 
 /**
+ * @brief initialise la mArrayList à NULL entre deux tours
+ * 
+ */
+void 
+caretakerNew(){
+    mArrayList[0] = NULL ;
+}
+
+/**
+ * 
  * @brief ajoute un memento à la liste
  * @param m
  * @return void
@@ -27,9 +37,7 @@ void
 caretakerAddMemento( pMemento pmArray ) {
     int i ;
     mArrayList[NB_UNDO - 1] = NULL ; //sentinelle
-
     for (i = 0 ; i < NB_UNDO - 1 ; i++) {
-        
         if (mArrayList[i] == NULL) {
             mArrayList[i] = pmArray ;
             break ;
@@ -42,18 +50,6 @@ caretakerAddMemento( pMemento pmArray ) {
             break;
         }
     }
-    /* ---> DEBUG     <--- */
-/*
-    int k ;
-    for (k = 0 ; k < NB_UNDO -2 && mArrayList[k]!= NULL; k++) {
-        printf( "DEBUG caretakerAddMemento:%d %d %d %d %d\n", k,
-                mArrayList[k]->mvtStart.row,
-                mArrayList[k]->mvtStart.column,
-                mArrayList[k]->mvtEnd.row,
-                mArrayList[k]->mvtEnd.column ) ;
-    }
-*/
-    /* END OF DEBUG */
 }
 
 /**
@@ -69,16 +65,6 @@ caretakerGetMemento( int undo ) {
         for (j = 1 ; j < NB_UNDO ; j++) {
             if (mArrayList[j] == NULL)  {
                 if (memcpy( pm, mArrayList[j - 1], sizeof (memento) ) != NULL) {
-                   printf( "DEBUG caretakerGetMemento:mArrayList[%d] srow:%d scolumn:%d erow:%d ecolumn:%d\n", j-1,
-                            mArrayList[j-1]->mvtStart.row,
-                            mArrayList[j-1]->mvtStart.column,
-                            mArrayList[j-1]->mvtEnd.row,
-                            mArrayList[j-1]->mvtEnd.column ) ;
-                   printf( "DEBUG caretakerGetMemento:pm srow:%d scolumn:%d erow:%d ecolumn:%d\n",
-                            pm->mvtStart.row,
-                            pm->mvtStart.column,
-                            pm->mvtEnd.row,
-                            pm->mvtEnd.column ) ;
                     mArrayList[j - 1] = NULL ;
                     return pm ;
                 }
@@ -137,22 +123,22 @@ originatorRestoreFromMemento( pMemento pm ) {
  */
 Peg_Memento
 mementoGetSaveState( pMemento pm ) {
-/*
-    printf( "mementoGetSaveState %d %d %d %d\n",pm->mvtStart.row,  pm->mvtStart.column, pm->mvtEnd.row,  pm->mvtEnd.column ) ;
-*/
-    statePeg.coordStart.row = pm->mvtStart.row ;
-    statePeg.coordStart.column = pm->mvtStart.column ;
-    statePeg.coordBetween.row = pm->mvtBetween.row ;
-    statePeg.coordBetween.column = pm->mvtBetween.column ;
-    statePeg.coordEnd.row = pm->mvtEnd.row ;
-    statePeg.coordEnd.column = pm->mvtEnd.column ;
-    return statePeg ;
+    if(pm != NULL) {
+        statePeg.coordStart.row = pm->mvtStart.row ;
+        statePeg.coordStart.column = pm->mvtStart.column ;
+        statePeg.coordBetween.row = pm->mvtBetween.row ;
+        statePeg.coordBetween.column = pm->mvtBetween.column ;
+        statePeg.coordEnd.row = pm->mvtEnd.row ;
+        statePeg.coordEnd.column = pm->mvtEnd.column ;
+        return statePeg ;
+    } else return statePeg ;
 }
 
 /**
  * @brief le memento à créer
  * @param 1 mvt de depart
- * @param 2 mvt de fin
+ * @param 2 mvt du milieu
+ * @param 3 mvt de fin
  */
 pMemento
 mementoNew( mvt mvtStart, mvt mvtBetween, mvt mvtEnd ) {

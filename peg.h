@@ -47,6 +47,6 @@ typedef struct s_Peg_Memento
 extern Peg tab_Peg[MAX_STRUCT_PEG] ;
 void 	pegFlushPeg() ;
 void 	pegFirstPeg(int, int) ;
-int		pegBuildPeg(int, int, Peg_Direction) ;
-int		pegReturnDefaultPeg() ;
+int     pegBuildPeg(int, int, Peg_Direction) ;
+int     pegReturnDefaultPeg() ;
 #endif

@@ -36,7 +36,7 @@ pMemento originatorSaveToMemento() ; 		// appel mementoNew qui ecrit la struct
 void originatorSet(Peg_Memento pegMemento) ;
 int originatorRestoreFromMemento(pMemento pm) ;// appel mementoGetSaveState à l'indice caretakerGetMemento(int)
 											// et modifie la matrice
-
+void caretakerNew() ;                   // initialise le caretaker
 void caretakerAddMemento(pMemento pm) ; // ajoute un pointeur dans mementoArrayList
 pMemento caretakerGetMemento(int) ;     // retourne pointeur memento à l'indice donné
                                         // faudra gérer la Liste en detruisant juste après le numero UNDO?
