@@ -35,7 +35,7 @@ static void 	__updateCursorScore(const score * ) ;
 static double 	__calculateScore(const int, const double ) ;
 static int 		__insertRecord(score *) ;
 static void 	__setRemainingPeg(int ) ;
-static void 	__setNamePlayer(int ) ;
+static void 	__setNamePlayer() ;
 static void 	__setBonusElapseTime(int) ;
 static void		__setIdScore(int ) ;
 static void		__setScoreGame(int ) ;
@@ -77,20 +77,20 @@ __insertRecord(score *inputScore){
 	__setScoreGame(scoreGame);
 	__setIdScore(inputScore->idScore);
 	if(cursorScore->scoreGame > tabSortScore[0].scoreGame){
-		__setNamePlayer(0);
+		__setNamePlayer();
 		__addBegin();
 		return 1 ;
 	}
 	else if(cursorScore->scoreGame < tabSortScore[SCORE_BEST_OF-2].scoreGame &&
 			cursorScore->scoreGame > tabSortScore[SCORE_BEST_OF-1].scoreGame){
-		__setNamePlayer( __addEnd() );
+		__setNamePlayer();
 		return 2 ;
 	}
 	else{
 		for (i = 0; i < SCORE_BEST_OF-1 ; i++){
 			if(cursorScore->scoreGame <= tabSortScore[i].scoreGame &&
 			   cursorScore->scoreGame > tabSortScore[i+1].scoreGame ){
-				 __setNamePlayer(i);
+				 __setNamePlayer();
 				 __addInside(i+1);
 				return 3 ;
 			}
@@ -154,7 +154,7 @@ __setScoreGame(int scoreGame){
 }
 
 static void
-__setNamePlayer(int pos){
+__setNamePlayer(){
 	char chaine[MAX_CAR_NAME] = "\0";
 	__displaySetNamePlayer() ;
 	fgets(chaine, sizeof(chaine), stdin);

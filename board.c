@@ -82,12 +82,14 @@ boardPlay(){
 			timerSetElapseTimer() ;
 			__displaySetCoordToSelect(pRow, pColumn) ;
             /* Appel de UNDO pour dernier mouvement */
-            if(*pRow == -1 || *pColumn == -1) {
-                timerSetElapseTimer() ;
-                printf("You ask [UNDO] the last move!\n") ;
-                originatorRestoreFromMemento(caretakerGetMemento(1)) ;
-                matrixUpdate(UNDO) ;
-                canDisplayBonusTimeScore = 1;
+            if (*pRow == -1 || *pColumn == -1) {
+            timerSetElapseTimer( ) ;
+            printf( "You ask [UNDO] the last move!\n" ) ;
+                if (originatorRestoreFromMemento( caretakerGetMemento( 1 ) ))
+                    matrixUpdate( UNDO ) ;
+                else
+                    printf( "There is no action to [UNDO] :( \n" ) ;
+            canDisplayBonusTimeScore = 0 ;
             }
             /* selection normale */
             else {

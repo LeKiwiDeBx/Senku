@@ -16,7 +16,7 @@
 
 static Peg_Memento statePeg ;
 static pMemento pm ;
-static mementoArrayList mArrayList = {NULL} ; //tableau de pointeur de memo
+static mementoArrayList mArrayList = {NULL} ; //tableau de pointeur de memento
 
 /**
  * @brief ajoute un memento à la liste
@@ -65,34 +65,27 @@ pMemento
 caretakerGetMemento( int undo ) {
     int j ;
     if (undo) {
-        /* ---> DEBUG     <--- */
-        /*
-                int nbMemento = (int) SIZE_TAB( mArrayList ) ;
-                printf( "nbMemento : %d\n", nbMemento ) ;
-        */
-/*
-            int k ;
-            for (k = 0 ; k < NB_UNDO ; k++) {
-                if (mArrayList[k] == NULL) {
-                    printf( "DEBUG caretaker:level:%d srow:%d scolumn:%d erow:%d ecolumn:%d\n", k-1,
-                            mArrayList[k-1]->mvtStart.row,
-                            mArrayList[k-1]->mvtStart.column,
-                            mArrayList[k-1]->mvtEnd.row,
-                            mArrayList[k-1]->mvtEnd.column ) ;
-                }
-            }
-*/
-    /* ---> END DEBUG     <--- */
-        for (j = 0 ; j < NB_UNDO ; j++) {
-            if (mArrayList[j] == NULL && j != 0)  {
-                if (memcpy( pm, mArrayList[j - 1], (size_t) sizeof (pMemento) ) != NULL) {
+        if (!mArrayList[0]) return NULL ;  //liste vide
+        for (j = 1 ; j < NB_UNDO ; j++) {
+            if (mArrayList[j] == NULL)  {
+                if (memcpy( pm, mArrayList[j - 1], sizeof (memento) ) != NULL) {
+                   printf( "DEBUG caretakerGetMemento:mArrayList[%d] srow:%d scolumn:%d erow:%d ecolumn:%d\n", j-1,
+                            mArrayList[j-1]->mvtStart.row,
+                            mArrayList[j-1]->mvtStart.column,
+                            mArrayList[j-1]->mvtEnd.row,
+                            mArrayList[j-1]->mvtEnd.column ) ;
+                   printf( "DEBUG caretakerGetMemento:pm srow:%d scolumn:%d erow:%d ecolumn:%d\n",
+                            pm->mvtStart.row,
+                            pm->mvtStart.column,
+                            pm->mvtEnd.row,
+                            pm->mvtEnd.column ) ;
                     mArrayList[j - 1] = NULL ;
                     return pm ;
                 }
             }
         }
     }   
-    return pm = mArrayList[0] ;
+    return NULL ;
 }
 
 /**
@@ -123,15 +116,19 @@ originatorSaveToMemento( ) {
 /**
  * @brief appel mementoGetSaveState à l'indice caretakerGetMemento(int)et modifie la matrice
  * @param le memento à restaurer
+ * @return succes ou pas
  */
-void
+int 
 originatorRestoreFromMemento( pMemento pm ) {
     Peg_Memento state ;
+    if(pm != NULL) {
         state = mementoGetSaveState( pm ) ;
-        //@TODO: tester l'ecriture de la matrice
         pMatrixLoad[state.coordStart.row][state.coordStart.column] = 1 ;
         pMatrixLoad[state.coordBetween.row][state.coordBetween.column] = 1 ;
         pMatrixLoad[state.coordEnd.row][state.coordEnd.column] = 0 ;
+        return 1 ;
+    }
+    return 0 ;
 }
 
 /**
@@ -140,7 +137,9 @@ originatorRestoreFromMemento( pMemento pm ) {
  */
 Peg_Memento
 mementoGetSaveState( pMemento pm ) {
+/*
     printf( "mementoGetSaveState %d %d %d %d\n",pm->mvtStart.row,  pm->mvtStart.column, pm->mvtEnd.row,  pm->mvtEnd.column ) ;
+*/
     statePeg.coordStart.row = pm->mvtStart.row ;
     statePeg.coordStart.column = pm->mvtStart.column ;
     statePeg.coordBetween.row = pm->mvtBetween.row ;

@@ -27,14 +27,14 @@ typedef struct s_memento{
 
 typedef memento* pMemento ;
 
-typedef pMemento mementoArrayList[NB_UNDO] ;
+typedef pMemento mementoArrayList[NB_UNDO] ; //typedef pMemento mementoArrayList[NB_UNDO]<br/>tableau de pointeur de memento
 
 pMemento mementoNew(mvt, mvt, mvt) ; 		// ecrit la structure
 Peg_Memento mementoGetSaveState(pMemento pm) ;	// calcul les mvt precedent
 
 pMemento originatorSaveToMemento() ; 		// appel mementoNew qui ecrit la struct
 void originatorSet(Peg_Memento pegMemento) ;
-void originatorRestoreFromMemento(pMemento pm) ;// appel mementoGetSaveState à l'indice caretakerGetMemento(int)
+int originatorRestoreFromMemento(pMemento pm) ;// appel mementoGetSaveState à l'indice caretakerGetMemento(int)
 											// et modifie la matrice
 
 void caretakerAddMemento(pMemento pm) ; // ajoute un pointeur dans mementoArrayList
