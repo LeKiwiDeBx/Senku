@@ -3,7 +3,7 @@ PROG = senku
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -o
+CFLAGS = -g3 -gdwarf-2 -Wall -Wextra -o
 
 OBJECTS = main.o board.o peg.o matrix.o timer.o score.o memento.o
 
