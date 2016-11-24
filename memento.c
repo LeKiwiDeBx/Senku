@@ -1,4 +1,3 @@
-
 /*
  * File:   memento.c
  * Author: Administrateur
@@ -19,16 +18,18 @@ static pMemento pm ;
 static mementoArrayList mArrayList = {NULL} ; //tableau de pointeur de memento
 
 /**
- * @brief initialise la mArrayList à NULL entre deux tours
+ * @brief re/initialise la mArrayList à NULL
  * 
  */
 void 
 caretakerNew(){
-    mArrayList[0] = NULL ;
+    int i ;
+    for (i = 0 ; i < SIZE_TAB(mArrayList) ; i++) {
+        mArrayList[i] = NULL ;
+    }
 }
 
 /**
- * 
  * @brief ajoute un memento à la liste
  * @param m
  * @return void
