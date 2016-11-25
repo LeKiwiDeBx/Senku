@@ -1,24 +1,26 @@
 # makefile de senku
 PROG = senku
 
-CC = gcc
+CC = gcc 
 
-CFLAGS = -g3 -gdwarf-2 -Wall -Wextra -o
+CFLAGS = -g3 -gdwarf-2 -Wall -Wextra -o 
 
 OBJECTS = main.o board.o peg.o matrix.o timer.o score.o memento.o
+
+PKG_CONFIG = `pkg-config --cflags --libs gtk+-3.0`
 
 install: all
 
 all: $(PROG)
 
 $(PROG): $(OBJECTS)
-	$(CC) $(CFLAGS) $(PROG) $(OBJECTS)
+	$(CC) $(CFLAGS) $(PROG) $(OBJECTS) $(PKG_CONFIG)
 
 board.o: board.c board.h matrix.h timer.h score.h
 	$(CC) $(CFLAGS) board.o -c board.c
 
 main.o: main.c board.h matrix.h
-	$(CC) $(CFLAGS) main.o -c main.c
+	$(CC) $(CFLAGS) main.o -c main.c $(PKG_CONFIG)
 
 matrix.o: matrix.c matrix.h peg.h memento.h
 	$(CC) $(CFLAGS) matrix.o -c matrix.c

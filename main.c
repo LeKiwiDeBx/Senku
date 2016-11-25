@@ -32,24 +32,19 @@
  *
  *
  */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
+#include <glib.h>
 #include "board.h"
 /*
   AND THE SHOW...
  */
-
-
 int main(int argc, char **argv)
 {
-	if( boardInit() ){
-		printf("\nGood bye! Thanks for playing this game ;)\n" );
-    	}
-	else
-		printf("\nSorry but Init game Senku FAILURE :( \n");
+	if (boardInit( ))
+        printf( "\nGood bye! Thanks for playing this game ;)\n" ) ;
+    else
+        printf( "\nSorry but Init game Senku FAILURE :( \n" ) ;
 	return 0;
 }
-
