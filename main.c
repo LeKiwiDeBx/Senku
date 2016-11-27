@@ -40,8 +40,15 @@
 /*
   AND THE SHOW...
  */
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
+
+    GtkWidget *window;
+    gtk_init(&argc, &argv);
+    window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+    gtk_widget_show  (window);
+    gtk_main ();
+
 	if (boardInit( ))
         printf( "\nGood bye! Thanks for playing this game ;)\n" ) ;
     else
