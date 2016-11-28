@@ -40,18 +40,47 @@
 /*
   AND THE SHOW...
  */
+void OnDestroy(GtkWidget *pWidget, gpointer pData) ;
+
 int main(int argc, char *argv[])
 {
-
     GtkWidget *window;
+    GtkWidget *grid;
+    GtkWidget *lbTitle ;
+    
     gtk_init(&argc, &argv);
-    window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-    gtk_widget_show  (window);
+    
+    window = gtk_window_new (GTK_WINDOW_TOPLEVEL);                          
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+    gtk_window_set_title(GTK_WINDOW(window), "Senku GTK Beta 2.0");
+    gtk_window_set_default_size(GTK_WINDOW(window), 360, 340) ;
+    
+    lbTitle = gtk_label_new("Senku game") ;
+    
+    grid = gtk_grid_new() ;
+    gtk_container_add(GTK_CONTAINER(window), grid);
+    gtk_grid_attach(GTK_GRID(grid),lbTitle,0,0,1,1);
+    
+   
+    g_signal_connect(G_OBJECT(window),"destroy",G_CALLBACK(OnDestroy),NULL) ;
+    gtk_widget_show_all(window);
     gtk_main ();
-
+    EXIT_SUCCESS ;
+/*
+    {
 	if (boardInit( ))
         printf( "\nGood bye! Thanks for playing this game ;)\n" ) ;
     else
         printf( "\nSorry but Init game Senku FAILURE :( \n" ) ;
 	return 0;
+    }
+*/
+}
+/**
+ * @brief   Arret de la boucle evenementielle   
+ */
+void 
+OnDestroy(GtkWidget *pWidget, gpointer pData)
+{
+    gtk_main_quit();
 }
