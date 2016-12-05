@@ -17,7 +17,7 @@ $(PROG): $(OBJECTS)
 	$(CC) $(CFLAGS) $(PROG) $(OBJECTS) $(PKG_CONFIG)
 
 board.o: board.c board.h matrix.h timer.h score.h
-	$(CC) $(CFLAGS) board.o -c board.c
+	$(CC) $(CFLAGS) board.o -c board.c $(PKG_CONFIG)
 
 main.o: main.c board.h matrix.h
 	$(CC) $(CFLAGS) main.o -c main.c $(PKG_CONFIG)
