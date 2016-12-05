@@ -137,7 +137,7 @@ printf("\n");
 
 void
 __displayMenu(){
-	printf("!==\t\t\t\t       \t\t\t\t==!\n");
+   	printf("!==\t\t\t\t       \t\t\t\t==!\n");
 	printf("!==\t\t\t\tM E N U\t\t\t\t==!\n");
 	printf("!==\t\t\t\t       \t\t\t\t==!\n");
 	printf("!==\t\t\t# [1] Shape English       \t\t==!\n");
