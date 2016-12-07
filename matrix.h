@@ -19,12 +19,22 @@
 */
 typedef int Matrix[HOR_MAX][VER_MAX] ;
 int (*pMatrixLoad)[VER_MAX] ; //pointeur sur le tableau Matrix multidimensionnel
-
+/**
+ * @name typedef struct s_matrixOfBoard
+ * @brief structure de la matrice du jeu (shape)
+ * @id identifiant unique
+ * @char nom humain(!)
+ * @pShape pointeur sur un tableau de type Matrix (schema du shape)
+ */
 typedef struct s_matrixOfBoard{
 	int id ;
 	char *name ;
 	Matrix *pShape ;
 } matrixOfBoard;
+/**
+ * @brief structure qui contient la matrice (shape) en cours du jeu
+ *        de type matrixOfBoard
+ */
 matrixOfBoard currentMatrixOfBoard ;
 
 /*

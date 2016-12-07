@@ -28,7 +28,11 @@
 	//~ {0,0,0,0,0,0,0,0,0,0,0},	//9
 	//~ {0,0,0,0,0,0,0,0,0,0,0}	    //10
 //~ } ;
-
+/**
+ * @brief schema du shape dit Anglais
+ *         matrice carrée 11 x 11
+ * @Matrix type de tableau 2D de integer (int)
+ */
 Matrix matrixEnglish = {
 	//0  1  2  3  4  5  6  7  8  9  10
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, //0
