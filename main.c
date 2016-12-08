@@ -41,21 +41,27 @@
 
 /*
  * AND THE SHOW...
-*/
+ */
+typedef struct s_coord {
+    int x ;
+    int y ;
+} Coord ;
+Coord eventCoord ;
+Coord *pEventCoord ;
 
 /* 
  * And the Widget's land begin here...
  */
 GtkWidget *pWindowMain ;
 
-void OnDestroy( GtkWidget *pWidget, gpointer pData ) ;
+void OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) ;
 void OnPlay( GtkWidget *pWidget, gpointer pData ) ;
 gboolean OnRadioToggled( GtkWidget* pWidget, GdkEvent *event, gpointer pData ) ;
 int which_radio_is_selected( GSList *group ) ;
 
 int
 main( int argc, char *argv[] ) {
-    
+
     GtkWidget *pGridMatrix ;
     GtkWidget *lbTitle1, *lbTitle2, *lbl4 ;
     GtkWidget *pVbox ;
@@ -75,27 +81,37 @@ main( int argc, char *argv[] ) {
     gtk_container_add( GTK_CONTAINER( pGridMain ), pGridMatrix ) ;
     gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 5 ) ;
     gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 5 ) ;
-//    int i, k ;
-//    for (k = 0 ; k < 10 ; k++) {
-//        for (i = 0 ; i < 10 ; i++) {
-//            lbl4 = gtk_label_new( " O " ) ;
-//            gtk_grid_attach( GTK_GRID( pGridMatrix ), lbl4, i, k, 1, 1 ) ;
-//        }
-//    }
+    //    int i, k ;
+    //    for (k = 0 ; k < 10 ; k++) {
+    //        for (i = 0 ; i < 10 ; i++) {
+    //            lbl4 = gtk_label_new( " O " ) ;
+    //            gtk_grid_attach( GTK_GRID( pGridMatrix ), lbl4, i, k, 1, 1 ) ;
+    //        }
+    //    }
     // matrix avec gtkEvent
-    GtkWidget *pMatrix_event = gtk_event_box_new () ;
-    gtk_grid_attach (GTK_GRID(pGridMatrix), pMatrix_event, 0, 0, 10, 10);
-//    gtk_event_box_set_above_child(GTK_EVENT_BOX(pMatrix_event), TRUE) ;
+    //TODO: faire un event pour chaque image
+    GtkWidget * pMatrix_event[11][11] ;
+    GtkWidget *imgPeg ;
+    
+    //  gtk_event_box_set_above_child(GTK_EVENT_BOX(pMatrix_event), TRUE) ;
     int i, k ;
+    pEventCoord = (Coord *) g_malloc( 11 * 11 * sizeof (Coord) ) ;
+    pEventCoord = &eventCoord ;
     for (k = 0 ; k < 10 ; k++) {
         for (i = 0 ; i < 10 ; i++) {
             lbl4 = gtk_label_new( " O " ) ;
-            gtk_grid_attach( GTK_GRID( pGridMatrix ), lbl4, i, k, 1, 1 ) ;
-            gtk_widget_set_events(pMatrix_event, GDK_BUTTON_MOTION_MASK); //"button_press_event"
-            g_signal_connect(G_OBJECT(pMatrix_event), "button_press_event", G_CALLBACK(OnDestroy), NULL);
+            imgPeg = gtk_image_new_from_file( "image/pacman_black.png" ) ;
+            pMatrix_event[k][i] = gtk_event_box_new( ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPeg, i, k, 1, 1 ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), pMatrix_event[k][i], i, k, 1, 1 ) ;
+            // gtk_widget_set_events(pMatrix_event, GDK_BUTTON_MOTION_MASK); //"button_press_event"
+            pEventCoord->x = k ;
+            pEventCoord->y = i ;
+            g_signal_connect( G_OBJECT( pMatrix_event[k][i] ), "button_press_event", G_CALLBACK( OnSelect ), (gpointer) pEventCoord ) ;
+            pEventCoord++ ;
         }
     }
-    
+
     //    Menu droit
     pVbox = gtk_vbox_new( TRUE, 0 ) ;
     gtk_box_set_homogeneous( GTK_BOX( pVbox ), FALSE ) ;
@@ -146,8 +162,8 @@ main( int argc, char *argv[] ) {
 
     gtk_box_pack_end( GTK_BOX( pHbox ), pButtonQuit, TRUE, TRUE, 15 ) ;
     gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 1, 2, 1, 1 ) ;
-    g_signal_connect( G_OBJECT( pWindowMain ), "destroy", G_CALLBACK( OnDestroy ), NULL ) ;
-    g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
+    g_signal_connect( G_OBJECT( pWindowMain ), "destroy", G_CALLBACK( OnSelect ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnSelect ), NULL ) ;
 
     /**
      * Dialog box Menu 
@@ -156,25 +172,25 @@ main( int argc, char *argv[] ) {
     GtkWidget *pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
     gtk_window_set_title( GTK_WINDOW( pBoxMenu ), "Shapes choice" ) ;
     gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
-    gtk_window_set_position(GTK_WINDOW(pBoxMenu), GTK_WIN_POS_CENTER ) ;
-    gtk_window_set_decorated(GTK_WINDOW( pBoxMenu ), FALSE) ;
-    gtk_window_set_deletable(GTK_WINDOW( pBoxMenu ), FALSE) ;
-    
+    gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
+    gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), FALSE ) ;
+    gtk_window_set_deletable( GTK_WINDOW( pBoxMenu ), FALSE ) ;
+
     gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
     gtk_window_resize( GTK_WINDOW( pBoxMenu ), 280, 300 ) ;
-    
-    
+
+
     // options
     GtkWidget *pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, 20 ) ;
     gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
-    
+
     GtkWidget *pfrTitle = gtk_frame_new( NULL ) ;
     gtk_frame_set_label( GTK_FRAME( pfrTitle ), "   Senku ver Beta 1.4  GTK release   (c) 2016   [°} Le KiWi   " ) ;
     GtkWidget *plbTitle = gtk_label_new( "\n\nShapes choice\n______________" ) ;
     gtk_container_add( GTK_CONTAINER( pfrTitle ), plbTitle ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pfrTitle, TRUE, FALSE, 25 ) ;
-    
-    
+
+
     GtkWidget *radio ;
     radio = gtk_radio_button_new_with_label( NULL, "Shape English" ) ;
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( radio ), TRUE ) ;
@@ -191,9 +207,9 @@ main( int argc, char *argv[] ) {
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, 20 ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, 15 ) ;
     //les signaux
-    g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
-    g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked",  G_CALLBACK( OnPlay ), radio ) ;
-//  g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
+    g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnSelect ), NULL ) ;
+    g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
+    //  g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
     gtk_container_add( GTK_CONTAINER( pBoxMenu ), pBoxMenuOption ) ;
     gtk_widget_show_all( pBoxMenu ) ;
     gtk_main( ) ;
@@ -207,43 +223,45 @@ main( int argc, char *argv[] ) {
         return 0;
         }
      */
-
 }
 
 void
-OnDestroy( GtkWidget *pWidget, gpointer pData ) {
-    gtk_main_quit( ) ;
+OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
+    Coord *p = g_malloc( sizeof (Coord) ) ;
+    p = (Coord *) pData ;
+    g_print( "Coord X:%d Y:%d", p->x, p->y ) ;
+    //    gtk_main_quit( ) ;
 }
 
 void
 OnPlay( GtkWidget* pWidget, gpointer pData ) {
     GtkWidget *pWindow = gtk_widget_get_toplevel( GTK_WIDGET( pData ) ) ;
     GtkRadioButton *radio = GTK_RADIO_BUTTON( pData ) ;
-    which_radio_is_selected( gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio) ) ) ;
+    which_radio_is_selected( gtk_radio_button_get_group( GTK_RADIO_BUTTON( radio ) ) ) ;
     gtk_widget_show_all( pWindowMain ) ;
     gtk_widget_destroy( pWindow ) ;
 }
 
 int
 OnRadioToggled( GtkWidget* pWidget, GdkEvent *event, gpointer pData ) {
-//    GtkRadioButton *radioBtn =  pData ; /* we passed a radio button as data */
-//    which_radio_is_selected( gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioBtn) ) ) ;
-//    return FALSE ;
+    //    GtkRadioButton *radioBtn =  pData ; /* we passed a radio button as data */
+    //    which_radio_is_selected( gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioBtn) ) ) ;
+    //    return FALSE ;
 }
 
 int
 which_radio_is_selected( GSList *group ) {
     GSList *Group = group ;
-    int i = 0, j= 0;
-    j = g_slist_length(group) ;
+    int i = 0, j = 0 ;
+    j = g_slist_length( group ) ;
     for ( ; group != NULL ; group = group->next) {
         GtkRadioButton *radio = group->data ;
-        i = g_slist_position(Group, group) ;
+        i = g_slist_position( Group, group ) ;
         if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON( radio ) )) {
-            g_print("Hello :)\n") ;
-            g_print( "DEBUG :: Radio button \"%s\" is the %d active\n", gtk_button_get_label( GTK_BUTTON( radio ) ), j-i) ;
-            return (j-i);
-        } 
+            g_print( "Hello :)\n" ) ;
+            g_print( "DEBUG :: Radio button \"%s\" is the %d active\n", gtk_button_get_label( GTK_BUTTON( radio ) ), j - i ) ;
+            return (j - i) ;
+        }
     }
-    return 0;
+    return 0 ;
 }
