@@ -56,6 +56,7 @@ GtkWidget *pWindowMain ;
 
 void OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) ;
 void OnPlay( GtkWidget *pWidget, gpointer pData ) ;
+void OnDestroy (GtkWidget *pWidget, gpointer pData) ;
 gboolean OnRadioToggled( GtkWidget* pWidget, GdkEvent *event, gpointer pData ) ;
 int which_radio_is_selected( GSList *group ) ;
 
@@ -162,8 +163,8 @@ main( int argc, char *argv[] ) {
 
     gtk_box_pack_end( GTK_BOX( pHbox ), pButtonQuit, TRUE, TRUE, 15 ) ;
     gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 1, 2, 1, 1 ) ;
-    g_signal_connect( G_OBJECT( pWindowMain ), "destroy", G_CALLBACK( OnSelect ), NULL ) ;
-    g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnSelect ), NULL ) ;
+    g_signal_connect( G_OBJECT( pWindowMain ), "destroy", G_CALLBACK( OnDestroy ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
 
     /**
      * Dialog box Menu 
@@ -207,7 +208,7 @@ main( int argc, char *argv[] ) {
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, 20 ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, 15 ) ;
     //les signaux
-    g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnSelect ), NULL ) ;
+    g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
     g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
     //  g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
     gtk_container_add( GTK_CONTAINER( pBoxMenu ), pBoxMenuOption ) ;
@@ -224,7 +225,10 @@ main( int argc, char *argv[] ) {
         }
      */
 }
-
+void 
+OnDestroy (GtkWidget *pWidget, gpointer pData) {
+    gtk_main_quit() ;
+}
 void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     Coord *p = g_malloc( sizeof (Coord) ) ;
