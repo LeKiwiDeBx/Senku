@@ -13,6 +13,12 @@
 #include "matrix.h"
 #include "peg.h"
 #include "memento.h"
+/**
+ * headers GTK/Glib
+ */
+#include <gtk/gtk.h>
+#include <glib.h>
+#include <glib/gprintf.h>
 
 //~ Matrix matrixEnglish = {  // TEST TEST TEST
 	//~ //0  0  2  3  4  5  6  7  8  9  00
@@ -78,8 +84,7 @@ Matrix matrixDiamond = {
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}	//10
 } ;
 
-Matrix matrixCopy ;
-
+// Matrix matrixCopy ;
 
 static void
 __displayMatrix(Matrix) ;
@@ -98,9 +103,9 @@ __displayPegFromTo(int, int, int, Peg_Direction, int);
 
 /*
  *
- * name: inconnu
- * @param
- * @return
+ * @brief: Charge la matrice
+ * @param int choice numéro choisit de selection du shape
+ * @return 1 si Ok, 0 si Nok
  *
  */
 int matrixLoad(int choice){
@@ -118,18 +123,19 @@ int matrixLoad(int choice){
 			currentMatrixOfBoard.pShape = &matrixDiamond ;
 			break;
 			case 4 :
-			printf("\n Thank you, Good bye! ;)" );
+//			printf("\n Thank you, Good bye! ;)" );
 			exit(EXIT_SUCCESS);
 			break;
 			default:
 			return 0 ;
 		}
         currentMatrixOfBoard.name = nameShape[choice] ;
-		__displayLoadChoice(currentMatrixOfBoard.name) ;
+        g_print("DEBUG :: Chargement !\n") ;
+//		__displayLoadChoice(currentMatrixOfBoard.name) ;
 		currentMatrixOfBoard.id = choice ;
 		memcpy(matrixCopy,currentMatrixOfBoard.pShape,HOR_MAX*VER_MAX*sizeof(int));
 		pMatrixLoad = matrixCopy ;
-		__displayMatrix(matrixCopy) ;
+//		__displayMatrix(matrixCopy) ;
 		return 1 ;
 	}
 	return 0 ;
@@ -310,7 +316,8 @@ __getCoordPegWhereWeGo(int where){
 
 void
 __displayLoadChoice(const char * shapeName){
-	printf("Loading %s...\n", shapeName);
+//	printf("Loading %s...\n", shapeName);
+	g_print("DEBUG :: Loading %s...\n", shapeName);
 }
 
 void
@@ -331,6 +338,8 @@ __displayMatrix(Matrix matrix){
 	printf("\n");
 	}
 }
+
+
 
 char
 *__selectItem(int item){

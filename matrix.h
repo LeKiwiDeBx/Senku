@@ -19,6 +19,7 @@
 */
 typedef int Matrix[HOR_MAX][VER_MAX] ;
 int (*pMatrixLoad)[VER_MAX] ; //pointeur sur le tableau Matrix multidimensionnel
+Matrix matrixCopy ;
 /**
  * @name typedef struct s_matrixOfBoard
  * @brief structure de la matrice du jeu (shape)

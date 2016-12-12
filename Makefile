@@ -23,7 +23,7 @@ main.o: main.c board.h matrix.h
 	$(CC) $(CFLAGS) main.o -c main.c $(PKG_CONFIG)
 
 matrix.o: matrix.c matrix.h peg.h memento.h
-	$(CC) $(CFLAGS) matrix.o -c matrix.c
+	$(CC) $(CFLAGS) matrix.o -c matrix.c $(PKG_CONFIG)
 
 peg.o: peg.c peg.h
 	$(CC) $(CFLAGS) peg.o -c peg.c

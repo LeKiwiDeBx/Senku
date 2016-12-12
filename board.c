@@ -87,21 +87,24 @@ GtkWidget *pVbox ;
  * @param event
  * @param pData une structure qui renferme les coordonnées du click mouse (en unité de matrice)
  */
-void OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) ;
+void 
+OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) ;
 
 /**
  * @brief Appel par le bouton play du menu du choix de shape
  * @param GtkWidget le bouton play
  * @param pData un bouton radion (sert à recuperer le groupe du bouton radio)
  */
-void OnPlay( GtkWidget *pWidget, gpointer pData ) ;
+void 
+OnPlay( GtkWidget *pWidget, gpointer pData ) ;
 
 /**
  * @brief Appel pour fin d'application
  * @param pWidget appele par les boutons quit et fermeture fenetre
  * @param pData NULL
  */
-void OnDestroy( GtkWidget *pWidget, gpointer pData ) ;
+void 
+OnDestroy( GtkWidget *pWidget, gpointer pData ) ;
 
 /**
  * @ Not use (???)
@@ -110,14 +113,23 @@ void OnDestroy( GtkWidget *pWidget, gpointer pData ) ;
  * @param pData
  * @return 
  */
-gboolean OnRadioToggled( GtkWidget* pWidget, GdkEvent *event, gpointer pData ) ;
+gboolean 
+OnRadioToggled( GtkWidget* pWidget, GdkEvent *event, gpointer pData ) ;
 
 /**
  * @ determine quel bouton du groupe à option est utilisé
  * @param group groupe du bouton
  * @return int la position dans le groupe sinon 0
  */
-int which_radio_is_selected( GSList *group ) ;
+int 
+which_radio_is_selected( GSList *group ) ;
+
+/**
+ * Affiche la matrice dans le pWindowMain
+ * @param matrix
+ */
+void
+_g_displayMatrix(Matrix matrix) ;
 
 int
 boardInit( ) {
@@ -152,27 +164,6 @@ boardInit( ) {
         gtk_container_add( GTK_CONTAINER( pGridMain ), pGridMatrix ) ;
         gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 5 ) ;
         gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 5 ) ;
-        GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
-        /**
-         * @Debug image provisoire
-         * @return 
-         */
-        GtkWidget *imgPeg ;
-        pEventCoord = (Coord *) g_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
-        pEventCoord = &eventCoord ;
-        for (k = 0 ; k < 10 ; k++) {
-            for (i = 0 ; i < 10 ; i++) {
-                imgPeg = gtk_image_new_from_file( "image/pacman_black.png" ) ;
-                pMatrix_event[k][i] = gtk_event_box_new( ) ;
-                gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPeg, i, k, 1, 1 ) ;
-                gtk_grid_attach( GTK_GRID( pGridMatrix ), pMatrix_event[k][i], i, k, 1, 1 ) ;
-                pEventCoord->x = k ;
-                pEventCoord->y = i ;
-                g_signal_connect( G_OBJECT( pMatrix_event[k][i] ), "button_press_event", G_CALLBACK( OnSelect ), (gpointer) pEventCoord ) ;
-                pEventCoord++ ;
-            }
-        }
-        
         //    Menu droit
         pVbox = gtk_vbox_new( TRUE, 0 ) ;
         gtk_box_set_homogeneous( GTK_BOX( pVbox ), FALSE ) ;
@@ -319,19 +310,18 @@ boardInit( ) {
          * function console
          * while (!matrixLoad( num = __getMenuChoice( ) )) ;
          */
-        //TODO: equivalent while (!matrixLoad( num = __getMenuChoice( ) )) ;
-        // e.g. si matrixLoad( which_radio_is_selected ) Ok --> dans OnPlay
         
         /**
          * adresse de la matrice courante (globale)
          * @return 
          */
-        // onlyOneBoard.set = &currentMatrixOfBoard ;
+            onlyOneBoard.set = &currentMatrixOfBoard ;
         
         /* TODO: code a adapter en GTK
          * boardPlay( ) ;
          *scoreNew( ) ;
          * */
+        
     //} while (__displayPlayAgain( )) ;
     return 1 ;
 }
@@ -400,11 +390,6 @@ __displayHeader( ) {
     printf( "!==  Senku ver Beta 1.3   	    (c) 2016   Le KiWi  ==!\n\n" ) ;
     printf( "\n" ) ;
 
-}
-
-void
-__g_displayHeader( ) {
-    ;
 }
 
 void
@@ -545,8 +530,15 @@ void
 OnPlay( GtkWidget* pWidget, gpointer pData ) {
     GtkWidget *pWindow = gtk_widget_get_toplevel( GTK_WIDGET( pData ) ) ;
     GtkRadioButton *radio = GTK_RADIO_BUTTON( pData ) ;
-    which_radio_is_selected( gtk_radio_button_get_group( GTK_RADIO_BUTTON( radio ) ) ) ;
-    gtk_widget_show_all( pWindowMain ) ;
+    // equivalent while (!matrixLoad( num = __getMenuChoice( ) )) ;
+    if(matrixLoad(which_radio_is_selected( gtk_radio_button_get_group( GTK_RADIO_BUTTON( radio ) ) ) ) ){
+        _g_displayMatrix(pMatrixLoad) ;
+        gtk_widget_show_all( pWindowMain ) ;
+        /**
+         * adresse de la matrice courante (globale)
+        */
+         onlyOneBoard.set = &currentMatrixOfBoard ;
+    }
     gtk_widget_destroy( pWindow ) ;
 }
 
@@ -574,3 +566,40 @@ which_radio_is_selected( GSList *group ) {
     return 0 ;
 }
 
+void
+_g_displayMatrix(Matrix matrix){
+    gint i,k ;
+    GtkWidget *imgPeg ;
+    GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
+    pEventCoord = (Coord *) g_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
+    pEventCoord = &eventCoord ;
+    GtkWidget *l ;
+    for (k = 0 ; k < HOR_MAX ; k++) {
+        for (i = 0 ; i < VER_MAX ; i++) {
+            switch( matrix[k][i] ){
+                case -1:
+                imgPeg = gtk_image_new_from_file( "image/pacman_red.png" ) ;
+                l = gtk_label_new("-1") ;
+                break;
+                case 0:
+                imgPeg = gtk_image_new_from_file( "image/pacman_black.png" ) ;
+                l = gtk_label_new("0") ;
+                break;
+                case 1:
+                imgPeg = gtk_image_new_from_file( "image/pacman_blue.png" ) ;
+                l = gtk_label_new("1") ;
+                break;
+                default: l = gtk_label_new("U") ;;
+            }
+            pMatrix_event[k][i] = gtk_event_box_new( ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPeg, i, k, 1, 1 ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), pMatrix_event[k][i], i, k, 1, 1 ) ;
+            pEventCoord->x = k ;
+            pEventCoord->y = i ;
+            g_print("DEBUG :: _g_displayMatrix\n");
+            g_signal_connect( G_OBJECT( pMatrix_event[k][i] ), "button_press_event", G_CALLBACK( OnSelect ), (gpointer) pEventCoord ) ;
+            pEventCoord++ ;
+        }
+    }
+  //gtk_widget_show_all( pGridMatrix ) ;  
+}
