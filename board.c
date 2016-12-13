@@ -162,8 +162,8 @@ boardInit( ) {
         //    Grille du Senku
         pGridMatrix = gtk_grid_new( ) ;
         gtk_container_add( GTK_CONTAINER( pGridMain ), pGridMatrix ) ;
-        gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 5 ) ;
-        gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 5 ) ;
+        gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
+        gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
         //    Menu droit
         pVbox = gtk_vbox_new( TRUE, 0 ) ;
         gtk_box_set_homogeneous( GTK_BOX( pVbox ), FALSE ) ;
@@ -520,10 +520,20 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 
 void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
+    gint nbMove = 0 ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
     //debug ::
     g_print( "Coord X:%d Y:%d", p->x, p->y ) ;
+    if (nbMove = matrixSelectPeg(p->x,p->y)){
+        GtkWidget *imgPegSelect = gtk_image_new_from_file("image/circle_gold_select32.png") ;
+        gtk_widget_destroy(gtk_grid_get_child_at(GTK_GRID(pGridMatrix),p->y, p->x)) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegSelect, p->y, p->x, 1, 1 ) ;
+        gtk_widget_show_all(GTK_WIDGET(pGridMatrix) ) ;
+        if (matrixUpdate( 3 )) { //debug :: south
+//           S _g_displayMatrix(pMatrixLoad);
+        }
+    }
 }
 
 void
@@ -578,22 +588,19 @@ _g_displayMatrix(Matrix matrix){
         for (i = 0 ; i < VER_MAX ; i++) {
             switch( matrix[k][i] ){
                 case -1:
-                imgPeg = gtk_image_new_from_file( "image/pacman_red.png" ) ;
-                l = gtk_label_new("-1") ;
+                imgPeg = gtk_image_new_from_file( "image/marble_1.png" ) ;
                 break;
                 case 0:
-                imgPeg = gtk_image_new_from_file( "image/pacman_black.png" ) ;
-                l = gtk_label_new("0") ;
+                imgPeg = gtk_image_new_from_file( "image/circle_white32.png" ) ;
                 break;
                 case 1:
-                imgPeg = gtk_image_new_from_file( "image/pacman_blue.png" ) ;
-                l = gtk_label_new("1") ;
+                imgPeg = gtk_image_new_from_file( "image/circle_gold32.png" ) ;
                 break;
-                default: l = gtk_label_new("U") ;;
+                default: ;
             }
             pMatrix_event[k][i] = gtk_event_box_new( ) ;
-            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPeg, i, k, 1, 1 ) ;
             gtk_grid_attach( GTK_GRID( pGridMatrix ), pMatrix_event[k][i], i, k, 1, 1 ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPeg, i, k, 1, 1 ) ;
             pEventCoord->x = k ;
             pEventCoord->y = i ;
             g_print("DEBUG :: _g_displayMatrix\n");
@@ -601,5 +608,4 @@ _g_displayMatrix(Matrix matrix){
             pEventCoord++ ;
         }
     }
-  //gtk_widget_show_all( pGridMatrix ) ;  
 }
