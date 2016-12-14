@@ -31,6 +31,7 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <codeAssistance>
+        <includeAdditional>true</includeAdditional>
       </codeAssistance>
       <makefileType>
         <makeTool>
@@ -83,6 +84,17 @@
       <item path="matrix.c" ex="false" tool="0" flavor2="3">
         <cTool>
           <incDir>
+            <pElem>../../../../../../GTK/include/gtk-3.0</pElem>
+            <pElem>../../../../../../GTK/include/cairo</pElem>
+            <pElem>../../../../../../GTK/include/pango-1.0</pElem>
+            <pElem>../../../../../../GTK/include/atk-1.0</pElem>
+            <pElem>../../../../../../GTK/include/pixman-1</pElem>
+            <pElem>../../../../../../GTK/include</pElem>
+            <pElem>../../../../../../GTK/include/freetype2</pElem>
+            <pElem>../../../../../../GTK/include/libpng15</pElem>
+            <pElem>../../../../../../GTK/include/gdk-pixbuf-2.0</pElem>
+            <pElem>../../../../../../GTK/include/glib-2.0</pElem>
+            <pElem>../../../../../../GTK/lib/glib-2.0/include</pElem>
             <pElem></pElem>
           </incDir>
         </cTool>

@@ -242,7 +242,7 @@ matrixUpdate(Peg_Direction where){
 	originatorSet(pegMemento);
 	caretakerAddMemento(originatorSaveToMemento());
     //fin memento UNDO
-	__displayMatrix(pMatrixLoad);
+//	__displayMatrix(pMatrixLoad);
 	return 1 ;
 }
 
