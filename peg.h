@@ -23,7 +23,8 @@ typedef enum e_Peg_Direction
 	SOUTH,  /* 3 					*/
 	WEST,	/* 4 					*/
 	DEFAULT,/* 5 emplacement par defaut */
-	UNDO = 666	/* 666 Devil Number =:> Peg à undo */
+	UNDO = 666 ,	/* 666 Devil Number =:> Peg à undo */
+        NO_MOVE = 10    /* on reclique sur le meme Peg (GDK) */
 } Peg_Direction;
 
 typedef struct s_Peg

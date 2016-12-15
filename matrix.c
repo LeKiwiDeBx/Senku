@@ -26,8 +26,8 @@
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//1
 	{-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//2
 	{-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//3
-    {-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1},	//4
-    {-1,-1, 0, 0, 0, 0, 0, 0, 0,-1,-1},	//5
+    {-1,-1, 0, 0, 0, 0, 1, 1, 0,-1,-1},	//4
+    {-1,-1, 0, 0, 0, 1, 1, 0, 0,-1,-1},	//5
     {-1,-1, 0, 0, 0, 1, 0, 0, 0,-1,-1},	//6
     {-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//7
 	{-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1},	//8
@@ -226,12 +226,14 @@ matrixUpdate(Peg_Direction where){
 		case EAST:
 		coefRow =  0 ; 	coefColumn = -1 ;
 		break;
-		default:
+        case NO_MOVE:
+        row = column = coefRow = coefColumn = 0 ;
+		default: 
 		return 0 ;
 	}
-	pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
-	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//erase
 	pMatrixLoad[row][column] = 1 ;
+    pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
+	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//erase
 	//mecanisme memento UNDO:: memorisation
         pegMemento.coordStart.row = row + 2*coefRow ;
         pegMemento.coordStart.column = column + 2*coefColumn ;
@@ -242,7 +244,7 @@ matrixUpdate(Peg_Direction where){
 	originatorSet(pegMemento);
 	caretakerAddMemento(originatorSaveToMemento());
     //fin memento UNDO
-//	__displayMatrix(pMatrixLoad);
+	__displayMatrix(pMatrixLoad);
 	return 1 ;
 }
 
