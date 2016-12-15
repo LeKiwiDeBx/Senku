@@ -543,52 +543,57 @@ void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static gboolean firstSelectPeg = TRUE ;
     static Coord pOld ;
-    gint nbMove = 0 ;
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
+    int remainingPeg = matrixCountRemainPeg( ) ;
     //debug ::
     g_print( "Coord X:%d Y:%d", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
         if (firstSelectPeg) {
             pOld.x = p->x ;
             pOld.y = p->y ;
-            if (nbMove = matrixSelectPeg( p->x, p->y )) {
+            if (matrixSelectPeg( p->x, p->y )) {
                 firstSelectPeg = FALSE ;
                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                 gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
             }
         }
-        else {
-             //second pion cliqué
+        else {//second pion cliqué
             //si prise possible alors prise
             if(matrixSelectPeg( pOld.x, pOld.y )){
                 int deltaX = 0, deltaY = 0, sumDelta = 0 ;
                 deltaX = pOld.x - p->x ;
                 deltaY = pOld.y - p->y ;
                 sumDelta = deltaX + deltaY ;
+                firstSelectPeg = TRUE ;
                 g_print( "deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
-                if (sumDelta == 2) {
-                    firstSelectPeg = TRUE ;
+                if (sumDelta ==  2 && (deltaX!=deltaY)) {
                     action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
                     if (matrixUpdate( action ))
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                    if(!matrixCanMovePeg()){ 
+                        g_print("\nDEBUG :: Plus rien ne bouge !\n");
+                        remainingPeg = matrixCountRemainPeg( ) ;
+                        g_print("\nDEBUG :: Peg %d\n", remainingPeg);
+                    }
                     g_print( "direction : %d\n", action ) ;
                 }
-                else if (sumDelta == -2) {
-                    firstSelectPeg = TRUE ;
+                else if (sumDelta == -2 && (deltaX!=deltaY)) {
                     action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
                     if (matrixUpdate( action ))
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                    if(!matrixCanMovePeg()) {
+                        g_print("\nDEBUG :: Plus rien ne bouge !\n");
+                        remainingPeg = matrixCountRemainPeg( ) ;
+                        g_print("\nDEBUG :: Peg %d\n", remainingPeg);
+                    }
                     g_print( "direction : %d\n", action ) ;
                 }
-                else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
-                    firstSelectPeg = TRUE ;                      //en excluant la cdtions particuliere sumdelta==0
-                                                                 //pour une autre raison (pions coins opposes d'un carre)
-                    matrixSelectPeg( p->x, p->y ) ;
-                    pOld.x = p->x ;
+                else if (sumDelta == 0 && (deltaX != -deltaY) ) { //on reclic sur le meme que le premier 
+                    matrixSelectPeg( p->x, p->y ) ;              //en excluant la cdtions particuliere sumdelta==0
+                    pOld.x = p->x ;                              //pour une autre raison (pions coins opposes d'un carre)
                     pOld.y = p->y ;
-
                 }
                 else { //ni prise ni meme bouton
                     if(matrixSelectPeg(p->x,p->y)) {//si une prise possible
@@ -606,7 +611,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
             gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
             }
         }
-    }
+    }  
 }
 
 void
