@@ -31,6 +31,10 @@
 #define _LINUX_   /* execution de system clear */
 #endif
 
+#define IMG_PEG_MOVE    "image/circle_gold32.png"
+#define IMG_PEG_SELECT  "image/circle_gold_select32.png"
+#define IMG_PEG_DELETE  "image/circle_white32.png"
+
 static void
 __displayHeader( ) ;
 static void
@@ -70,6 +74,15 @@ typedef struct s_coord {
 } Coord ;
 Coord eventCoord ;
 Coord *pEventCoord ;
+
+typedef enum e_actionSelect {
+    ACTION_SELECT_PEG,
+    ACTION_SELECT_TAKE_NORTH,
+    ACTION_SELECT_TAKE_EAST,
+    ACTION_SELECT_TAKE_SOUTH,
+    ACTION_SELECT_TAKE_WEST,
+    ACTION_SELECT_UNSELECT_PEG = 10,
+} actionSelect ;
 
 /* *****************************************************************************
  * And the Widget's land begin here... 
@@ -130,6 +143,14 @@ which_radio_is_selected( GSList *group ) ;
  */
 void
 _g_displayMatrix( Matrix matrix ) ;
+/**
+ * Met à jour l'affichage de la matrice apres une selection/prise
+ * @param action type action et direction
+ * @param x coord du clic ligne
+ * @param y coord du clic colonne
+ */
+void
+_g_displayUpdateMatrix( actionSelect action, const int x, const int y ) ;
 
 int
 boardInit( ) {
@@ -521,42 +542,119 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static gboolean firstSelectPeg = TRUE ;
+    static Coord pOld ;
     gint nbMove = 0 ;
+    actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
     //debug ::
     g_print( "Coord X:%d Y:%d", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
-        if(firstSelectPeg){
-            
+        if (firstSelectPeg) {
+            pOld.x = p->x ;
+            pOld.y = p->y ;
             if (nbMove = matrixSelectPeg( p->x, p->y )) {
-                GtkWidget *imgPegSelect = gtk_image_new_from_file( "image/circle_gold_select32.png" ) ;
-                gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), p->y, p->x ) ) ;
-                gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegSelect, p->y, p->x, 1, 1 ) ;
+                firstSelectPeg = FALSE ;
+                _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                 gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
             }
-        } else {
-            ; //second pion cliqué
-            ; //si prise possible alors prise
-            if (matrixUpdate( 3 )) { //debug :: south 
-                    //todo: reecrire la matrixUpdate sans affichage !
-                    //           ??? _g_displayMatrix(pMatrixLoad);
-                /********** DEBUG :: SOUTH  ********************/
-                GtkWidget *imgPegDelete_1 = gtk_image_new_from_file( "image/circle_white32.png" ) ;
-                GtkWidget *imgPegDelete_2 = gtk_image_new_from_file( "image/circle_white32.png" ) ;
-                GtkWidget *imgPegMove = gtk_image_new_from_file( "image/circle_gold32.png" ) ;
-                gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), p->y, p->x ) ) ;
-                gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), p->y, p->x-1 ) ) ;
-                gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), p->y, p->x-2 ) ) ;
-                gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove, p->y, p->x, 1, 1 ) ;
-                gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_1, p->y, p->x-1, 1, 1 ) ;
-                gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_2, p->y, p->x-2, 1, 1 ) ;
-                gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
-                }
-            
         }
-    firstSelectPeg = !firstSelectPeg ;
+        else {
+             //second pion cliqué
+            //si prise possible alors prise
+            if(matrixSelectPeg( pOld.x, pOld.y )){
+                int deltaX = 0, deltaY = 0, sumDelta = 0 ;
+                deltaX = pOld.x - p->x ;
+                deltaY = pOld.y - p->y ;
+                sumDelta = deltaX + deltaY ;
+                g_print( "deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
+                if (sumDelta == 2) {
+                    firstSelectPeg = TRUE ;
+                    action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
+                    if (matrixUpdate( action ))
+                        _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                    g_print( "direction : %d\n", action ) ;
+                }
+                else if (sumDelta == -2) {
+                    firstSelectPeg = TRUE ;
+                    action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
+                    if (matrixUpdate( action ))
+                        _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                    g_print( "direction : %d\n", action ) ;
+                }
+                else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
+                    firstSelectPeg = TRUE ;                      //en excluant la cdtions particuliere sumdelta==0
+                                                                 //pour une autre raison (pions coins opposes d'un carre)
+                    matrixSelectPeg( p->x, p->y ) ;
+                    pOld.x = p->x ;
+                    pOld.y = p->y ;
+
+                }
+                else { //ni prise ni meme bouton
+                    if(matrixSelectPeg(p->x,p->y)) {//si une prise possible
+                        g_print("change selection de depart\n");
+                        firstSelectPeg = FALSE ;
+                        matrixSelectPeg( p->x, p->y ) ;
+                        /* unselect l'ancien */
+                        _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
+                        /* select le nouveau */
+                        _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
+                        pOld.x = p->x ;
+                        pOld.y = p->y ;
+                    }
+                }
+            gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
+            }
+        }
     }
+}
+
+void
+_g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
+    gint coefRow = 0, coefColumn = 0 ; // coefficient d'effacement
+    GtkWidget *imgPegDelete_1 = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
+    GtkWidget *imgPegDelete_2 = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
+    GtkWidget *imgPegMove = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
+    GtkWidget *imgPegUnselect = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
+    GtkWidget *imgPegSelect = gtk_image_new_from_file( IMG_PEG_SELECT ) ;
+    switch (action) {
+    case ACTION_SELECT_PEG:
+        
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegSelect, y, x, 1, 1 ) ;
+        break ;
+    case ACTION_SELECT_UNSELECT_PEG:
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegUnselect, y, x, 1, 1 ) ;
+        break ;
+    case ACTION_SELECT_TAKE_NORTH:
+        coefRow = -1 ;
+        coefColumn = 0 ;
+        break ;
+    case ACTION_SELECT_TAKE_EAST:
+        coefRow = 0 ;
+        coefColumn = 1 ;
+        break ;
+    case ACTION_SELECT_TAKE_SOUTH:
+        coefRow = 1 ;
+        coefColumn = 0 ;
+        break ;
+    case ACTION_SELECT_TAKE_WEST:
+        coefRow = 0 ;
+        coefColumn = -1 ;
+        break ;
+    default: break ;
+    }
+
+    if (action != ACTION_SELECT_PEG && action != ACTION_SELECT_UNSELECT_PEG) {
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 1 * coefColumn, x - 1 * coefRow ) ) ;
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 2 * coefColumn, x - 2 * coefRow ) ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove, y, x, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_2, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
+    }
+    gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
 }
 
 void
