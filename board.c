@@ -542,64 +542,83 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static gboolean firstSelectPeg = TRUE ;
-    static Coord pOld ;
+    static Coord pOld = {0,0};
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
     int remainingPeg = matrixCountRemainPeg( ) ;
     //debug ::
-    g_print( "Coord X:%d Y:%d", p->x, p->y ) ;
+    g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
+    g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
         if (firstSelectPeg) {
-            pOld.x = p->x ;
-            pOld.y = p->y ;
             if (matrixSelectPeg( p->x, p->y )) {
-                firstSelectPeg = FALSE ;
+                firstSelectPeg = FALSE ; 
                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
-                gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
+                /* unselect l'ancien si existe */
+                if(pOld.x || pOld.y ){
+                    _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
+                }
+                pOld.x = p->x ;
+                pOld.y = p->y ;
             }
         }
-        else {//second pion cliqué
-            //si prise possible alors prise
+        else {//second selection cliqué
+            //si prise possible
             if(matrixSelectPeg( pOld.x, pOld.y )){
                 int deltaX = 0, deltaY = 0, sumDelta = 0 ;
                 deltaX = pOld.x - p->x ;
                 deltaY = pOld.y - p->y ;
                 sumDelta = deltaX + deltaY ;
                 firstSelectPeg = TRUE ;
-                g_print( "deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
-                if (sumDelta ==  2 && (deltaX!=deltaY)) {
+                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
+                if (sumDelta ==  2 && (deltaX!=deltaY)) { // on prend
+                    pOld.x = p->x ;                              //pour une autre raison (pions coins opposes d'un carre)
+                    pOld.y = p->y ;
                     action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
-                    if (matrixUpdate( action ))
+                    if (matrixUpdate( action )){
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                        if(matrixSelectPeg( pOld.x, pOld.y )){
+                            firstSelectPeg = FALSE ;
+                            _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
+                        }
+                    }
                     if(!matrixCanMovePeg()){ 
                         g_print("\nDEBUG :: Plus rien ne bouge !\n");
                         remainingPeg = matrixCountRemainPeg( ) ;
                         g_print("\nDEBUG :: Peg %d\n", remainingPeg);
                     }
-                    g_print( "direction : %d\n", action ) ;
+                    g_print( "\nDEBUG :: direction : %d\n", action ) ;
                 }
-                else if (sumDelta == -2 && (deltaX!=deltaY)) {
+                else if (sumDelta == -2 && (deltaX!=deltaY)) { // on prend
+                    pOld.x = p->x ;                              //pour une autre raison (pions coins opposes d'un carre)
+                    pOld.y = p->y ;
                     action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
-                    if (matrixUpdate( action ))
+                    if (matrixUpdate( action )){
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                        if(matrixSelectPeg( pOld.x, pOld.y )){
+                            firstSelectPeg = FALSE ;
+                            _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
+                        }
+                    }
                     if(!matrixCanMovePeg()) {
                         g_print("\nDEBUG :: Plus rien ne bouge !\n");
                         remainingPeg = matrixCountRemainPeg( ) ;
                         g_print("\nDEBUG :: Peg %d\n", remainingPeg);
                     }
-                    g_print( "direction : %d\n", action ) ;
+                    g_print( "\nDEBUG :: direction : %d\n", action ) ;
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY) ) { //on reclic sur le meme que le premier 
-                    matrixSelectPeg( p->x, p->y ) ;              //en excluant la cdtions particuliere sumdelta==0
+                   if( matrixSelectPeg( p->x, p->y )){              //en excluant la cdtions particuliere sumdelta==0
                     pOld.x = p->x ;                              //pour une autre raison (pions coins opposes d'un carre)
                     pOld.y = p->y ;
+                   }
                 }
                 else { //ni prise ni meme bouton
+                    g_print("\nDEBUG :: change selection de depart\n");
                     if(matrixSelectPeg(p->x,p->y)) {//si une prise possible
-                        g_print("change selection de depart\n");
                         firstSelectPeg = FALSE ;
-                        matrixSelectPeg( p->x, p->y ) ;
+//                        matrixSelectPeg( p->x, p->y ) ;
                         /* unselect l'ancien */
                         _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                         /* select le nouveau */
@@ -608,9 +627,10 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         pOld.y = p->y ;
                     }
                 }
-            gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
+            
             }
         }
+    gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
     }  
 }
 
@@ -624,7 +644,6 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
     GtkWidget *imgPegSelect = gtk_image_new_from_file( IMG_PEG_SELECT ) ;
     switch (action) {
     case ACTION_SELECT_PEG:
-        
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegSelect, y, x, 1, 1 ) ;
         break ;
@@ -650,7 +669,6 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
         break ;
     default: break ;
     }
-
     if (action != ACTION_SELECT_PEG && action != ACTION_SELECT_UNSELECT_PEG) {
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 1 * coefColumn, x - 1 * coefRow ) ) ;
@@ -659,7 +677,7 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_2, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
     }
-    gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
+//    gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
 }
 
 void
