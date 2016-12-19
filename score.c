@@ -107,6 +107,7 @@ scoreSetCalculateBonusElapseTimer(double elapseTimer){
 	if(i>= MIN_SEC_BONUS && i<= MAX_SEC_BONUS){
 		bonus = 5*(9-i) ;
 		bonusTimeScore += bonus ;
+        g_print("DEBUG :: scoreSetCalculateBonusElapseTimer %f\n",elapseTimer) ;
 		__displaySetCalculateBonusElapseTimer(bonus) ;
 	}
 }

@@ -8,8 +8,8 @@
 #define _SCORE_H_
 
 #define MAX_CAR_NAME 13
-#define MAX_SEC_BONUS 7
-#define MIN_SEC_BONUS 2
+#define MAX_SEC_BONUS 7 //debug:: 7 valeur originale
+#define MIN_SEC_BONUS 0  //debug:: 2 valeur originale
 
 typedef struct s_Score {
 	int 	idScore ;

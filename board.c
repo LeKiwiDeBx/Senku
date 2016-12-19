@@ -35,7 +35,7 @@
 #define IMG_PEG_SELECT  "image/circle_gold_select32.png"
 #define IMG_PEG_DELETE  "image/circle_white32.png"
 #define IMG_PEG_BOARD   "image/marble_1.png"
-
+#define NO_MORE_MOVE    "No more move!"
 static void
 __displayHeader( ) ;
 static void
@@ -90,12 +90,33 @@ typedef enum e_actionSelect {
  * ****************************************************************************/
 /* fenetre principal application */
 GtkWidget *pWindowMain ;
+/* grille principale */
+GtkWidget *pGridMain ;
 /* grille matrice qui contient le shape*/
 GtkWidget *pGridMatrix ;
-/* boite qui contient les etiquettes indicatrices verticale gauche*/
+/* boite qui contient les etiquettes indicatrices verticale à droite*/
 GtkWidget *pVbox ;
 /* label pegs remaining value */
-GtkWidget *plbPegsValue ;
+GtkWidget *plbTime = NULL ;
+GtkWidget *plbTimeValue = NULL ;
+GtkWidget *plbBonus = NULL ;
+GtkWidget *plbBonusValue = NULL ;
+GtkWidget *plbPegs = NULL ;
+GtkWidget *plbPegsValue = NULL ;
+GtkWidget *pfrComments = NULL ;
+GtkWidget *plbComments = NULL ;
+GtkWidget *pBoxMenu = NULL ;
+GtkWidget *pHbox = NULL ;
+GtkWidget *pButtonUndo = NULL ;
+GtkWidget *pButtonQuit = NULL ;
+GtkWidget *pfrTitle = NULL ;
+GtkWidget *pBoxMenuOption = NULL ;
+GtkWidget *plbTitle = NULL ;
+GtkWidget *radio = NULL ;
+GtkWidget *pBoxMenuButton = NULL ;
+GtkWidget *pBtnMenuQuit = NULL ;
+GtkWidget *pBtnMenuPlay = NULL ;
+
 /**
  * @brief Appel selection image avec un clic souris
  * @param pWidget boxEvent qui encapsule l'image
@@ -153,11 +174,14 @@ _g_displayMatrix( Matrix matrix ) ;
  */
 void
 _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) ;
+/**
+ * affichage du chronometre
+ */
+gboolean
+_g_display_time( gpointer pData ) ;
 
 int
 boardInit( ) {
-    int num = 0 ; //numero du shape
-    int i, k ; //indice pour la matrice
     scoreInit( ) ;
     //do {
     //	#ifdef _LINUX_
@@ -179,69 +203,40 @@ boardInit( ) {
     g_signal_connect( G_OBJECT( pWindowMain ), "destroy", G_CALLBACK( OnDestroy ), NULL ) ;
 
     // Creation de la grille principale container */
-    GtkWidget *pGridMain = gtk_grid_new( ) ;
-    gtk_container_add( GTK_CONTAINER( pWindowMain ), pGridMain ) ;
-
+    pGridMain = gtk_grid_new( ) ;
+    
     //    Grille du Senku
     pGridMatrix = gtk_grid_new( ) ;
     gtk_container_add( GTK_CONTAINER( pGridMain ), pGridMatrix ) ;
     gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
     gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
-    //    Menu droit
-    pVbox = gtk_vbox_new( TRUE, 0 ) ;
-    gtk_box_set_homogeneous( GTK_BOX( pVbox ), FALSE ) ;
-    gtk_box_set_spacing( GTK_BOX( pVbox ), 10 ) ;
-    gtk_widget_set_margin_left( GTK_WIDGET( pVbox ), 20 ) ;
-    GtkWidget *plbTime = gtk_label_new( "Time:" ) ;
-    /**
-     * @Todo a passer en globale
-     * @return 
-     */
-    GtkWidget *plbTimeValue = gtk_label_new( " 0 s" ) ;
-    gtk_box_pack_start( GTK_BOX( pVbox ), plbTime, FALSE, FALSE, 10 ) ;
-    gtk_box_pack_start( GTK_BOX( pVbox ), plbTimeValue, FALSE, FALSE, 0 ) ;
-    gtk_widget_set_halign( GTK_WIDGET( plbTime ), GTK_ALIGN_START ) ;
-    gtk_widget_set_halign( GTK_WIDGET( plbTimeValue ), GTK_ALIGN_START ) ;
-
-    GtkWidget *plbPegs = gtk_label_new( "Pegs remaining:" ) ;
-    /**
-     * @Todo a passer en globale
-     * @return 
-     */
+    
+    //Creation grille des valeurs à droite
+    GtkWidget *pGridValues = gtk_grid_new() ; 
+    plbBonus = gtk_label_new( "Bonus:" ) ;
+    plbBonusValue = gtk_label_new( " 0 " ) ;
+    plbPegs = gtk_label_new( "Pegsremaining:" ) ;
     plbPegsValue = gtk_label_new( " 0 " ) ;
-    gtk_box_pack_start( GTK_BOX( pVbox ), plbPegs, FALSE, FALSE, 0 ) ;
-    gtk_box_pack_start( GTK_BOX( pVbox ), GTK_WIDGET(plbPegsValue), FALSE, FALSE, 0 ) ;
-    gtk_widget_set_halign( GTK_WIDGET( plbPegs ), GTK_ALIGN_START ) ;
-    gtk_widget_set_halign( GTK_WIDGET( plbPegsValue ), GTK_ALIGN_START ) ;
-    //debug
-    gtk_label_set_text(GTK_LABEL(plbPegsValue),"pipo" );
-    //debug fin
-    GtkWidget *plbBonus = gtk_label_new( "Bonus:" ) ;
-    /**
-     * @Todo a passer en globale
-     * @return 
-     */
-    GtkWidget *plbBonusValue = gtk_label_new( " 0 " ) ;
-    gtk_box_pack_start( GTK_BOX( pVbox ), plbBonus, FALSE, FALSE, 0 ) ;
-    gtk_box_pack_start( GTK_BOX( pVbox ), plbBonusValue, FALSE, FALSE, 0 ) ;
-    gtk_widget_set_halign( GTK_WIDGET( plbBonus ), GTK_ALIGN_START ) ;
-    gtk_widget_set_halign( GTK_WIDGET( plbBonusValue ), GTK_ALIGN_START ) ;
-
-    /* ajout menu droit */
-    gtk_container_add( GTK_CONTAINER( pGridMain ), pVbox ) ;
-
+    plbTime = gtk_label_new( "Time:" ) ;
+    plbTimeValue = gtk_label_new( " 0 " ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonus,         0, 1, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonusValue,    0, 2, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegs,          0, 3, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegsValue,     0, 4, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbTime,          0, 5, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbTimeValue,     0, 6, 1, 1 ) ;
+    gtk_grid_set_column_homogeneous( GTK_GRID( pGridMain ), FALSE ) ;
+    gtk_container_add( GTK_CONTAINER( pGridMain ), pGridValues ) ;
+    
+    gtk_container_add( GTK_CONTAINER( pWindowMain ), pGridMain ) ;
     /** 
      * label comments game in progress 
      */
     /* pour pouvoir ajouter en dessous la zone des commentaires*/
     gtk_orientable_set_orientation( GTK_ORIENTABLE( pGridMain ), GTK_ORIENTATION_VERTICAL ) ;
-    GtkWidget *pfrComments = gtk_frame_new( NULL ) ;
+    pfrComments = gtk_frame_new( NULL ) ;
     gtk_frame_set_label( GTK_FRAME( pfrComments ), "Comments: " ) ;
-    /**
-     * @Todo a passer en globale
-     * @return 
-     */
-    GtkWidget *plbComments = gtk_label_new( "In progress..." ) ;
+    plbComments = gtk_label_new( "In progress..." ) ;
     gtk_container_add( GTK_CONTAINER( pfrComments ), plbComments ) ;
     gtk_widget_set_margin_top( GTK_WIDGET( pfrComments ), 20 ) ;
     gtk_widget_set_halign( GTK_WIDGET( plbComments ), GTK_ALIGN_START ) ;
@@ -249,17 +244,17 @@ boardInit( ) {
     gtk_grid_attach( GTK_GRID( pGridMain ), pfrComments, 0, 1, 2, 1 ) ;
 
     /* Button bottom  <Undo> et <Quit> */
-    GtkWidget *pHbox = gtk_hbox_new( TRUE, 0 ) ;
+    pHbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 0 ) ;
     gtk_widget_set_margin_top( GTK_WIDGET( pHbox ), 20 ) ;
     /* on ajoute à partir de la fin */
     gtk_widget_set_halign( GTK_WIDGET( pHbox ), GTK_ALIGN_END ) ;
-    GtkWidget *pButtonUndo = gtk_button_new_with_label( "Undo" ) ;
+    pButtonUndo = gtk_button_new_with_label( "Undo" ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonUndo, FALSE, FALSE, 15 ) ;
     /* bouton Quit caler à droite */
-    GtkWidget *pButtonQuit = gtk_button_new_with_label( "Quit" ) ;
+    pButtonQuit = gtk_button_new_with_label( "Quit" ) ;
     gtk_box_pack_end( GTK_BOX( pHbox ), pButtonQuit, TRUE, TRUE, 15 ) ;
     /* on ajoute les boutons */
-    gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 1, 2, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 1, 3, 1, 1 ) ;
     /* les signaux des boutons */
 
     g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
@@ -273,7 +268,7 @@ boardInit( ) {
      * Dialog box Menu 
      * choix des shapes modale et sans decoration (style screen splash)
      */
-    GtkWidget *pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
+    pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
     gtk_window_set_title( GTK_WINDOW( pBoxMenu ), "Shapes choice" ) ;
     gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
     gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
@@ -284,18 +279,18 @@ boardInit( ) {
     gtk_window_resize( GTK_WINDOW( pBoxMenu ), 280, 300 ) ;
 
     // options
-    GtkWidget *pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, 20 ) ;
+    pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, 20 ) ;
     gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
     /* sorte d'en tete dans un frame
        ??? peut etre mettre toutes les options dans le frame ???*/
-    GtkWidget *pfrTitle = gtk_frame_new( NULL ) ;
+    pfrTitle = gtk_frame_new( NULL ) ;
     gtk_frame_set_label( GTK_FRAME( pfrTitle ), "   Senku GTK Alpha 2.0   (c) 2016   [°} Le KiWi   " ) ;
-    GtkWidget *plbTitle = gtk_label_new( "\n\nShapes choice\n______________" ) ;
+    plbTitle = gtk_label_new( "\n\nShapes choice\n______________" ) ;
     gtk_container_add( GTK_CONTAINER( pfrTitle ), plbTitle ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pfrTitle, TRUE, FALSE, 25 ) ;
     /* les boutons radios
      ??? externaliser les textes dans un tableau de char ??? */
-    GtkWidget *radio ;
+
     radio = gtk_radio_button_new_with_label( NULL, "Shape English" ) ;
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( radio ), TRUE ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
@@ -304,9 +299,9 @@ boardInit( ) {
     radio = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( radio ), "Shape Diamond" ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
     // boutons <Quit> et <Play> ben oui au moins :)) */
-    GtkWidget *pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 20 ) ;
-    GtkWidget *pBtnMenuQuit = gtk_button_new_with_label( "Quit" ) ;
-    GtkWidget *pBtnMenuPlay = gtk_button_new_with_label( "Play" ) ;
+    pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 20 ) ;
+    pBtnMenuQuit = gtk_button_new_with_label( "Quit" ) ;
+    pBtnMenuPlay = gtk_button_new_with_label( "Play" ) ;
     /* on ajoute les boutons */
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, 20 ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, 20 ) ;
@@ -547,17 +542,28 @@ void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static gboolean firstSelectPeg = TRUE ;
     static Coord pOld = {0, 0} ;
+    int remainingPeg = 0 ;
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
-    int remainingPeg = matrixCountRemainPeg( ) ;
+    gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
+    gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
+    g_free( display ) ;
+    double elapseTimer, totalTimer ;
+    timerSetStartTimer( ) ;
+    timerSetStartTimer( ) ;
+    timerSetElapseTimer( ) ;
+    scoreResetBonusTimeScore( ) ;
+    caretakerNew( ) ;
     //debug ::
     g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
     g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
+        timerSetStartTimer( ) ;
         if (firstSelectPeg) {
             if (matrixSelectPeg( p->x, p->y )) {
                 firstSelectPeg = FALSE ;
+                timerSetElapseTimer( ) ;
                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                 /* unselect l'ancien si existe */
                 if (pOld.x || pOld.y) {
@@ -576,17 +582,26 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 sumDelta = deltaX + deltaY ;
                 firstSelectPeg = TRUE ;
                 g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
-                if (sumDelta == 2 && (deltaX != deltaY)) { 
-                    // on prend et pour une autre raison (pions coins opposes d'un carre)
+                if (sumDelta == 2 && (deltaX != deltaY)) { // on prend et pour une autre raison (pions coins opposes d'un carre)
                     action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
                     if (matrixUpdate( action )) {
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                        gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
+                        gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
+                        g_free( display ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
                         if (matrixSelectPeg( pOld.x, pOld.y )) {
                             firstSelectPeg = FALSE ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
                         }
+                        
+                        elapseTimer = timerGetElapseTimer( ) ;
+                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
+                        totalTimer = timerGetTotalTimer( ) ;
+                        gchar *displayBonus = g_strdup_printf( "%d", scoreGetBonusTimeScore( ) ) ;
+                        gtk_label_set_text( GTK_LABEL( plbBonusValue ), displayBonus ) ;
+                        g_free( display ) ;
                     }
                     else if (matrixSelectPeg( p->x, p->y )) {
                         g_print( "\nDEBUG :: Echec prise !\n" ) ;
@@ -595,24 +610,44 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
+                        
+                        elapseTimer = timerGetElapseTimer( ) ;
+                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
+                        totalTimer = timerGetTotalTimer( ) ;
                     }
                     if (!matrixCanMovePeg( )) {
                         g_print( "\nDEBUG :: Plus rien ne bouge !\n" ) ;
                         remainingPeg = matrixCountRemainPeg( ) ;
+                        gchar *display = g_strdup_printf( "%s", "No more move !" ) ;
+                        gtk_label_set_text( GTK_LABEL( plbComments ), display ) ;
+                        g_free( display ) ;
+                        g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
+                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
+                        timerSetStopTimer( ) ;
                         g_print( "\nDEBUG :: Peg %d\n", remainingPeg ) ;
                     }
                     g_print( "\nDEBUG :: direction : %d\n", action ) ;
                 }
-                else if (sumDelta == -2 && (deltaX != deltaY)) { 
+                else if (sumDelta == -2 && (deltaX != deltaY)) {
                     action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
                     if (matrixUpdate( action )) {
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
+                        gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
+                        gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
+                        g_free( display ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
                         if (matrixSelectPeg( pOld.x, pOld.y )) {
                             firstSelectPeg = FALSE ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
                         }
+                        
+                        elapseTimer = timerGetElapseTimer( ) ;
+                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
+                        totalTimer = timerGetTotalTimer( ) ;
+                        gchar *displayBonus = g_strdup_printf( "%d", scoreGetBonusTimeScore( ) ) ;
+                        gtk_label_set_text( GTK_LABEL( plbBonusValue ), displayBonus ) ;
+                        g_free( display ) ;
                     }
                     else if (matrixSelectPeg( p->x, p->y )) {
                         firstSelectPeg = FALSE ;
@@ -620,18 +655,27 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
+                        
+                        elapseTimer = timerGetElapseTimer( ) ;
+                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
+                        totalTimer = timerGetTotalTimer( ) ;
                     }
                     if (!matrixCanMovePeg( )) {
                         g_print( "\nDEBUG :: Plus rien ne bouge !\n" ) ;
                         remainingPeg = matrixCountRemainPeg( ) ;
+                        gchar *display = g_strdup_printf( "%s", "No more move !" ) ;
+                        gtk_label_set_text( GTK_LABEL( plbComments ), display ) ;
+                        g_free( display ) ;
+                        g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
+                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
+                        timerSetStopTimer( ) ;
                         g_print( "\nDEBUG :: Peg %d\n", remainingPeg ) ;
                     }
                     g_print( "\nDEBUG :: direction : %d\n", action ) ;
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
                     if (matrixSelectPeg( p->x, p->y )) { //en excluant la cdtions particuliere sumdelta==0
-                        pOld.x = p->x ; //pour une autre raison (pions coins opposes d'un carre)
-                        pOld.y = p->y ;
+                        ; //pour une autre raison (pions coins opposes d'un carre)
                     }
                 }
                 else { //ni prise ni meme bouton
@@ -647,15 +691,8 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     }
                 }
             }
-            else {
-//                g_print( "DEBUG :: Prise <NOK> :\n" ) ;
-//                g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
-//                g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
-            ;}
         }
-        // g_strdup_printf("%d", remainingPeg)
-       gtk_label_set_text(GTK_LABEL(plbPegsValue), g_strdup_printf("%d", remainingPeg))  ;
-       gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
+        gtk_widget_show_all( GTK_WIDGET( pGridMain ) ) ;
     }
 }
 
@@ -716,8 +753,24 @@ OnPlay( GtkWidget* pWidget, gpointer pData ) {
          * adresse de la matrice courante (globale)
          */
         onlyOneBoard.set = &currentMatrixOfBoard ;
+        g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( FALSE ) ) ;
     }
     gtk_widget_destroy( pWindow ) ;
+}
+
+gboolean
+_g_display_time( gpointer pData ) {
+    static int i = 0 ;
+    static gboolean stop = FALSE ;
+    int timerStop = GPOINTER_TO_INT( pData ) ;
+    stop = (timerStop)? !stop: stop ;
+    if (!stop) {
+        gchar *display = g_strdup_printf( "%d", i++ ) ;
+        gtk_label_set_text( GTK_LABEL( plbTimeValue ), display ) ;
+        g_free( display ) ;
+        return TRUE ;
+    }
+    else return FALSE ;
 }
 
 int
