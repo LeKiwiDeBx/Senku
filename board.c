@@ -222,7 +222,7 @@ boardInit( ) {
     GtkWidget *pGridValues = gtk_grid_new() ; 
     plbBonus = gtk_label_new( "Bonus:" ) ;
     plbBonusValue = gtk_label_new( " 0 " ) ;
-    plbPegs = gtk_label_new( "Pegsremaining:" ) ;
+    plbPegs = gtk_label_new( "Pegs:" ) ;
     plbPegsValue = gtk_label_new( " 0 " ) ;
     plbTime = gtk_label_new( "Time:" ) ;
     plbTimeValue = gtk_label_new( " 0 " ) ;
@@ -324,7 +324,7 @@ boardInit( ) {
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
 
-    // on lance la boucle
+    // on lance la boucle infernale
     gtk_main( ) ;
     EXIT_SUCCESS ;
 
@@ -550,22 +550,17 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static gboolean firstSelectPeg = TRUE ;
     static Coord pOld = {0, 0} ;
     int remainingPeg = 0 ;
+    double elapseTimer, totalTimer ;
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
-//    gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
-//    gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
-//    g_free( display ) ;
     _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
-    double elapseTimer, totalTimer ;
-    timerSetStartTimer( ) ;
     timerSetStartTimer( ) ;
     timerSetElapseTimer( ) ;
-    scoreResetBonusTimeScore( ) ;
+//    scoreResetBonusTimeScore( ) ;
     caretakerNew( ) ;
-    //debug ::
-    g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
-    g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
+//    g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
+//    g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
         timerSetStartTimer( ) ;
         if (firstSelectPeg) {
@@ -573,31 +568,26 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 firstSelectPeg = FALSE ;
                 timerSetElapseTimer( ) ;
                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
-                /* unselect l'ancien si existe */
-                if (pOld.x || pOld.y) {
+                if (pOld.x || pOld.y) { /* unselect si l'ancien si existe */
                     _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                 }
                 pOld.x = p->x ;
                 pOld.y = p->y ;
             }
         }
-        else {//second selection cliqué
-            //si prise possible
-            if (matrixSelectPeg( pOld.x, pOld.y )) {
+        else {//seconde selection cliquée
+            if (matrixSelectPeg( pOld.x, pOld.y )) { //si prise possible
                 int deltaX = 0, deltaY = 0, sumDelta = 0 ;
                 deltaX = pOld.x - p->x ;
                 deltaY = pOld.y - p->y ;
                 sumDelta = deltaX + deltaY ;
                 firstSelectPeg = TRUE ;
-                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
-                if (sumDelta == 2 && (deltaX != deltaY)) { // on prend et pour une autre raison (pions coins opposes d'un carre)
-                    action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
-                    /*factorisation de code */
-                    /*---------------------------------------------------------------------*/
-                     /*
-                      * cdtion sur sumdelta pour action
-                      * 
-                     /*---------------------------------------------------------------------*/
+//                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
+                if(deltaX != deltaY){
+                    if(sumDelta == 2)
+                        action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
+                    else if(sumDelta == -2)
+                        action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
                     if (matrixUpdate( action )) {
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
                         _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
@@ -611,79 +601,33 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         totalTimer = timerGetTotalTimer( ) ;
                         _g_labelSet(plbBonusValue, GINT_TO_POINTER(scoreGetBonusTimeScore())) ;
-                    }
-                    else if (matrixSelectPeg( p->x, p->y )) {
-                        g_print( "\nDEBUG :: Echec prise !\n" ) ;
+                    } 
+                    else if (matrixSelectPeg( p->x, p->y )) { //clique changement d'avis
                         firstSelectPeg = FALSE ;
                         _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
-                        elapseTimer = timerGetElapseTimer( ) ;
-                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         totalTimer = timerGetTotalTimer( ) ;
                     }
                     if (!matrixCanMovePeg( )) {
-                        g_print( "\nDEBUG :: Plus rien ne bouge !\n" ) ;
                         remainingPeg = matrixCountRemainPeg( ) ;
-                        gtk_label_set_text( GTK_LABEL( plbComments ),  "No more move !" ) ;
+                        gtk_label_set_text( GTK_LABEL( plbComments ),  NO_MORE_MOVE ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         timerSetStopTimer( ) ;
-                        g_print( "\nDEBUG :: Peg %d\n", remainingPeg ) ;
                     }
-                    g_print( "\nDEBUG :: direction : %d\n", action ) ;
-                    /*--Fin du code à factoriser ----------------------------------------------*/
-                }
-                else if (sumDelta == -2 && (deltaX != deltaY)) {
-                    action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
-                    if (matrixUpdate( action )) {
-                        _g_displayUpdateMatrix( action, p->x, p->y ) ;
-                        _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
-                        pOld.x = p->x ;
-                        pOld.y = p->y ;
-                        if (matrixSelectPeg( pOld.x, pOld.y )) {
-                            firstSelectPeg = FALSE ;
-                            _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
-                        }
-                        elapseTimer = timerGetElapseTimer( ) ;
-                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
-                        totalTimer = timerGetTotalTimer( ) ;
-                        _g_labelSet(plbBonusValue, GINT_TO_POINTER(scoreGetBonusTimeScore())) ;
-                    }
-                    else if (matrixSelectPeg( p->x, p->y )) {
-                        firstSelectPeg = FALSE ;
-                        _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
-                        _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
-                        pOld.x = p->x ;
-                        pOld.y = p->y ;
-                        elapseTimer = timerGetElapseTimer( ) ;
-                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
-                        totalTimer = timerGetTotalTimer( ) ;
-                    }
-                    if (!matrixCanMovePeg( )) {
-                        g_print( "\nDEBUG :: Plus rien ne bouge !\n" ) ;
-                        remainingPeg = matrixCountRemainPeg( ) ;
-                        gtk_label_set_text( GTK_LABEL( plbComments ), "No more move !" ) ;
-                        g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
-                        timerSetStopTimer( ) ;
-                        g_print( "\nDEBUG :: Peg %d\n", remainingPeg ) ;
-                    }
-                    g_print( "\nDEBUG :: direction : %d\n", action ) ;
+                    
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
-                    if (matrixSelectPeg( p->x, p->y )) { //en excluant la cdtions particuliere sumdelta==0
-                        ; //pour une autre raison (pions coins opposes d'un carre)
+                    if (matrixSelectPeg( p->x, p->y )) {         //en excluant la cdtions particuliere sumdelta==0
+                        _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;//pour une autre raison (pions coins opposes d'un carre)
                     }
                 }
-                else { //ni prise ni meme bouton
+                else { //ni prise ni meme peg
                     g_print( "\nDEBUG :: change selection de depart\n" ) ;
                     firstSelectPeg = FALSE ;
                     if (matrixSelectPeg( p->x, p->y )) {//si une prise possible
-                        /* unselect l'ancien */
                         _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
-                        /* select le nouveau */
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
