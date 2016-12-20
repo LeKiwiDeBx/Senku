@@ -179,6 +179,13 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) ;
  */
 gboolean
 _g_display_time( gpointer pData ) ;
+/**
+ * @brief reecrit le texte du label
+ * @param pWidget le label
+ * @param pData   le texte à écrire
+ */
+void
+_g_labelSet(GtkWidget *pWidget, gpointer pData) ;
 
 int
 boardInit( ) {
@@ -546,9 +553,10 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
-    gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
-    gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
-    g_free( display ) ;
+//    gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
+//    gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
+//    g_free( display ) ;
+    _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
     double elapseTimer, totalTimer ;
     timerSetStartTimer( ) ;
     timerSetStartTimer( ) ;
@@ -584,24 +592,25 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
                 if (sumDelta == 2 && (deltaX != deltaY)) { // on prend et pour une autre raison (pions coins opposes d'un carre)
                     action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
+                    /*factorisation de code */
+                    /*---------------------------------------------------------------------*/
+                     /*
+                      * cdtion sur sumdelta pour action
+                      * 
+                     /*---------------------------------------------------------------------*/
                     if (matrixUpdate( action )) {
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
-                        gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
-                        gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
-                        g_free( display ) ;
+                        _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
                         if (matrixSelectPeg( pOld.x, pOld.y )) {
                             firstSelectPeg = FALSE ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
                         }
-                        
                         elapseTimer = timerGetElapseTimer( ) ;
                         scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         totalTimer = timerGetTotalTimer( ) ;
-                        gchar *displayBonus = g_strdup_printf( "%d", scoreGetBonusTimeScore( ) ) ;
-                        gtk_label_set_text( GTK_LABEL( plbBonusValue ), displayBonus ) ;
-                        g_free( display ) ;
+                        _g_labelSet(plbBonusValue, GINT_TO_POINTER(scoreGetBonusTimeScore())) ;
                     }
                     else if (matrixSelectPeg( p->x, p->y )) {
                         g_print( "\nDEBUG :: Echec prise !\n" ) ;
@@ -610,7 +619,6 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
-                        
                         elapseTimer = timerGetElapseTimer( ) ;
                         scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         totalTimer = timerGetTotalTimer( ) ;
@@ -618,36 +626,30 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     if (!matrixCanMovePeg( )) {
                         g_print( "\nDEBUG :: Plus rien ne bouge !\n" ) ;
                         remainingPeg = matrixCountRemainPeg( ) ;
-                        gchar *display = g_strdup_printf( "%s", "No more move !" ) ;
-                        gtk_label_set_text( GTK_LABEL( plbComments ), display ) ;
-                        g_free( display ) ;
+                        gtk_label_set_text( GTK_LABEL( plbComments ),  "No more move !" ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
                         scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         timerSetStopTimer( ) ;
                         g_print( "\nDEBUG :: Peg %d\n", remainingPeg ) ;
                     }
                     g_print( "\nDEBUG :: direction : %d\n", action ) ;
+                    /*--Fin du code à factoriser ----------------------------------------------*/
                 }
                 else if (sumDelta == -2 && (deltaX != deltaY)) {
                     action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
                     if (matrixUpdate( action )) {
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
-                        gchar *display = g_strdup_printf( "%d", matrixCountRemainPeg( ) ) ;
-                        gtk_label_set_text( GTK_LABEL( plbPegsValue ), display ) ;
-                        g_free( display ) ;
+                        _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
                         if (matrixSelectPeg( pOld.x, pOld.y )) {
                             firstSelectPeg = FALSE ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
                         }
-                        
                         elapseTimer = timerGetElapseTimer( ) ;
                         scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         totalTimer = timerGetTotalTimer( ) ;
-                        gchar *displayBonus = g_strdup_printf( "%d", scoreGetBonusTimeScore( ) ) ;
-                        gtk_label_set_text( GTK_LABEL( plbBonusValue ), displayBonus ) ;
-                        g_free( display ) ;
+                        _g_labelSet(plbBonusValue, GINT_TO_POINTER(scoreGetBonusTimeScore())) ;
                     }
                     else if (matrixSelectPeg( p->x, p->y )) {
                         firstSelectPeg = FALSE ;
@@ -655,7 +657,6 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
-                        
                         elapseTimer = timerGetElapseTimer( ) ;
                         scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         totalTimer = timerGetTotalTimer( ) ;
@@ -663,9 +664,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     if (!matrixCanMovePeg( )) {
                         g_print( "\nDEBUG :: Plus rien ne bouge !\n" ) ;
                         remainingPeg = matrixCountRemainPeg( ) ;
-                        gchar *display = g_strdup_printf( "%s", "No more move !" ) ;
-                        gtk_label_set_text( GTK_LABEL( plbComments ), display ) ;
-                        g_free( display ) ;
+                        gtk_label_set_text( GTK_LABEL( plbComments ), "No more move !" ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
                         scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
                         timerSetStopTimer( ) ;
@@ -694,6 +693,13 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
         }
         gtk_widget_show_all( GTK_WIDGET( pGridMain ) ) ;
     }
+}
+
+void
+_g_labelSet(GtkWidget *pWidget, gpointer pData){
+    gchar *display = g_strdup_printf( "%d", GPOINTER_TO_INT(pData) ) ;
+    gtk_label_set_text( GTK_LABEL( pWidget ), display ) ;
+    g_free( display ) ;
 }
 
 void
