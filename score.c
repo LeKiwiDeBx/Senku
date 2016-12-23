@@ -25,7 +25,7 @@ static tabScore tabSortScore ;
 static score cursorCurrentScore ;
 static pScore cursorScore ;
 static score inputScore ;
-static int bonusTimeScore = 0 ;
+static double bonusTimeScore = 0 ;
 static int remainingPeg = 0 ;
 
 static void 	__addBegin() ;
@@ -42,7 +42,7 @@ static void		__setScoreGame(int ) ;
 static void 	__clean(const char *buffer, FILE *fp) ;
 static void		__displaySortScore(int ) ;
 static void		__displaySetNamePlayer() ;
-static void		__displaySetCalculateBonusElapseTimer(int bonus) ;
+static void		__displaySetCalculateBonusElapseTimer(double bonus) ;
 
 void
 scoreNew(){
@@ -103,9 +103,10 @@ void
 scoreSetCalculateBonusElapseTimer(double elapseTimer){
 	/* cast sauvage !!!! :(*/
 	int i = (int) elapseTimer ;
-	int bonus = 0 ;
+	double bonus = 0 ;
 	if(i>= MIN_SEC_BONUS && i<= MAX_SEC_BONUS){
-		bonus = 5*(9-i) ;
+		//bonus = 5*(9-i) ;
+        bonus = (MAX_SEC_BONUS - elapseTimer) ;
 		bonusTimeScore += bonus ;
         g_print("DEBUG :: scoreSetCalculateBonusElapseTimer %f\n",elapseTimer) ;
 		__displaySetCalculateBonusElapseTimer(bonus) ;
@@ -113,8 +114,8 @@ scoreSetCalculateBonusElapseTimer(double elapseTimer){
 }
 
 static void
-__displaySetCalculateBonusElapseTimer(int bonus){
-	printf("\n Yep! Bonus: + %d points!\n", bonus) ;
+__displaySetCalculateBonusElapseTimer(double bonus){
+	printf("\n Yep! Bonus: + %d points!\n", (int)bonus) ;
 }
 
 int

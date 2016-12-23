@@ -219,19 +219,60 @@ boardInit( ) {
     gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
     
     //Creation grille des valeurs à droite
+    plbBonus = gtk_label_new( "Bonus") ;
     GtkWidget *pGridValues = gtk_grid_new() ; 
-    plbBonus = gtk_label_new( "Bonus:" ) ;
+    gtk_widget_set_margin_top (GTK_WIDGET(pGridValues), 75) ;
+    gtk_widget_set_margin_left(GTK_WIDGET(pGridValues), 50) ;
+    /*test pango markup*/
+    const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
+    char *markup = g_markup_printf_escaped (format,"Bonus");
+    gtk_label_set_markup (GTK_LABEL (plbBonus), markup);
+    g_free (markup);
+    /*test pango markup*/
+    
     plbBonusValue = gtk_label_new( " 0 " ) ;
-    plbPegs = gtk_label_new( "Pegs:" ) ;
+    /*test pango markup*/
+    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
+    markup = g_markup_printf_escaped (format," 0 ");
+    gtk_label_set_markup (GTK_LABEL (plbBonusValue), markup);
+    g_free (markup);
+    /*test pango markup*/    
+    
+    plbPegs = gtk_label_new( "Pegs" ) ;
+    /*test pango markup*/
+    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
+    markup = g_markup_printf_escaped (format,"Pegs");
+    gtk_label_set_markup (GTK_LABEL (plbPegs), markup);
+    g_free (markup);
+    /*test pango markup*/
     plbPegsValue = gtk_label_new( " 0 " ) ;
-    plbTime = gtk_label_new( "Time:" ) ;
+    /*test pango markup*/
+    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
+    markup = g_markup_printf_escaped (format," 0 ");
+    gtk_label_set_markup (GTK_LABEL (plbPegsValue), markup);
+    g_free (markup);
+    /*test pango markup*/
+    
+    plbTime = gtk_label_new( "Time" ) ;
+    /*test pango markup*/
+    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
+    markup = g_markup_printf_escaped (format,"Time");
+    gtk_label_set_markup (GTK_LABEL (plbTime), markup);
+    g_free (markup);
+    /*test pango markup*/
     plbTimeValue = gtk_label_new( " 0 " ) ;
-    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonus,         0, 1, 1, 1 ) ;
-    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonusValue,    0, 2, 1, 1 ) ;
-    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegs,          0, 3, 1, 1 ) ;
-    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegsValue,     0, 4, 1, 1 ) ;
-    gtk_grid_attach( GTK_GRID( pGridValues ), plbTime,          0, 5, 1, 1 ) ;
-    gtk_grid_attach( GTK_GRID( pGridValues ), plbTimeValue,     0, 6, 1, 1 ) ;
+    /*test pango markup*/
+    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
+    markup = g_markup_printf_escaped (format," 0 ");
+    gtk_label_set_markup (GTK_LABEL (plbTimeValue), markup);
+    g_free (markup);
+    /*test pango markup*/
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonus,         1, 2, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonusValue,    1, 3, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegs,          1, 4, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegsValue,     1, 5, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbTime,          1, 6, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbTimeValue,     1, 7, 1, 1 ) ;
     gtk_grid_set_column_homogeneous( GTK_GRID( pGridMain ), FALSE ) ;
     gtk_container_add( GTK_CONTAINER( pGridMain ), pGridValues ) ;
     
@@ -319,7 +360,7 @@ boardInit( ) {
     //les signaux 
     g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
     g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
-    //  g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
+    //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
 
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
@@ -555,18 +596,21 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
     _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
-    timerSetStartTimer( ) ;
-    timerSetElapseTimer( ) ;
+    //timerSetStartTimer( ) ;
+    //timerSetElapseTimer( ) ;
 //    scoreResetBonusTimeScore( ) ;
     caretakerNew( ) ;
 //    g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
 //    g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
-        timerSetStartTimer( ) ;
+        //timerSetStartTimer( ) ;
         if (firstSelectPeg) {
+            /*debug timer*/
+            timerStartClock() ;
+            /*  */
             if (matrixSelectPeg( p->x, p->y )) {
                 firstSelectPeg = FALSE ;
-                timerSetElapseTimer( ) ;
+                //timerSetElapseTimer( ) ;
                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                 if (pOld.x || pOld.y) { /* unselect si l'ancien si existe */
                     _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
@@ -576,14 +620,19 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
             }
         }
         else {//seconde selection cliquée
+             /* debug time */
+             timerStopClock() ;
+             g_printf("\DEBUG :: Elapse %f",timerGetElapseClock() * 1000) ;
+             /*  */
             if (matrixSelectPeg( pOld.x, pOld.y )) { //si prise possible
                 int deltaX = 0, deltaY = 0, sumDelta = 0 ;
                 deltaX = pOld.x - p->x ;
                 deltaY = pOld.y - p->y ;
                 sumDelta = deltaX + deltaY ;
                 firstSelectPeg = TRUE ;
-//                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d\n", deltaX, deltaY, sumDelta ) ;
-                if(deltaX != deltaY){
+                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d", deltaX, deltaY, sumDelta ) ;
+                g_print( "\nDEBUG :: pOldX: %d pOldY: %d px: %d py: %d", pOld.x, pOld.y, p->x, p->y ) ;
+                if(deltaX != deltaY && (sumDelta == 2 || sumDelta == -2)){
                     if(sumDelta == 2)
                         action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
                     else if(sumDelta == -2)
@@ -597,35 +646,37 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                             firstSelectPeg = FALSE ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
                         }
-                        elapseTimer = timerGetElapseTimer( ) ;
-                        scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
-                        totalTimer = timerGetTotalTimer( ) ;
+                       // elapseTimer = timerGetElapseTimer( ) ;
+                       // scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
+                       /* version avec clock() */ 
+                        scoreSetCalculateBonusElapseTimer( timerGetElapseClock() * 1000 ) ;
+                       //totalTimer = timerGetTotalTimer( ) ;
                         _g_labelSet(plbBonusValue, GINT_TO_POINTER(scoreGetBonusTimeScore())) ;
                     } 
-                    else if (matrixSelectPeg( p->x, p->y )) { //clique changement d'avis
+                    else if (matrixSelectPeg( p->x, p->y )) { //clique changement d'avis avec prise
                         firstSelectPeg = FALSE ;
                         _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                         pOld.x = p->x ;
                         pOld.y = p->y ;
-                        totalTimer = timerGetTotalTimer( ) ;
+                       // totalTimer = timerGetTotalTimer( ) ;
+                    }else { //changement d'avis sans prise (erreur de second clique)
+                        firstSelectPeg = FALSE ;
                     }
                     if (!matrixCanMovePeg( )) {
                         remainingPeg = matrixCountRemainPeg( ) ;
                         gtk_label_set_text( GTK_LABEL( plbComments ),  NO_MORE_MOVE ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-                        timerSetStopTimer( ) ;
                     }
-                    
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
                     if (matrixSelectPeg( p->x, p->y )) {         //en excluant la cdtions particuliere sumdelta==0
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;//pour une autre raison (pions coins opposes d'un carre)
                     }
                 }
-                else { //ni prise ni meme peg
-                    g_print( "\nDEBUG :: change selection de depart\n" ) ;
-                    firstSelectPeg = FALSE ;
+                else { //ni prise ni meme peg de depart
+                    g_print( "\nDEBUG :: change selection de depart si prise possible\n" ) ;
+                    firstSelectPeg = FALSE ; 
                     if (matrixSelectPeg( p->x, p->y )) {//si une prise possible
                         _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
@@ -633,7 +684,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         pOld.y = p->y ;
                     }
                 }
-            }
+            }else g_print("\nDEBUG :: prise impossible ");
         }
         gtk_widget_show_all( GTK_WIDGET( pGridMain ) ) ;
     }
@@ -641,9 +692,15 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
 
 void
 _g_labelSet(GtkWidget *pWidget, gpointer pData){
-    gchar *display = g_strdup_printf( "%d", GPOINTER_TO_INT(pData) ) ;
-    gtk_label_set_text( GTK_LABEL( pWidget ), display ) ;
-    g_free( display ) ;
+    /*test pango markup*/
+    const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%d</span>";
+    gchar *markup = g_markup_printf_escaped (format, GPOINTER_TO_INT(pData) );
+    gtk_label_set_markup (GTK_LABEL (pWidget), markup);
+    g_free (markup);
+    /*test pango markup*/
+//    gchar *display = g_strdup_printf( "%d", GPOINTER_TO_INT(pData) ) ;
+//    gtk_label_set_text( GTK_LABEL( pWidget ), display ) ;
+//    g_free( display ) ;
 }
 
 void
@@ -715,9 +772,15 @@ _g_display_time( gpointer pData ) {
     int timerStop = GPOINTER_TO_INT( pData ) ;
     stop = (timerStop)? !stop: stop ;
     if (!stop) {
-        gchar *display = g_strdup_printf( "%d", i++ ) ;
-        gtk_label_set_text( GTK_LABEL( plbTimeValue ), display ) ;
-        g_free( display ) ;
+        /*test pango markup*/
+        const gchar *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%ds</span>";
+        gchar *markup = g_markup_printf_escaped (format,i++);
+        gtk_label_set_markup (GTK_LABEL (plbTimeValue), markup);
+        g_free (markup);
+        /*test pango markup*/
+//        gchar *display = g_strdup_printf( "%d", i++ ) ;
+//        gtk_label_set_text( GTK_LABEL( plbTimeValue ), display ) ;
+//        g_free( display ) ;
         return TRUE ;
     }
     else return FALSE ;

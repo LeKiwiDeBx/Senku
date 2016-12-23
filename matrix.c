@@ -130,7 +130,7 @@ int matrixLoad(int choice){
 			return 0 ;
 		}
         currentMatrixOfBoard.name = nameShape[choice] ;
-        g_print("DEBUG :: Chargement !\n") ;
+        g_print("DEBUG :: Loading.........[X]\n") ;
 //		__displayLoadChoice(currentMatrixOfBoard.name) ;
 		currentMatrixOfBoard.id = choice ;
 		memcpy(matrixCopy,currentMatrixOfBoard.pShape,HOR_MAX*VER_MAX*sizeof(int));
