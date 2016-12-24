@@ -31,6 +31,17 @@
 #define _LINUX_   /* execution de system clear */
 #endif
 
+/* MACROS PANGO*/
+
+#ifndef SENKU_PANGO_MARKUP_LABEL
+#define SENKU_PANGO_MARKUP_LABEL "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">%s</span>"
+#endif
+#ifndef SENKU_PANGO_MARKUP_VALUE
+#define SENKU_PANGO_MARKUP_VALUE "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">%d</span>"
+#endif
+
+
+
 #define IMG_PEG_MOVE    "image/circle_gold32.png"
 #define IMG_PEG_SELECT  "image/circle_gold_select32.png"
 #define IMG_PEG_DELETE  "image/circle_white32.png"
@@ -224,46 +235,47 @@ boardInit( ) {
     gtk_widget_set_margin_top (GTK_WIDGET(pGridValues), 75) ;
     gtk_widget_set_margin_left(GTK_WIDGET(pGridValues), 50) ;
     /*test pango markup*/
-    const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
-    char *markup = g_markup_printf_escaped (format,"Bonus");
+    //const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
+    //char *markup = g_markup_printf_escaped (format,"Bonus");
+    char *markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL,"Bonus");
     gtk_label_set_markup (GTK_LABEL (plbBonus), markup);
     g_free (markup);
     /*test pango markup*/
     
     plbBonusValue = gtk_label_new( " 0 " ) ;
     /*test pango markup*/
-    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
-    markup = g_markup_printf_escaped (format," 0 ");
+//    const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_VALUE, 0 );
     gtk_label_set_markup (GTK_LABEL (plbBonusValue), markup);
     g_free (markup);
     /*test pango markup*/    
     
     plbPegs = gtk_label_new( "Pegs" ) ;
     /*test pango markup*/
-    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
-    markup = g_markup_printf_escaped (format,"Pegs");
+//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL,"Pegs");
     gtk_label_set_markup (GTK_LABEL (plbPegs), markup);
     g_free (markup);
     /*test pango markup*/
     plbPegsValue = gtk_label_new( " 0 " ) ;
     /*test pango markup*/
-    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
-    markup = g_markup_printf_escaped (format," 0 ");
+//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_VALUE, 0 );
     gtk_label_set_markup (GTK_LABEL (plbPegsValue), markup);
     g_free (markup);
     /*test pango markup*/
     
     plbTime = gtk_label_new( "Time" ) ;
     /*test pango markup*/
-    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
-    markup = g_markup_printf_escaped (format,"Time");
+//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL,"Time");
     gtk_label_set_markup (GTK_LABEL (plbTime), markup);
     g_free (markup);
     /*test pango markup*/
     plbTimeValue = gtk_label_new( " 0 " ) ;
     /*test pango markup*/
-    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
-    markup = g_markup_printf_escaped (format," 0 ");
+//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_VALUE,0 );
     gtk_label_set_markup (GTK_LABEL (plbTimeValue), markup);
     g_free (markup);
     /*test pango markup*/
@@ -283,8 +295,8 @@ boardInit( ) {
     /* pour pouvoir ajouter en dessous la zone des commentaires*/
     gtk_orientable_set_orientation( GTK_ORIENTABLE( pGridMain ), GTK_ORIENTATION_VERTICAL ) ;
     pfrComments = gtk_frame_new( NULL ) ;
-    gtk_frame_set_label( GTK_FRAME( pfrComments ), "Comments: " ) ;
-    plbComments = gtk_label_new( "In progress..." ) ;
+    gtk_frame_set_label( GTK_FRAME( pfrComments ), "" ) ;
+    plbComments = gtk_label_new( NULL ) ;
     gtk_container_add( GTK_CONTAINER( pfrComments ), plbComments ) ;
     gtk_widget_set_margin_top( GTK_WIDGET( pfrComments ), 20 ) ;
     gtk_widget_set_halign( GTK_WIDGET( plbComments ), GTK_ALIGN_START ) ;
@@ -622,7 +634,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
         else {//seconde selection cliquée
              /* debug time */
              timerStopClock() ;
-             g_printf("\DEBUG :: Elapse %f",timerGetElapseClock() * 1000) ;
+             g_printf("\nDEBUG :: Elapse %f",timerGetElapseClock() * 1000) ;
              /*  */
             if (matrixSelectPeg( pOld.x, pOld.y )) { //si prise possible
                 int deltaX = 0, deltaY = 0, sumDelta = 0 ;
@@ -665,7 +677,12 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     }
                     if (!matrixCanMovePeg( )) {
                         remainingPeg = matrixCountRemainPeg( ) ;
-                        gtk_label_set_text( GTK_LABEL( plbComments ),  NO_MORE_MOVE ) ;
+                        
+//                        gtk_label_set_text( GTK_LABEL( plbComments ),  NO_MORE_MOVE ) ;
+                        const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
+                        gchar *markup = g_markup_printf_escaped (format, NO_MORE_MOVE );
+                        gtk_label_set_markup (GTK_LABEL (plbComments), markup);
+                        g_free (markup);
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
                     }
                 }
