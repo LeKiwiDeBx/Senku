@@ -32,15 +32,10 @@
 #endif
 
 /* MACROS PANGO*/
-
-#ifndef SENKU_PANGO_MARKUP_LABEL
-#define SENKU_PANGO_MARKUP_LABEL "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">%s</span>"
-#endif
-#ifndef SENKU_PANGO_MARKUP_VALUE
-#define SENKU_PANGO_MARKUP_VALUE "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">%d</span>"
-#endif
-
-
+#define LABEL_COLOR_TITLE "#385998"
+#define LABEL_COLOR_TEXT  "#FF6600"
+//#385998
+#define SENKU_PANGO_MARKUP_LABEL(color,type) "<span size=\"xx-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
 
 #define IMG_PEG_MOVE    "image/circle_gold32.png"
 #define IMG_PEG_SELECT  "image/circle_gold_select32.png"
@@ -234,51 +229,33 @@ boardInit( ) {
     GtkWidget *pGridValues = gtk_grid_new() ; 
     gtk_widget_set_margin_top (GTK_WIDGET(pGridValues), 75) ;
     gtk_widget_set_margin_left(GTK_WIDGET(pGridValues), 50) ;
-    /*test pango markup*/
-    //const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
-    //char *markup = g_markup_printf_escaped (format,"Bonus");
-    char *markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL,"Bonus");
+    char *markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL(#385998,s),"Bonus");
     gtk_label_set_markup (GTK_LABEL (plbBonus), markup);
     g_free (markup);
-    /*test pango markup*/
     
     plbBonusValue = gtk_label_new( " 0 " ) ;
-    /*test pango markup*/
-//    const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
-    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_VALUE, 0 );
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL(#FF6600,d), 0 );
     gtk_label_set_markup (GTK_LABEL (plbBonusValue), markup);
     g_free (markup);
-    /*test pango markup*/    
     
     plbPegs = gtk_label_new( "Pegs" ) ;
-    /*test pango markup*/
-//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
-    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL,"Pegs");
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL(#385998,s),"Pegs");
     gtk_label_set_markup (GTK_LABEL (plbPegs), markup);
     g_free (markup);
-    /*test pango markup*/
     plbPegsValue = gtk_label_new( " 0 " ) ;
-    /*test pango markup*/
-//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
-    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_VALUE, 0 );
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL(#FF6600,d), 0 );
     gtk_label_set_markup (GTK_LABEL (plbPegsValue), markup);
     g_free (markup);
-    /*test pango markup*/
     
     plbTime = gtk_label_new( "Time" ) ;
-    /*test pango markup*/
-//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#385998\">\%s</span>";
-    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL,"Time");
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL(#385998,s),"Time");
     gtk_label_set_markup (GTK_LABEL (plbTime), markup);
     g_free (markup);
-    /*test pango markup*/
     plbTimeValue = gtk_label_new( " 0 " ) ;
-    /*test pango markup*/
-//    format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%s</span>";
-    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_VALUE,0 );
+    markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL(#FF6600,d),0 );
     gtk_label_set_markup (GTK_LABEL (plbTimeValue), markup);
     g_free (markup);
-    /*test pango markup*/
+
     gtk_grid_attach( GTK_GRID( pGridValues ), plbBonus,         1, 2, 1, 1 ) ;
     gtk_grid_attach( GTK_GRID( pGridValues ), plbBonusValue,    1, 3, 1, 1 ) ;
     gtk_grid_attach( GTK_GRID( pGridValues ), plbPegs,          1, 4, 1, 1 ) ;
@@ -349,7 +326,8 @@ boardInit( ) {
     gtk_container_add( GTK_CONTAINER( pfrTitle ), plbTitle ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pfrTitle, TRUE, FALSE, 25 ) ;
     /* les boutons radios
-     ??? externaliser les textes dans un tableau de char ??? */
+     ???    externaliser les textes dans un tableau de char
+            pour une construction dynamique ???*/
 
     radio = gtk_radio_button_new_with_label( NULL, "Shape English" ) ;
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( radio ), TRUE ) ;
@@ -610,7 +588,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     _g_labelSet(plbPegsValue, GINT_TO_POINTER(matrixCountRemainPeg())) ;
     //timerSetStartTimer( ) ;
     //timerSetElapseTimer( ) ;
-//    scoreResetBonusTimeScore( ) ;
+//   scoreResetBonusTimeScore( ) ;
     caretakerNew( ) ;
 //    g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
 //    g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
@@ -709,15 +687,9 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
 
 void
 _g_labelSet(GtkWidget *pWidget, gpointer pData){
-    /*test pango markup*/
-    const char *format = "<span size=\"xx-large\" weight=\"bold\" color=\"#FF6600\">\%d</span>";
-    gchar *markup = g_markup_printf_escaped (format, GPOINTER_TO_INT(pData) );
+    gchar *markup = g_markup_printf_escaped (SENKU_PANGO_MARKUP_LABEL(#FF6600,d), GPOINTER_TO_INT(pData) );
     gtk_label_set_markup (GTK_LABEL (pWidget), markup);
     g_free (markup);
-    /*test pango markup*/
-//    gchar *display = g_strdup_printf( "%d", GPOINTER_TO_INT(pData) ) ;
-//    gtk_label_set_text( GTK_LABEL( pWidget ), display ) ;
-//    g_free( display ) ;
 }
 
 void
