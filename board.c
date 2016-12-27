@@ -32,11 +32,13 @@
 #endif
 
 /* MACROS PANGO*/
-#define LABEL_COLOR_TITLE "#385998"
-#define LABEL_COLOR_TEXT  "#FF6600"
+#define LABEL_COLOR_TITLE #385998
+#define LABEL_COLOR_TEXT  #FF6600 
 //#385998
-#define SENKU_PANGO_MARKUP_LABEL(color,type) "<span size=\"xx-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
+#define SENKU_PANGO_CONCAT_STR(color,type) "<span size=\"xx-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
+#define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 
+#define TIMER_DELAY     1000
 #define IMG_PEG_MOVE    "image/circle_gold32.png"
 #define IMG_PEG_SELECT  "image/circle_gold_select32.png"
 #define IMG_PEG_DELETE  "image/circle_white32.png"
@@ -89,6 +91,7 @@ typedef enum e_actionSelect {
     ACTION_SELECT_TAKE_SOUTH,
     ACTION_SELECT_TAKE_WEST,
     ACTION_SELECT_UNSELECT_PEG = 10,
+    ACTION_UNDO = 666        
 } actionSelect ;
 
 /* *****************************************************************************
@@ -238,131 +241,132 @@ boardInit( ) {
     gtk_widget_set_margin_top( GTK_WIDGET( pGridValues ), 75 ) ;
     gtk_widget_set_margin_left( GTK_WIDGET( pGridValues ), 50 ) ;
 
-    char *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#385998,s),"Bonus");
-            gtk_label_set_markup( GTK_LABEL( plbBonus ), markup ) ;
-            g_free( markup ) ;
-            plbBonusValue = gtk_label_new( " 0 " ) ;
-            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#FF6600,d), 0 );
-            gtk_label_set_markup( GTK_LABEL( plbBonusValue ), markup ) ;
-            g_free( markup ) ;
+        char *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),"Bonus");
+        gtk_label_set_markup( GTK_LABEL( plbBonus ), markup ) ;
+        g_free( markup ) ;
+        plbBonusValue = gtk_label_new( " 0 " ) ;
 
-            plbPegs = gtk_label_new( "Pegs" ) ;
-            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#385998,s),"Pegs");
-            gtk_label_set_markup( GTK_LABEL( plbPegs ), markup ) ;
-            g_free( markup ) ;
-            plbPegsValue = gtk_label_new( " 0 " ) ;
-            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#FF6600,d), 0 );
-            gtk_label_set_markup( GTK_LABEL( plbPegsValue ), markup ) ;
-            g_free( markup ) ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d), 0 );
+        gtk_label_set_markup( GTK_LABEL( plbBonusValue ), markup ) ;
+        g_free( markup ) ;
 
-            plbTime = gtk_label_new( "Time" ) ;
-            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#385998,s),"Time");
-            gtk_label_set_markup( GTK_LABEL( plbTime ), markup ) ;
-            g_free( markup ) ;
-            plbTimeValue = gtk_label_new( " 0 " ) ;
-            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#FF6600,d),0 );
-            gtk_label_set_markup( GTK_LABEL( plbTimeValue ), markup ) ;
-            g_free( markup ) ;
+        plbPegs = gtk_label_new( "Pegs" ) ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),"Pegs");
+        gtk_label_set_markup( GTK_LABEL( plbPegs ), markup ) ;
+        g_free( markup ) ;
+        plbPegsValue = gtk_label_new( " 0 " ) ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d), 0 );
+        gtk_label_set_markup( GTK_LABEL( plbPegsValue ), markup ) ;
+        g_free( markup ) ;
 
-            gtk_grid_attach( GTK_GRID( pGridValues ), plbBonus, 1, 2, 1, 1 ) ;
-            gtk_grid_attach( GTK_GRID( pGridValues ), plbBonusValue, 1, 3, 1, 1 ) ;
-            gtk_grid_attach( GTK_GRID( pGridValues ), plbPegs, 1, 4, 1, 1 ) ;
-            gtk_grid_attach( GTK_GRID( pGridValues ), plbPegsValue, 1, 5, 1, 1 ) ;
-            gtk_grid_attach( GTK_GRID( pGridValues ), plbTime, 1, 6, 1, 1 ) ;
-            gtk_grid_attach( GTK_GRID( pGridValues ), plbTimeValue, 1, 7, 1, 1 ) ;
-            gtk_grid_set_column_homogeneous( GTK_GRID( pGridMain ), FALSE ) ;
-            gtk_container_add( GTK_CONTAINER( pGridMain ), pGridValues ) ;
+        plbTime = gtk_label_new( "Time" ) ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),"Time");
+        gtk_label_set_markup( GTK_LABEL( plbTime ), markup ) ;
+        g_free( markup ) ;
+        plbTimeValue = gtk_label_new( " 0 " ) ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d),0 );
+        gtk_label_set_markup( GTK_LABEL( plbTimeValue ), markup ) ;
+        g_free( markup ) ;
 
-            gtk_container_add( GTK_CONTAINER( pWindowMain ), pGridMain ) ;
-            /** 
-             * label comments game in progress 
-             */
-            /* pour pouvoir ajouter en dessous la zone des commentaires*/
-            gtk_orientable_set_orientation( GTK_ORIENTABLE( pGridMain ), GTK_ORIENTATION_VERTICAL ) ;
-            pfrComments = gtk_frame_new( NULL ) ;
-            gtk_frame_set_label( GTK_FRAME( pfrComments ), "" ) ;
-            plbComments = gtk_label_new( NULL ) ;
-            gtk_container_add( GTK_CONTAINER( pfrComments ), plbComments ) ;
-            gtk_widget_set_margin_top( GTK_WIDGET( pfrComments ), 20 ) ;
-            gtk_widget_set_halign( GTK_WIDGET( plbComments ), GTK_ALIGN_START ) ;
-            /* ajoute sur deux cellules horizontale du GridMain (soit la totalité) */
-            gtk_grid_attach( GTK_GRID( pGridMain ), pfrComments, 0, 1, 2, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridValues ), plbBonus, 1, 2, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridValues ), plbBonusValue, 1, 3, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridValues ), plbPegs, 1, 4, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridValues ), plbPegsValue, 1, 5, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridValues ), plbTime, 1, 6, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridValues ), plbTimeValue, 1, 7, 1, 1 ) ;
+        gtk_grid_set_column_homogeneous( GTK_GRID( pGridMain ), FALSE ) ;
+        gtk_container_add( GTK_CONTAINER( pGridMain ), pGridValues ) ;
 
-            /* Button bottom  <Undo> et <Quit> */
-            pHbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 0 ) ;
-            gtk_widget_set_margin_top( GTK_WIDGET( pHbox ), 20 ) ;
-            /* on ajoute à partir de la fin */
-            gtk_widget_set_halign( GTK_WIDGET( pHbox ), GTK_ALIGN_END ) ;
-            pButtonUndo = gtk_button_new_with_label( "Undo" ) ;
-            gtk_box_pack_start( GTK_BOX( pHbox ), pButtonUndo, FALSE, FALSE, 15 ) ;
-            /* bouton Quit caler à droite */
-            pButtonQuit = gtk_button_new_with_label( "Quit" ) ;
-            gtk_box_pack_end( GTK_BOX( pHbox ), pButtonQuit, TRUE, TRUE, 15 ) ;
-            /* on ajoute les boutons */
-            gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 1, 3, 1, 1 ) ;
-            /* les signaux des boutons */
-            g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
-            /**
-             * @Todo Juste un prototype pour le signal pButtonUndo --> OnUndo
-             * @return 
-             */
-            g_signal_connect( G_OBJECT( pButtonUndo ), "clicked", G_CALLBACK( OnUndo ), NULL ) ;
+        gtk_container_add( GTK_CONTAINER( pWindowMain ), pGridMain ) ;
+        /** 
+         * label comments game in progress 
+         */
+        /* pour pouvoir ajouter en dessous la zone des commentaires*/
+        gtk_orientable_set_orientation( GTK_ORIENTABLE( pGridMain ), GTK_ORIENTATION_VERTICAL ) ;
+        pfrComments = gtk_frame_new( NULL ) ;
+        gtk_frame_set_label( GTK_FRAME( pfrComments ), "" ) ;
+        plbComments = gtk_label_new( NULL ) ;
+        gtk_container_add( GTK_CONTAINER( pfrComments ), plbComments ) ;
+        gtk_widget_set_margin_top( GTK_WIDGET( pfrComments ), 20 ) ;
+        gtk_widget_set_halign( GTK_WIDGET( plbComments ), GTK_ALIGN_START ) ;
+        /* ajoute sur deux cellules horizontale du GridMain (soit la totalité) */
+        gtk_grid_attach( GTK_GRID( pGridMain ), pfrComments, 0, 1, 2, 1 ) ;
 
-            /**
-             * Dialog box Menu 
-             * choix des shapes modale et sans decoration (style screen splash)
-             */
-            pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
-            gtk_window_set_title( GTK_WINDOW( pBoxMenu ), "Shapes choice" ) ;
-            gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
-            gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
-            gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), FALSE ) ;
-            gtk_window_set_deletable( GTK_WINDOW( pBoxMenu ), FALSE ) ;
-            /* rend la fenetre de choix dependante de la fenetre principale */
-            gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
-            gtk_window_resize( GTK_WINDOW( pBoxMenu ), 280, 300 ) ;
+        /* Button bottom  <Undo> et <Quit> */
+        pHbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 0 ) ;
+        gtk_widget_set_margin_top( GTK_WIDGET( pHbox ), 20 ) ;
+        /* on ajoute à partir de la fin */
+        gtk_widget_set_halign( GTK_WIDGET( pHbox ), GTK_ALIGN_END ) ;
+        pButtonUndo = gtk_button_new_with_label( "Undo" ) ;
+        gtk_box_pack_start( GTK_BOX( pHbox ), pButtonUndo, FALSE, FALSE, 15 ) ;
+        /* bouton Quit caler à droite */
+        pButtonQuit = gtk_button_new_with_label( "Quit" ) ;
+        gtk_box_pack_end( GTK_BOX( pHbox ), pButtonQuit, TRUE, TRUE, 15 ) ;
+        /* on ajoute les boutons */
+        gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 1, 3, 1, 1 ) ;
+        /* les signaux des boutons */
+        g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
+        /**
+         * @Todo Juste un prototype pour le signal pButtonUndo --> OnUndo
+         * @return 
+         */
+        g_signal_connect( G_OBJECT( pButtonUndo ), "clicked", G_CALLBACK( OnUndo ), NULL ) ;
 
-            // options
-            pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, 20 ) ;
-            gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
-            /* sorte d'en tete dans un frame
-               ??? peut etre mettre toutes les options dans le frame ???*/
-            pfrTitle = gtk_frame_new( NULL ) ;
-            gtk_frame_set_label( GTK_FRAME( pfrTitle ), "   Senku GTK Alpha 2.0   (c) 2016   [°} Le KiWi   " ) ;
-            plbTitle = gtk_label_new( "\n\nShapes choice\n______________" ) ;
-            gtk_container_add( GTK_CONTAINER( pfrTitle ), plbTitle ) ;
-            gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pfrTitle, TRUE, FALSE, 25 ) ;
-            /* les boutons radios
-             ???    externaliser les textes dans un tableau de char
-                    pour une construction dynamique ???*/
-            radio = gtk_radio_button_new_with_label( NULL, "Shape English" ) ;
-            gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( radio ), TRUE ) ;
-            gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
-            radio = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( radio ), "Shape German" ) ;
-            gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
-            radio = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( radio ), "Shape Diamond" ) ;
-            gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
-            // boutons <Quit> et <Play> ben oui au moins :)) */
-            pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 20 ) ;
-            pBtnMenuQuit = gtk_button_new_with_label( "Quit" ) ;
-            pBtnMenuPlay = gtk_button_new_with_label( "Play" ) ;
-            /* on ajoute les boutons */
-            gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, 20 ) ;
-            gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, 20 ) ;
-            /* on ajoute box des boutons à la box des menu*/
-            gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, 15 ) ;
-            /* on ajoute les options */
-            gtk_container_add( GTK_CONTAINER( pBoxMenu ), pBoxMenuOption ) ;
-            //les signaux 
-            g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
-            g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
-            //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
+        /**
+         * Dialog box Menu 
+         * choix des shapes modale et sans decoration (style screen splash)
+         */
+        pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
+        gtk_window_set_title( GTK_WINDOW( pBoxMenu ), "Shapes choice" ) ;
+        gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
+        gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
+        gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), FALSE ) ;
+        gtk_window_set_deletable( GTK_WINDOW( pBoxMenu ), FALSE ) ;
+        /* rend la fenetre de choix dependante de la fenetre principale */
+        gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
+        gtk_window_resize( GTK_WINDOW( pBoxMenu ), 280, 300 ) ;
 
-            // on se la montre...
-            gtk_widget_show_all( pBoxMenu ) ;
-            // on lance la boucle infernale
-            gtk_main( ) ;
-            EXIT_SUCCESS ;
+        // options
+        pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, 20 ) ;
+        gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
+        /* sorte d'en tete dans un frame
+           ??? peut etre mettre toutes les options dans le frame ???*/
+        pfrTitle = gtk_frame_new( NULL ) ;
+        gtk_frame_set_label( GTK_FRAME( pfrTitle ), "   Senku GTK Alpha 2.0   (c) 2016   [°} Le KiWi   " ) ;
+        plbTitle = gtk_label_new( "\n\nShapes choice\n______________" ) ;
+        gtk_container_add( GTK_CONTAINER( pfrTitle ), plbTitle ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pfrTitle, TRUE, FALSE, 25 ) ;
+        /* les boutons radios
+         ???    externaliser les textes dans un tableau de char
+                pour une construction dynamique ???*/
+        radio = gtk_radio_button_new_with_label( NULL, "Shape English" ) ;
+        gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( radio ), TRUE ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
+        radio = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( radio ), "Shape German" ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
+        radio = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( radio ), "Shape Diamond" ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
+        // boutons <Quit> et <Play> ben oui au moins :)) */
+        pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 20 ) ;
+        pBtnMenuQuit = gtk_button_new_with_label( "Quit" ) ;
+        pBtnMenuPlay = gtk_button_new_with_label( "Play" ) ;
+        /* on ajoute les boutons */
+        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, 20 ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, 20 ) ;
+        /* on ajoute box des boutons à la box des menu*/
+        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, 15 ) ;
+        /* on ajoute les options */
+        gtk_container_add( GTK_CONTAINER( pBoxMenu ), pBoxMenuOption ) ;
+        //les signaux 
+        g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
+        g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
+        //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
+
+        // on se la montre...
+        gtk_widget_show_all( pBoxMenu ) ;
+        // on lance la boucle infernale
+        gtk_main( ) ;
+        EXIT_SUCCESS ;
 
             /***************************************************************************
              * __displayMenu()  ;
@@ -592,19 +596,26 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) {
-    if (originatorRestoreFromMemento( caretakerGetMemento( 1 ) )) {
-        g_printf( "\nDEBUG :: You ask [UNDO] the last move!" ) ;
-                matrixUpdate( UNDO ) ;
+    g_printf( "\nDEBUG :: OnUndo [UNDO] the last move!" ) ;
+    pMemento pMementoUndo = malloc(sizeof(memento)) ;
+    pMementoUndo = caretakerGetMemento(1) ;
+    originatorRestoreFromMemento( pMementoUndo ) ;
+    if(pMementoUndo){
+        g_print("\nDEBUG :: x depart %d | y depart %d | x arrive %d | y arrive %d", 
+                pMementoUndo->mvtStart.row, 
+                pMementoUndo->mvtStart.column,
+                pMementoUndo->mvtEnd.row,
+                pMementoUndo->mvtEnd.column);
+        matrixUpdate(UNDO) ;
+        _g_displayUpdateMatrix( UNDO,0,0 ) ;
     }
-
-    else g_printf( "\nDEBUG :: There is no action to [UNDO] :(" ) ;
-            ;
-    }
+    else g_printf( "\nDEBUG :: OnUndo There is no action to [UNDO] :(" ) ;
+}
 
 void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static gboolean firstSelectPeg = TRUE ;
-            static Coord pOld = {0, 0} ;
+    static Coord pOld = {0, 0} ;
     int remainingPeg = 0 ;
             double elapseTimer = 0.0 ;
             actionSelect action ;
@@ -662,12 +673,12 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                             pOld.x = p->x ;
                             pOld.y = p->y ;
                         }
-                        else { //changement d'avis sans prise (erreur de second clique)
+                        else { //changement d'avis sans prise (ie: erreur de second clique)
                             firstSelectPeg = FALSE ;
                         }
                     if (!matrixCanMovePeg( )) {
                         remainingPeg = matrixCountRemainPeg( ) ;
-                        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#FF6600,s), NO_MORE_MOVE );
+                        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), NO_MORE_MOVE );
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
@@ -697,7 +708,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
 
 void
 _g_labelSet( GtkWidget *pWidget, gpointer pData ) {
-    gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#FF6600,d), GPOINTER_TO_INT(pData) );
+    gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d), GPOINTER_TO_INT(pData) );
     gtk_label_set_markup( GTK_LABEL( pWidget ), markup ) ;
     g_free( markup ) ;
 }
@@ -735,9 +746,12 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
         coefRow = 0 ;
         coefColumn = -1 ;
         break ;
+    case ACTION_UNDO:
+        g_print("\nDEBUG :: ACTION_UNDO") ;
+        break;
     default: break ;
     }
-    if (action != ACTION_SELECT_PEG && action != ACTION_SELECT_UNSELECT_PEG) {
+    if (action != ACTION_SELECT_PEG && action != ACTION_SELECT_UNSELECT_PEG && action != ACTION_UNDO ) {
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 1 * coefColumn, x - 1 * coefRow ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 2 * coefColumn, x - 2 * coefRow ) ) ;
@@ -745,21 +759,21 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_2, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
     }
+    else if(action == ACTION_UNDO){
+        _g_displayMatrix( pMatrixLoad ) ;
+    }
 }
 
 void
 OnPlay( GtkWidget* pWidget, gpointer pData ) {
     GtkWidget *pWindow = gtk_widget_get_toplevel( GTK_WIDGET( pData ) ) ;
-            GtkRadioButton *radio = GTK_RADIO_BUTTON( pData ) ;
-            // equivalent while (!matrixLoad( num = __getMenuChoice( ) )) ;
+    GtkRadioButton *radio = GTK_RADIO_BUTTON( pData ) ;
+    // equivalent while (!matrixLoad( num = __getMenuChoice( ) )) ;
     if (matrixLoad( which_radio_is_selected( gtk_radio_button_get_group( GTK_RADIO_BUTTON( radio ) ) ) )) {
         _g_displayMatrix( pMatrixLoad ) ;
         gtk_widget_show_all( pWindowMain ) ;
-        /**
-         * adresse de la matrice courante (globale)
-         */
         onlyOneBoard.set = &currentMatrixOfBoard ;
-        g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( FALSE ) ) ;
+        g_timeout_add( TIMER_DELAY, _g_display_time, GINT_TO_POINTER( FALSE ) ) ;
     }
     gtk_widget_destroy( pWindow ) ;
 }
@@ -771,7 +785,7 @@ _g_display_time( gpointer pData ) {
     int timerStop = GPOINTER_TO_INT( pData ) ;
     stop = (timerStop) ? !stop : stop ;
     if (!stop) {
-        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(#FF6600,ds),i++);
+        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,ds),i++);
         gtk_label_set_markup( GTK_LABEL( plbTimeValue ), markup ) ;
         g_free( markup ) ;
         return TRUE ;
@@ -806,11 +820,11 @@ which_radio_is_selected( GSList *group ) {
 void
 _g_displayMatrix( Matrix matrix ) {
     gint i, k ;
-    GtkWidget *imgPeg ;
+    GtkWidget *imgPeg = NULL ;
     GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
     pEventCoord = (Coord *) g_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
     pEventCoord = &eventCoord ;
-    g_print( "DEBUG :: _g_displayMatrix\n" ) ;
+    g_print( "\nDEBUG :: _g_displayMatrix" ) ;
     for (k = 0 ; k < HOR_MAX ; k++) {
         for (i = 0 ; i < VER_MAX ; i++) {
             switch (matrix[k][i]) {

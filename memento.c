@@ -45,7 +45,7 @@ caretakerAddMemento( pMemento pmArray ) {
         }
         else if(i == NB_UNDO -2) {
             //decalage vers la gauche du tableau --> FIFO
-            printf( "FIFO\n" ) ;
+//            printf( "FIFO\n" ) ;
             memmove( mArrayList, mArrayList + 1, (NB_UNDO - 2) * sizeof (pMemento) ) ;
             mArrayList[NB_UNDO - 2] = pmArray ;
             break;
