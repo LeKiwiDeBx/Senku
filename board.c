@@ -91,7 +91,6 @@ typedef enum e_actionSelect {
     ACTION_SELECT_TAKE_SOUTH,
     ACTION_SELECT_TAKE_WEST,
     ACTION_SELECT_UNSELECT_PEG = 10,
-    ACTION_UNDO = 666        
 } actionSelect ;
 
 /* *****************************************************************************
@@ -158,6 +157,13 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) ;
  */
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) ;
+
+/**
+ * @brief appel par OnUndo pour retablir l'affichage des pions undo
+ * @param pm les coordonnées des étapes du undo
+ */
+static void
+_g_displayUndoMatrix(pMemento pm) ;
 
 /**
  * @ Not use (???)
@@ -590,7 +596,6 @@ __displayPlayAgain( ) {
 
 void
 OnDestroy( GtkWidget *pWidget, gpointer pData ) {
-
     gtk_main_quit( ) ;
 }
 
@@ -599,17 +604,39 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
     g_printf( "\nDEBUG :: OnUndo [UNDO] the last move!" ) ;
     pMemento pMementoUndo = malloc(sizeof(memento)) ;
     pMementoUndo = caretakerGetMemento(1) ;
-    originatorRestoreFromMemento( pMementoUndo ) ;
     if(pMementoUndo){
-        g_print("\nDEBUG :: x depart %d | y depart %d | x arrive %d | y arrive %d", 
-                pMementoUndo->mvtStart.row, 
-                pMementoUndo->mvtStart.column,
-                pMementoUndo->mvtEnd.row,
-                pMementoUndo->mvtEnd.column);
-        matrixUpdate(UNDO) ;
-        _g_displayUpdateMatrix( UNDO,0,0 ) ;
+        originatorRestoreFromMemento( pMementoUndo ) ;
+        _g_displayUndoMatrix( pMementoUndo) ;
     }
     else g_printf( "\nDEBUG :: OnUndo There is no action to [UNDO] :(" ) ;
+}
+
+void
+_g_displayUndoMatrix(pMemento pm){
+    int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
+     if(pm){
+        g_print("\nDEBUG :: x depart %d | y depart %d | x arrive %d | y arrive %d", 
+                pm->mvtStart.row, 
+                pm->mvtStart.column,
+                pm->mvtEnd.row,
+                pm->mvtEnd.column);
+        GtkWidget *imgPegDelete = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
+        GtkWidget *imgPegMove_1 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
+        GtkWidget *imgPegMove_2 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
+        matrixUpdate(UNDO) ;
+        x = pm->mvtEnd.row ;
+        y = pm->mvtEnd.column ;
+        coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
+        coefColumn = pm->mvtBetween.column - pm->mvtStart.column ;
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 1 * coefColumn, x - 1 * coefRow ) ) ;
+        gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 2 * coefColumn, x - 2 * coefRow ) ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete, y, x, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
+        gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_2, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
+        gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
+        /*@TODO mettre a jour les derniere coordonnées du peg pour pouvoir faire un OnSelect */
+    ;}
 }
 
 void
@@ -746,21 +773,15 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
         coefRow = 0 ;
         coefColumn = -1 ;
         break ;
-    case ACTION_UNDO:
-        g_print("\nDEBUG :: ACTION_UNDO") ;
-        break;
     default: break ;
     }
-    if (action != ACTION_SELECT_PEG && action != ACTION_SELECT_UNSELECT_PEG && action != ACTION_UNDO ) {
+    if (action != ACTION_SELECT_PEG && action != ACTION_SELECT_UNSELECT_PEG && action) {
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 1 * coefColumn, x - 1 * coefRow ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 2 * coefColumn, x - 2 * coefRow ) ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove, y, x, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete_2, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
-    }
-    else if(action == ACTION_UNDO){
-        _g_displayMatrix( pMatrixLoad ) ;
     }
 }
 
