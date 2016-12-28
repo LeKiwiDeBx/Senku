@@ -209,6 +209,14 @@ _g_display_time( gpointer pData ) ;
  */
 void
 _g_labelSet( GtkWidget *pWidget, gpointer pData ) ;
+/**
+ * @brief gestion de la variable booleene firsSelectPeg
+ * @param action "get" ou "set" une valeur bool
+ * @param value booelen à positionner
+ * @return return la valeur de firstSelectPeg ou -1 si Pbleme
+ */
+static gboolean 
+_firstSelectPeg(char* action, gboolean value) ;
 
 int
 boardInit( ) {
@@ -624,6 +632,7 @@ _g_displayUndoMatrix(pMemento pm){
         GtkWidget *imgPegMove_1 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
         GtkWidget *imgPegMove_2 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
         matrixUpdate(UNDO) ;
+        _firstSelectPeg("set", TRUE) ;
         x = pm->mvtEnd.row ;
         y = pm->mvtEnd.column ;
         coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
@@ -635,30 +644,46 @@ _g_displayUndoMatrix(pMemento pm){
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_2, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
         gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
-        /*@TODO mettre a jour les derniere coordonnées du peg pour pouvoir faire un OnSelect */
-    ;}
+        
+    }
+}
+
+gboolean 
+_firstSelectPeg(char* action, gboolean value){
+    static gboolean firstSelectPeg = TRUE;
+    if(!strcmp(action,"get") ){
+//            g_print("\nDEBUG :: action get firstSelectPeg %d", firstSelectPeg);
+        return firstSelectPeg ;
+    }
+    else if(!strcmp(action,"set")){
+        firstSelectPeg = value;
+//            g_print("\nDEBUG :: action set firstSelectPeg %d", firstSelectPeg);
+//            g_print("\nDEBUG :: action set value %d", value);
+        return firstSelectPeg ; 
+    }
+    return -1 ;
 }
 
 void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
-    static gboolean firstSelectPeg = TRUE ;
     static Coord pOld = {0, 0} ;
     int remainingPeg = 0 ;
-            double elapseTimer = 0.0 ;
-            actionSelect action ;
-            Coord *p = g_malloc( sizeof (Coord) ) ;
-            p = (Coord *) pData ;
-            _g_labelSet( plbPegsValue, GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
-            caretakerNew( ) ;
-            //    g_print( "DEBUG :: Coord Old X:%d Y:%d\n", pOld.x, pOld.y ) ;
-            //    g_print( "DEBUG :: Coord New X:%d Y:%d\n", p->x, p->y ) ;
+    double elapseTimer = 0.0 ;
+    actionSelect action ;
+    Coord *p = g_malloc( sizeof (Coord) ) ;
+    p = (Coord *) pData ;
+    _g_labelSet( plbPegsValue, GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
+    caretakerNew( ) ;
+    g_print( "\nDEBUG :: Coord Old X:%d Y:%d", pOld.x, pOld.y ) ;
+    g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
-        if (firstSelectPeg) {
+        if ( _firstSelectPeg("get",FALSE) ) { //premier clic de selection
+            g_print("\nDEBUG :: premier selection clic") ;
             timerStartClock( ) ;
             if (matrixSelectPeg( p->x, p->y )) {
-                firstSelectPeg = FALSE ;
+                _firstSelectPeg("set",FALSE) ;
                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
-                if (pOld.x || pOld.y) { /* unselect si l'ancien si existe */
+                if ((pOld.x || pOld.y) && (pMatrixLoad[pOld.x][pOld.y] == 1)) { /* unselect si l'ancien si existe */
                     _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                 }
                 pOld.x = p->x ;
@@ -666,6 +691,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
             }
         }
         else {//seconde selection cliquée
+            g_print("\nDEBUG :: seconde selection clic") ;
             timerStopClock( ) ;
             g_printf( "\nDEBUG :: Elapse %f", timerGetElapseClock( ) * 1000 ) ;
             if (matrixSelectPeg( pOld.x, pOld.y )) { //si prise possible
@@ -673,7 +699,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 deltaX = pOld.x - p->x ;
                 deltaY = pOld.y - p->y ;
                 sumDelta = deltaX + deltaY ;
-                firstSelectPeg = TRUE ;
+                _firstSelectPeg("set",TRUE) ;
                 g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d", deltaX, deltaY, sumDelta ) ;
                 g_print( "\nDEBUG :: pOldX: %d pOldY: %d px: %d py: %d", pOld.x, pOld.y, p->x, p->y ) ;
                 if (deltaX != deltaY && (sumDelta == 2 || sumDelta == -2)) {
@@ -687,21 +713,21 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                             pOld.x = p->x ;
                             pOld.y = p->y ;
                             if (matrixSelectPeg( pOld.x, pOld.y )) {
-                                firstSelectPeg = FALSE ;
+                                _firstSelectPeg("set",FALSE) ;
                                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
                             }
                             scoreSetCalculateBonusElapseTimer( timerGetElapseClock( ) * 1000 ) ;
                             _g_labelSet( plbBonusValue, GINT_TO_POINTER( scoreGetBonusTimeScore( ) ) ) ;
                         }
                         else if (matrixSelectPeg( p->x, p->y )) { //clique changement d'avis avec prise
-                            firstSelectPeg = FALSE ;
+                            _firstSelectPeg("set",FALSE) ;
                             _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
                             pOld.x = p->x ;
                             pOld.y = p->y ;
                         }
                         else { //changement d'avis sans prise (ie: erreur de second clique)
-                            firstSelectPeg = FALSE ;
+                            _firstSelectPeg("set",FALSE) ;
                         }
                     if (!matrixCanMovePeg( )) {
                         remainingPeg = matrixCountRemainPeg( ) ;
@@ -718,7 +744,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 }
                 else { //ni prise ni meme peg de depart
                     g_print( "\nDEBUG :: change selection de depart si prise possible\n" ) ;
-                    firstSelectPeg = FALSE ;
+                    _firstSelectPeg("set",FALSE) ;
                     if (matrixSelectPeg( p->x, p->y )) {//si une prise possible
                         _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                         _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
