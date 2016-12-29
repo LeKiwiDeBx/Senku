@@ -7,7 +7,25 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="15">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="18">
+        <file>
+            <url>board.c</url>
+            <bookmark id="16">
+                <name/>
+                <line>420</line>
+                <key/>
+            </bookmark>
+            <bookmark id="17">
+                <name/>
+                <line>735</line>
+                <key/>
+            </bookmark>
+            <bookmark id="18">
+                <name/>
+                <line>739</line>
+                <key/>
+            </bookmark>
+        </file>
         <file>
             <url>main.c</url>
             <bookmark id="14">
@@ -19,12 +37,10 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/peg.h</file>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/memento.h</file>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/score.c</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/matrix.c</file>
+            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/score.c</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/board.c</file>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/memento.c</file>
+            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/score.h</file>
         </group>
     </open-files>
     <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">

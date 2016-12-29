@@ -49,7 +49,7 @@ scoreNew(){
 	static int id = 0, ret = 0 ;
 	inputScore.idScore = ++id;
 	ret = __insertRecord(&inputScore) ;
-	__displaySortScore(ret) ;
+	__displaySortScore(ret) ; //version terminal
 }
 
 static void
@@ -77,20 +77,20 @@ __insertRecord(score *inputScore){
 	__setScoreGame(scoreGame);
 	__setIdScore(inputScore->idScore);
 	if(cursorScore->scoreGame > tabSortScore[0].scoreGame){
-		__setNamePlayer();
+//		__setNamePlayer(); version terminal
 		__addBegin();
 		return 1 ;
 	}
 	else if(cursorScore->scoreGame < tabSortScore[SCORE_BEST_OF-2].scoreGame &&
 			cursorScore->scoreGame > tabSortScore[SCORE_BEST_OF-1].scoreGame){
-		__setNamePlayer();
+//		__setNamePlayer(); version terminal
 		return 2 ;
 	}
 	else{
 		for (i = 0; i < SCORE_BEST_OF-1 ; i++){
 			if(cursorScore->scoreGame <= tabSortScore[i].scoreGame &&
 			   cursorScore->scoreGame > tabSortScore[i+1].scoreGame ){
-				 __setNamePlayer();
+//				 __setNamePlayer(); version terminal
 				 __addInside(i+1);
 				return 3 ;
 			}

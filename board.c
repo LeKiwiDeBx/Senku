@@ -38,13 +38,17 @@
 #define SENKU_PANGO_CONCAT_STR(color,type) "<span size=\"xx-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 
-#define TIMER_DELAY     1000
-#define IMG_PEG_MOVE    "image/circle_gold32.png"
-#define IMG_PEG_SELECT  "image/circle_gold_select32.png"
-#define IMG_PEG_DELETE  "image/circle_white32.png"
-#define IMG_PEG_UNDO    "image/circle_gold_undo32.png"
-#define IMG_PEG_BOARD   "image/marble_1.png"
-#define NO_MORE_MOVE    "No more move!"
+#define TIMER_DELAY         1000
+#define IMG_PEG_MOVE        "image/circle_gold32.png"
+#define IMG_PEG_SELECT      "image/circle_gold_select32.png"
+#define IMG_PEG_DELETE      "image/circle_white32.png"
+#define IMG_PEG_UNDO        "image/circle_gold_undo32.png"
+#define IMG_PEG_BOARD       "image/marble_1.png"
+#define NO_MORE_MOVE        "No more move!"
+#define NO_ACTION_UNDO      "There is no action to [Undo] :("
+#define ACTION_UNDO         "[Undo] last move"
+#define BLANK               ""
+#define BOX_SCORE_TITLE     " Score "
 static void
 __displayHeader( ) ;
 static void
@@ -125,6 +129,8 @@ GtkWidget *radio = NULL ;
 GtkWidget *pBoxMenuButton = NULL ;
 GtkWidget *pBtnMenuQuit = NULL ;
 GtkWidget *pBtnMenuPlay = NULL ;
+GtkWidget *pBoxScore = NULL ;
+GtkWidget *pGridScore = NULL ;
 
 /**
  * @brief Appel selection image avec un clic souris
@@ -378,6 +384,23 @@ boardInit( ) {
     g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
     //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
 
+    pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
+    gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
+    gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
+    gtk_window_set_position( GTK_WINDOW( pBoxScore ), GTK_WIN_POS_CENTER ) ;
+    gtk_window_set_decorated( GTK_WINDOW( pBoxScore ), TRUE ) ;
+    gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), TRUE ) ;
+    gtk_window_set_transient_for( GTK_WINDOW( pBoxScore ), GTK_WINDOW( pWindowMain ) ) ;
+    gtk_window_resize( GTK_WINDOW( pBoxScore ), 280, 300 ) ;
+    /** 
+     * Grille du Score 
+     */
+    pGridScore = gtk_grid_new( ) ;
+    gtk_container_add( GTK_CONTAINER( pBoxScore ), pGridScore ) ;
+    gtk_grid_set_row_spacing( GTK_GRID( pGridScore ), 0 ) ;
+    gtk_grid_set_column_spacing( GTK_GRID( pGridScore ), 0 ) ;
+    
+    
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
     // on lance la boucle infernale
@@ -617,8 +640,16 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
     if(pMementoUndo){
         originatorRestoreFromMemento( pMementoUndo ) ;
         _g_displayUndoMatrix( pMementoUndo) ;
+        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), ACTION_UNDO);
+        gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
+        g_free( markup ) ;
     }
-    else g_printf( "\nDEBUG :: OnUndo There is no action to [UNDO] :(" ) ;
+    else {
+        g_printf( "\nDEBUG :: OnUndo There is no action to [UNDO] :(" ) ;
+        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), NO_ACTION_UNDO);
+        gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
+        g_free( markup ) ;
+    }
 }
 
 void
@@ -737,7 +768,14 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-//                        scoreNew() ;
+                        scoreNew() ; // 0 si pas inserer
+                        //@TODO affichage des scores et tester le retour de scoreNew()
+                        // Score table
+                        GtkWidget *plbScoreTest = gtk_label_new("[°}") ;
+                        gtk_grid_attach(pGridScore, plbScoreTest, 0,0,1,1) ;
+                        /* ecrire fct dans score.c qui retourne un tableau de structure: score tabScore[] */
+                        /* que l'on passe à une fonction g_display_box_score(tabScore) dans board.c */
+                        gtk_widget_show_all( pBoxScore ) ;
                     }
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
