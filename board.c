@@ -224,6 +224,13 @@ _g_labelSet( GtkWidget *pWidget, gpointer pData ) ;
  */
 static gboolean 
 _firstSelectPeg(char* action, gboolean value) ;
+/**
+ * @brief affiche les scores 
+ * @param pointeur sur le tableau des scores
+ * @param rang dans le top rated
+ */
+static void
+_g_display_box_score(pScore ps, const int rank) ;
 
 int
 boardInit( ) {
@@ -700,6 +707,7 @@ void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static Coord pOld = {0, 0} ;
     int remainingPeg = 0 ;
+    int rank = 0 ;
     double elapseTimer = 0.0 ;
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
@@ -768,14 +776,12 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-                        scoreNew() ; // 0 si pas inserer
+                        rank = scoreNew() ; // 0 si pas inserer sinon position insertion
                         //@TODO affichage des scores et tester le retour de scoreNew()
-                        // Score table
-                        GtkWidget *plbScoreTest = gtk_label_new("[°}") ;
-                        gtk_grid_attach(pGridScore, plbScoreTest, 0,0,1,1) ;
-                        /* ecrire fct dans score.c qui retourne un tableau de structure: score tabScore[] */
-                        /* que l'on passe à une fonction g_display_box_score(tabScore) dans board.c */
-                        gtk_widget_show_all( pBoxScore ) ;
+                        pScore resultScore =  (score*)malloc( SCORE_BEST_OF * sizeof(score)) ;
+                        resultScore = scoreGetSortScore() ;
+                        _g_display_box_score(resultScore, rank) ;
+                        g_free(resultScore) ;
                     }
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
@@ -938,4 +944,21 @@ _g_displayMatrix( Matrix matrix ) {
             pEventCoord++ ;
         }
     }
+}
+
+void
+_g_display_box_score(pScore ps, const int rank){
+    int i ;
+    char *r = "", *s="" ;
+//    GtkWidget *plbScoreTest = gtk_label_new("[°}") ;
+    
+    g_printf("\n%*s\t%-*s\t%*s\t%*s\n",5,"ORDER",12,"   PLAYER   ",3,"PEG",5,"SCORE");
+		for (i = 1; i <= SCORE_BEST_OF; i++){
+            r = (i==rank)? "*":"" ;
+            GtkWidget *plbScoreTest = gtk_label_new(g_strdup_printf("%d",i)) ;
+            gtk_grid_attach(pGridScore, plbScoreTest, 0,i,1,1) ;
+            g_printf("%d\t%-12s\t%-3d\t%.f%s\n",i,ps->namePlayer, ps->remainingPeg, ps->scoreGame, r);
+            ps++ ;
+		}
+    gtk_widget_show_all( pBoxScore ) ;
 }
