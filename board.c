@@ -391,23 +391,23 @@ boardInit( ) {
     g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
     //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
 
-    pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
-    gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
-    gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
-    gtk_window_set_position( GTK_WINDOW( pBoxScore ), GTK_WIN_POS_CENTER ) ;
-    gtk_window_set_decorated( GTK_WINDOW( pBoxScore ), TRUE ) ;
-    gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), TRUE ) ;
-    gtk_window_set_transient_for( GTK_WINDOW( pBoxScore ), GTK_WINDOW( pWindowMain ) ) ;
-    gtk_window_resize( GTK_WINDOW( pBoxScore ), 280, 300 ) ;
-    /** 
-     * Grille du Score 
-     */
-    pGridScore = gtk_grid_new( ) ;
-    gtk_container_add( GTK_CONTAINER( pBoxScore ), pGridScore ) ;
-    gtk_grid_set_row_spacing( GTK_GRID( pGridScore ), 0 ) ;
-    gtk_grid_set_column_spacing( GTK_GRID( pGridScore ), 0 ) ;
-    
-    
+//    pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
+//    gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
+//    gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
+//    gtk_window_set_position( GTK_WINDOW( pBoxScore ), GTK_WIN_POS_CENTER ) ;
+//    gtk_window_set_decorated( GTK_WINDOW( pBoxScore ), TRUE ) ;
+//    gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), TRUE ) ;
+//    gtk_window_set_transient_for( GTK_WINDOW( pBoxScore ), GTK_WINDOW( pWindowMain ) ) ;
+//    gtk_window_resize( GTK_WINDOW( pBoxScore ), 280, 300 ) ;
+//    /** 
+//     * Grille du Score 
+//     */
+//    pGridScore = gtk_grid_new( ) ;
+//    gtk_container_add( GTK_CONTAINER( pBoxScore ), pGridScore ) ;
+//    gtk_grid_set_row_spacing( GTK_GRID( pGridScore ), 5 ) ;
+//    gtk_grid_set_column_spacing( GTK_GRID( pGridScore ), 7 ) ;
+//    gtk_grid_set_column_homogeneous(GTK_GRID(pGridScore), TRUE) ;
+
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
     // on lance la boucle infernale
@@ -949,14 +949,52 @@ _g_displayMatrix( Matrix matrix ) {
 void
 _g_display_box_score(pScore ps, const int rank){
     int i ;
-    char *r = "", *s="" ;
-//    GtkWidget *plbScoreTest = gtk_label_new("[°}") ;
+    char *r = "";
+    GtkWidget *plbScoreOrder    = NULL ;
+    GtkWidget *plbScorePlayer   = NULL ;
+    GtkWidget *plbScorePeg      = NULL ;
+    GtkWidget *plbScoreScore    = NULL ;
+    GtkWidget *plbScoreRank     = NULL ;
+    pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
+    gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
+    gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
+    gtk_window_set_position( GTK_WINDOW( pBoxScore ), GTK_WIN_POS_CENTER ) ;
+    gtk_window_set_decorated( GTK_WINDOW( pBoxScore ), TRUE ) ;
+    gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), TRUE ) ;
+    gtk_window_set_transient_for( GTK_WINDOW( pBoxScore ), GTK_WINDOW( pWindowMain ) ) ;
+    gtk_window_resize( GTK_WINDOW( pBoxScore ), 280, 300 ) ;
+    /** 
+     * Grille du Score 
+     */
+    pGridScore = gtk_grid_new( ) ;
+    gtk_container_add( GTK_CONTAINER( pBoxScore ), pGridScore ) ;
+    gtk_grid_set_row_spacing( GTK_GRID( pGridScore ), 5 ) ;
+    gtk_grid_set_column_spacing( GTK_GRID( pGridScore ), 7 ) ;
+    gtk_grid_set_column_homogeneous(GTK_GRID(pGridScore), TRUE) ;
     
     g_printf("\n%*s\t%-*s\t%*s\t%*s\n",5,"ORDER",12,"   PLAYER   ",3,"PEG",5,"SCORE");
+    plbScoreOrder = gtk_label_new("RANK") ;
+    plbScorePlayer = gtk_label_new("PLAYER") ;
+    plbScorePeg = gtk_label_new("PEG") ;
+    plbScoreScore = gtk_label_new("SCORE") ;
+    plbScoreRank = gtk_label_new("LAST") ;
+    gtk_grid_attach(pGridScore, plbScoreOrder, 0,0,1,1) ;
+    gtk_grid_attach_next_to(pGridScore, plbScorePlayer,plbScoreOrder,GTK_POS_RIGHT ,1,1 ) ;
+    gtk_grid_attach_next_to(pGridScore, plbScorePeg,plbScorePlayer,GTK_POS_RIGHT ,1,1 ) ;
+    gtk_grid_attach_next_to(pGridScore, plbScoreScore,plbScorePeg,GTK_POS_RIGHT ,1,1 ) ;
+    gtk_grid_attach_next_to(pGridScore, plbScoreRank,plbScoreScore,GTK_POS_RIGHT ,1,1 ) ;
 		for (i = 1; i <= SCORE_BEST_OF; i++){
-            r = (i==rank)? "*":"" ;
-            GtkWidget *plbScoreTest = gtk_label_new(g_strdup_printf("%d",i)) ;
-            gtk_grid_attach(pGridScore, plbScoreTest, 0,i,1,1) ;
+            r = (i==rank)? "<=]":"" ;
+            plbScoreOrder = gtk_label_new(g_strdup_printf("%d",i)) ;
+            plbScorePlayer = gtk_label_new(ps->namePlayer) ;
+            plbScorePeg = gtk_label_new(g_strdup_printf("%d", ps->remainingPeg)) ;
+            plbScoreScore = gtk_label_new(g_strdup_printf("%.f", ps->scoreGame)) ;
+            plbScoreRank = gtk_label_new(r) ;
+            gtk_grid_attach(pGridScore, plbScoreOrder, 0,i,1,1) ;
+            gtk_grid_attach_next_to(pGridScore, plbScorePlayer,plbScoreOrder,GTK_POS_RIGHT ,1,1 ) ;
+            gtk_grid_attach_next_to(pGridScore, plbScorePeg,plbScorePlayer,GTK_POS_RIGHT ,1,1 ) ;
+            gtk_grid_attach_next_to(pGridScore, plbScoreScore,plbScorePeg,GTK_POS_RIGHT ,1,1 ) ;
+            gtk_grid_attach_next_to(pGridScore, plbScoreRank,plbScoreScore,GTK_POS_RIGHT ,1,1 ) ;
             g_printf("%d\t%-12s\t%-3d\t%.f%s\n",i,ps->namePlayer, ps->remainingPeg, ps->scoreGame, r);
             ps++ ;
 		}

@@ -10,7 +10,7 @@
 #include <string.h> /* memcpy */
 #include "score.h"
 
-#define	SCORE_BEST_OF 10
+
 #define PRN printf("\n")
 
 typedef enum e_typeSort
@@ -19,7 +19,6 @@ typedef enum e_typeSort
 	TIME,
 	SCORE
 } typeSort;
-typedef score tabScore[SCORE_BEST_OF] ;
 
 static tabScore tabSortScore ;
 static score cursorCurrentScore ;
@@ -44,12 +43,13 @@ static void		__displaySortScore(int ) ;
 static void		__displaySetNamePlayer() ;
 static void		__displaySetCalculateBonusElapseTimer(double bonus) ;
 
-void
+int
 scoreNew(){
 	static int id = 0, ret = 0 ;
 	inputScore.idScore = ++id;
 	ret = __insertRecord(&inputScore) ;
 	__displaySortScore(ret) ; //version terminal
+    return ret ;
 }
 
 static void
@@ -84,7 +84,7 @@ __insertRecord(score *inputScore){
 	else if(cursorScore->scoreGame < tabSortScore[SCORE_BEST_OF-2].scoreGame &&
 			cursorScore->scoreGame > tabSortScore[SCORE_BEST_OF-1].scoreGame){
 //		__setNamePlayer(); version terminal
-		return 2 ;
+		return SCORE_BEST_OF ;
 	}
 	else{
 		for (i = 0; i < SCORE_BEST_OF-1 ; i++){
@@ -92,7 +92,7 @@ __insertRecord(score *inputScore){
 			   cursorScore->scoreGame > tabSortScore[i+1].scoreGame ){
 //				 __setNamePlayer(); version terminal
 				 __addInside(i+1);
-				return 3 ;
+				return (i+2) ;
 			}
 		}
 	}
@@ -130,6 +130,11 @@ void scoreResetBonusTimeScore(){
 void
 scoreSetRemainingPeg(int number){
 	remainingPeg = number ;
+}
+
+tabScore*
+scoreGetSortScore(){
+    return tabSortScore ;
 }
 
 static void

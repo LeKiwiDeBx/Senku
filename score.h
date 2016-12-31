@@ -10,6 +10,7 @@
 #define MAX_CAR_NAME 13
 #define MAX_SEC_BONUS 60 //debug:: 7 valeur originale
 #define MIN_SEC_BONUS 0  //debug:: 2 valeur originale
+#define	SCORE_BEST_OF 10
 
 typedef struct s_Score {
 	int 	idScore ;
@@ -19,13 +20,15 @@ typedef struct s_Score {
 	double 	scoreGame ;
 } score;
 typedef score *pScore ;
+typedef score tabScore[SCORE_BEST_OF] ;
 
 void scoreAdd() ;
 void scoreInit() ;
-void scoreNew() ;
+int  scoreNew() ;
 void scoreSetTimeGame(int ) ;
 void scoreSetCalculateBonusElapseTimer(double ) ;
 int  scoreGetBonusTimeScore() ;
 void scoreResetBonusTimeScore() ;
 void scoreSetRemainingPeg(int );
+tabScore* scoreGetSortScore() ;
 #endif
