@@ -21,7 +21,7 @@
 #include <glib/gprintf.h>
 
  Matrix matrixEnglish = {  // TEST TEST TEST
-	//0  1  2  3  4  5  6  7  8  9  10
+//	0  1  2  3  4  5  6  7  8  9  10
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, //0
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//1
 	{-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//2
@@ -110,17 +110,11 @@ __displayPegFromTo(int, int, int, Peg_Direction, int);
  */
 int matrixLoad(int choice){
     char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
+    Matrix *matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
 	if(choice >= 0 && choice <= 4 ){
-		switch (choice)
-		{
-			case 1 :
-			currentMatrixOfBoard.pShape = &matrixEnglish ;
-			break;
-			case 2 :
-			currentMatrixOfBoard.pShape = &matrixGerman ;
-			break;
-			case 3 :
-			currentMatrixOfBoard.pShape = &matrixDiamond ;
+		switch (choice)	{
+			case 1 :case 2 :case 3 :
+			currentMatrixOfBoard.pShape = matrixType[choice];
 			break;
 			case 4 :
 //			printf("\n Thank you, Good bye! ;)" );
@@ -130,7 +124,7 @@ int matrixLoad(int choice){
 			return 0 ;
 		}
         currentMatrixOfBoard.name = nameShape[choice] ;
-        g_print("DEBUG :: Loading.........[X]\n") ;
+//        g_print("DEBUG :: Loading.........[X]\n") ;
 //		__displayLoadChoice(currentMatrixOfBoard.name) ;
 		currentMatrixOfBoard.id = choice ;
 		memcpy(matrixCopy,currentMatrixOfBoard.pShape,HOR_MAX*VER_MAX*sizeof(int));
