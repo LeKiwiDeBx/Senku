@@ -276,6 +276,12 @@ _g_erase_displayMatrix() ;
  */
 static void
 _g_new_GridMatrix() ;
+/**
+ * @brief demande le nom pour le score
+ * @return 
+ */
+void
+_g_display_get_name() ;
 
 int
 boardInit( ) {
@@ -398,7 +404,7 @@ boardInit( ) {
     g_signal_connect( G_OBJECT( pButtonNewGame ),"clicked", G_CALLBACK( OnNewGame ), NULL ) ;
 
     _g_display_box_menu(NULL) ;
-    
+    onlyOneBoard.set = &currentMatrixOfBoard ;
     // on lance la boucle infernale
     gtk_main( ) ;
     EXIT_SUCCESS ;
@@ -417,8 +423,9 @@ boardInit( ) {
              * adresse de la matrice courante (globale)
              * @return 
              */
-    onlyOneBoard.set = &currentMatrixOfBoard ;
-
+             /*
+               * onlyOneBoard.set = &currentMatrixOfBoard ;
+            */
             /* TODO: code a adapter en GTK
              * boardPlay( ) ;
              * scoreNew( ) ;
@@ -436,7 +443,6 @@ boardInit( ) {
 */
 static void
 _g_display_box_menu(gpointer pData){
-    //if(pBoxMenu) g_free(pBoxMenu) ;
     int k = 0 ;
     gint optK = (GPOINTER_TO_INT(pData))? GPOINTER_TO_INT(pData): 0 ;
     char *shapeName[]= {"Shape English","Shape German", "Shape Diamond" };
@@ -446,49 +452,48 @@ _g_display_box_menu(gpointer pData){
     const int boxMenuOptionSpacing = 20 ;
     const int boxMenuOptionPadding = 25 ;
     const int boxMenuButtonSpacing = 20 ;
-    
-        pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
-        gtk_window_set_title( GTK_WINDOW( pBoxMenu ), TITLE_MENU ) ;
-        gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
-        gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
-        gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), FALSE ) ;
-        gtk_window_set_deletable( GTK_WINDOW( pBoxMenu ), FALSE ) ;
-        /* rend la fenetre de choix dependante de la fenetre principale */
-        gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
-        gtk_window_resize( GTK_WINDOW( pBoxMenu ), boxMenuWidth, boxMenuHeight ) ;
-        // options
-        pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, boxMenuOptionSpacing ) ;
-        gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
-        /* sorte d'en tete dans un frame
-           ??? peut etre mettre toutes les options dans le frame ???*/
-        plbTitle = gtk_label_new( TITLE_MAIN ) ;
-        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), plbTitle, TRUE, FALSE, boxMenuOptionPadding ) ;
-        GtkWidget *pRadio[sizeShapeName] ;
-        pRadio[0] = gtk_radio_button_new_with_label( NULL, shapeName[0] ) ;
-        for(k=1;k<=sizeShapeName;k++){
-            gtk_box_pack_start(GTK_BOX(pBoxMenuOption), pRadio[k-1], FALSE, FALSE, 0 ) ; // 
-            pRadio[k] = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( pRadio[k-1] ), shapeName[k] ) ;
-        } 
-        gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( pRadio[optK] ), TRUE) ;
-    
-        // boutons <Quit> et <Play> ben oui au moins :)) */
-        pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
-        pBtnMenuQuit = gtk_button_new_with_label( "Quit" ) ;
-        pBtnMenuPlay = gtk_button_new_with_label( "Play" ) ;
-        /* on ajoute les boutons */
-        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, boxMenuButtonSpacing ) ;
-        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, boxMenuButtonSpacing ) ;
-        /* on ajoute box des boutons à la box des menu*/
-        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, boxMenuOptionSpacing ) ;
-        /* on ajoute les options */
-        gtk_container_add( GTK_CONTAINER(pBoxMenu ), pBoxMenuOption ) ;
-        //les signaux 
-        g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
-        g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), pRadio[0] ) ; //radio a la place de pRadio[0]
-        //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
-        // on se la montre...
-        gtk_widget_show_all( pBoxMenu ) ;
-    
+    const char* labelQuit = "Quit" ;
+    const char* labelPlay = "Play" ;
+    pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
+    gtk_window_set_title( GTK_WINDOW( pBoxMenu ), TITLE_MENU ) ;
+    gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
+    gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
+    gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), FALSE ) ;
+    gtk_window_set_deletable( GTK_WINDOW( pBoxMenu ), FALSE ) ;
+    /* rend la fenetre de choix dependante de la fenetre principale */
+    gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
+    gtk_window_resize( GTK_WINDOW( pBoxMenu ), boxMenuWidth, boxMenuHeight ) ;
+    // options
+    pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, boxMenuOptionSpacing ) ;
+    gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
+    /* ??? peut etre mettre toutes les options dans le frame ???*/
+    plbTitle = gtk_label_new( TITLE_MAIN ) ;
+    gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), plbTitle, TRUE, FALSE, boxMenuOptionPadding ) ;
+    GtkWidget *pRadio[sizeShapeName] ;
+    pRadio[0] = gtk_radio_button_new_with_label( NULL, shapeName[0] ) ;
+    for(k=1;k<=sizeShapeName;k++){
+        gtk_box_pack_start(GTK_BOX(pBoxMenuOption), pRadio[k-1], FALSE, FALSE, 0 ) ; // 
+        pRadio[k] = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( pRadio[k-1] ), shapeName[k] ) ;
+    } 
+    gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( pRadio[optK] ), TRUE) ;
+
+    // boutons <Quit> et <Play> ben oui au moins :)) */
+    pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
+    pBtnMenuQuit = gtk_button_new_with_label( labelQuit ) ;
+    pBtnMenuPlay = gtk_button_new_with_label( labelPlay ) ;
+    /* on ajoute les boutons */
+    gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, boxMenuButtonSpacing ) ;
+    gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, boxMenuButtonSpacing ) ;
+    /* on ajoute box des boutons à la box des menu*/
+    gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, boxMenuOptionSpacing ) ;
+    /* on ajoute les options */
+    gtk_container_add( GTK_CONTAINER(pBoxMenu ), pBoxMenuOption ) ;
+    //les signaux 
+    g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
+    g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), pRadio[0] ) ; //radio a la place de pRadio[0]
+    //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
+    // on se la montre...
+    gtk_widget_show_all( pBoxMenu ) ;
 }
 
 int
@@ -988,7 +993,6 @@ which_radio_is_selected( GSList *group ) {
 
 static void
 _g_erase_displayMatrix(){
-    gint i, k ;
     g_print( "\nDEBUG :: _g_displayMatrix ERASE" ) ;
     gtk_widget_destroy(  GTK_WIDGET( pGridMatrix ) ) ;
 }
@@ -1031,6 +1035,29 @@ _g_displayMatrix( Matrix matrix ) {
 }
 
 void
+_g_display_get_name(){
+    GtkWidget *pWindowGetName = NULL ;
+    GtkWidget *pEntryName = NULL ;
+    GtkWidget *pBoxGetName = NULL ;
+    GtkWidget *pLabelName = NULL ;
+    GtkWidget *pButtonOk = NULL ;
+    const char* labelNom = "Votre nom:" ;
+    char *buffer[10];
+    pLabelName = gtk_label_new(labelNom) ;
+    pWindowGetName = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
+    pButtonOk = gtk_button_new_with_label("Ok") ;
+    pBoxGetName = gtk_box_new(GTK_ORIENTATION_VERTICAL,0) ;
+    pEntryName = gtk_entry_new() ;
+    gtk_entry_set_input_purpose (pEntryName, GTK_INPUT_PURPOSE_NAME);
+    gtk_box_pack_start(GTK_BOX(pBoxGetName), pLabelName, TRUE,FALSE,10) ;
+    gtk_box_pack_start(GTK_BOX(pBoxGetName), pEntryName, TRUE,FALSE,10) ;
+    gtk_box_pack_start(GTK_BOX(pBoxGetName), pButtonOk, TRUE,FALSE,10) ;
+//    g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnGetName), NULL);
+    gtk_container_add(GTK_CONTAINER(pWindowGetName), pBoxGetName) ;
+    gtk_widget_show_all(pWindowGetName) ;
+}
+
+void
 _g_display_box_score(pScore ps, const int rank){
     int i,k ;
     char *r = "";
@@ -1043,6 +1070,9 @@ _g_display_box_score(pScore ps, const int rank){
     GtkWidget *plbScoreRank     = NULL ;
     GtkWidget *lbScore[] = {plbScoreOrder, plbScorePlayer, plbScorePeg, plbScoreScore, plbScoreRank} ;
     sizeArray = (int)(sizeof(lbScore)/sizeof(GtkWidget*))  ;
+    
+    _g_display_get_name() ;
+    
     pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
     gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
     gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
