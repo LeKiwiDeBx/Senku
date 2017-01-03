@@ -184,6 +184,13 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) ;
  */
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) ;
+/**
+ * @brief Validation de la boite de nom
+ * @param pWidget
+ * @param pData le nom
+ */
+void
+OnSetName(GtkWidget *pWidget, gpointer pData ) ;
 
 /**
  * @brief appel par OnUndo pour retablir l'affichage des pions undo
@@ -851,13 +858,14 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-                        rank = scoreNew() ; // 0 si pas inserer sinon position insertion
+                        //rank = scoreNew() ; // 0 si pas inserer sinon position insertion
                         //@TODO affichage des scores et tester le retour de scoreNew()
+                         if(rank = scoreNew()) _g_display_get_name() ;
                         pScore resultScore =  (score*)malloc( SCORE_BEST_OF * sizeof(score)) ;
                         resultScore = scoreGetSortScore() ;
-                        _g_display_box_score(resultScore, rank) ;
+//                        _g_display_box_score(resultScore, rank) ;
                         g_free(resultScore) ;
-                        if(!rank) return NULL ; //exit(EXIT_FAILURE) ;
+                        
                     }
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
@@ -1045,16 +1053,33 @@ _g_display_get_name(){
     char *buffer[10];
     pLabelName = gtk_label_new(labelNom) ;
     pWindowGetName = gtk_window_new(GTK_WINDOW_TOPLEVEL) ;
+    gtk_window_set_default_size (GTK_WINDOW(pWindowGetName), 200,150 );
     pButtonOk = gtk_button_new_with_label("Ok") ;
-    pBoxGetName = gtk_box_new(GTK_ORIENTATION_VERTICAL,0) ;
+    pBoxGetName = gtk_box_new(GTK_ORIENTATION_VERTICAL,5) ;
+    gtk_box_set_homogeneous(GTK_BOX(pBoxGetName), FALSE) ;
     pEntryName = gtk_entry_new() ;
     gtk_entry_set_input_purpose (pEntryName, GTK_INPUT_PURPOSE_NAME);
-    gtk_box_pack_start(GTK_BOX(pBoxGetName), pLabelName, TRUE,FALSE,10) ;
-    gtk_box_pack_start(GTK_BOX(pBoxGetName), pEntryName, TRUE,FALSE,10) ;
-    gtk_box_pack_start(GTK_BOX(pBoxGetName), pButtonOk, TRUE,FALSE,10) ;
-//    g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnGetName), NULL);
+    gtk_box_pack_start(GTK_BOX(pBoxGetName), pLabelName, TRUE,TRUE,5) ;
+    gtk_box_pack_start(GTK_BOX(pBoxGetName), pEntryName, TRUE,TRUE,5) ;
+    gtk_box_pack_start(GTK_BOX(pBoxGetName), pButtonOk, FALSE,FALSE,15) ;
+    g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnSetName), pEntryName );
     gtk_container_add(GTK_CONTAINER(pWindowGetName), pBoxGetName) ;
+    gtk_window_set_position( GTK_WINDOW( pWindowGetName ), GTK_WIN_POS_CENTER_ALWAYS ) ;
     gtk_widget_show_all(pWindowGetName) ;
+}
+
+void
+OnSetName(GtkWidget *pWidget, gpointer pData ){
+    const gchar *sName;
+    sName = gtk_entry_get_text(GTK_ENTRY(pData));
+    /*@TODO cree une fonction public dans score.h qui insere le nom
+     * tel que:
+     * void scoreSetNamePlayer(gchar *sName){
+     *  if(sName)
+     *   strncpy(cursorScore->namePlayer, sName, MAX_CAR_NAME);
+     * }
+     */
+    g_print("\nDEBUG le nom est %s", sName );
 }
 
 void
@@ -1070,8 +1095,6 @@ _g_display_box_score(pScore ps, const int rank){
     GtkWidget *plbScoreRank     = NULL ;
     GtkWidget *lbScore[] = {plbScoreOrder, plbScorePlayer, plbScorePeg, plbScoreScore, plbScoreRank} ;
     sizeArray = (int)(sizeof(lbScore)/sizeof(GtkWidget*))  ;
-    
-    _g_display_get_name() ;
     
     pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
     gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
@@ -1111,4 +1134,5 @@ _g_display_box_score(pScore ps, const int rank){
             ps++ ;
 		}
     gtk_widget_show_all( pBoxScore ) ;
+   
 }
