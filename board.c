@@ -37,11 +37,15 @@
 //#385998
 #define SENKU_PANGO_CONCAT_STR(color,type) "<span size=\"xx-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
+#define SENKU_ABS(x) ((x))?(x):(-x)
 
+#define TITLE_MAIN          "   Senku GTK Alpha 2.0   (c) 2016   [°} Le KiWi   "
+#define TITLE_MENU          "Shapes choice"
 #define TIMER_DELAY         1000
 #define IMG_PEG_MOVE        "image/circle_gold32.png"
 #define IMG_PEG_SELECT      "image/circle_gold_select32.png"
 #define IMG_PEG_DELETE      "image/circle_white32.png"
+#define IMG_PEG_DELETE_UNDO "image/circle_white_undo32.png"
 #define IMG_PEG_UNDO        "image/circle_gold_undo32.png"
 #define IMG_PEG_BOARD       "image/marble_1.png"
 #define NO_MORE_MOVE        "No more move!"
@@ -53,7 +57,10 @@
 #define APPLICATION_SIZE_WIDTH 360
 #define APPLICATION_SIZE_HEIGHT 340
 #define APPLICATION_BORDER_WIDTH 10
-
+#define MAX_LABEL                10 //nombre etiquette maximum coté droit
+#define LABEL_BONUS_TEXT    "Bonus"
+#define LABEL_PEG_TEXT      "Pegs"
+#define LABEL_TIME_TEXT     "Time"
 static void
 __displayHeader( ) ;
 static void
@@ -103,6 +110,11 @@ typedef enum e_actionSelect {
     ACTION_SELECT_UNSELECT_PEG = 10,
 } actionSelect ;
 
+enum typeLabel{
+    LABEL_BONUS,
+    LABEL_PEG,
+    LABEL_TIME,
+};
 /* *****************************************************************************
  * And the Widget's land begin here... 
  * ****************************************************************************/
@@ -137,6 +149,8 @@ GtkWidget *pBtnMenuQuit = NULL ;
 GtkWidget *pBtnMenuPlay = NULL ;
 GtkWidget *pBoxScore = NULL ;
 GtkWidget *pGridScore = NULL ;
+GtkWidget *plbValues[MAX_LABEL] ;
+GtkWidget *plbValuesValue[MAX_LABEL] ; 
 
 /**
  * @brief Appel selection image avec un clic souris
@@ -297,10 +311,11 @@ boardInit( ) {
     GtkWidget *pGridValues = gtk_grid_new( ) ;
     gtk_widget_set_margin_top( GTK_WIDGET( pGridValues ), 75 ) ;
     gtk_widget_set_margin_left( GTK_WIDGET( pGridValues ), 50 ) ;
-    char *plbValuesTitle[] = {"Bonus", "Pegs", "Time"} ;
-    GtkWidget *plbValuesValue[] = {NULL} ; 
+    char *plbValuesTitle[] = {LABEL_BONUS_TEXT, LABEL_PEG_TEXT, LABEL_TIME_TEXT} ;
     int sizeValueArray = (int)(sizeof(plbValuesTitle) /sizeof(char*)) ;
-    GtkWidget *plbValues[sizeValueArray] ;
+    if(sizeValueArray > MAX_LABEL) exit(0) ;
+//    GtkWidget *plbValues[sizeValueArray] ;
+//    GtkWidget *plbValuesValue[sizeValueArray] ; 
     int k =0, i = 0;
     const char* textInit = " 0 " ;
     const int valInit = 0 ;
@@ -421,55 +436,59 @@ boardInit( ) {
 */
 static void
 _g_display_box_menu(gpointer pData){
-    if(pBoxMenu) g_free(pBoxMenu) ;
-    if(!pData){
+    //if(pBoxMenu) g_free(pBoxMenu) ;
+    int k = 0 ;
+    gint optK = (GPOINTER_TO_INT(pData))? GPOINTER_TO_INT(pData): 0 ;
+    char *shapeName[]= {"Shape English","Shape German", "Shape Diamond" };
+    int sizeShapeName = (int)(sizeof(shapeName)/sizeof(char*)) ;
+    const int boxMenuWidth = 280 ;
+    const int boxMenuHeight = 300 ;
+    const int boxMenuOptionSpacing = 20 ;
+    const int boxMenuOptionPadding = 25 ;
+    const int boxMenuButtonSpacing = 20 ;
+    
         pBoxMenu = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
-        gtk_window_set_title( GTK_WINDOW( pBoxMenu ), "Shapes choice" ) ;
+        gtk_window_set_title( GTK_WINDOW( pBoxMenu ), TITLE_MENU ) ;
         gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
         gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
         gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), FALSE ) ;
         gtk_window_set_deletable( GTK_WINDOW( pBoxMenu ), FALSE ) ;
         /* rend la fenetre de choix dependante de la fenetre principale */
         gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
-        gtk_window_resize( GTK_WINDOW( pBoxMenu ), 280, 300 ) ;
+        gtk_window_resize( GTK_WINDOW( pBoxMenu ), boxMenuWidth, boxMenuHeight ) ;
         // options
-        pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, 20 ) ;
+        pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, boxMenuOptionSpacing ) ;
         gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
         /* sorte d'en tete dans un frame
            ??? peut etre mettre toutes les options dans le frame ???*/
-        pfrTitle = gtk_frame_new( NULL ) ;
-        gtk_frame_set_label( GTK_FRAME( pfrTitle ), "   Senku GTK Alpha 2.0   (c) 2016   [°} Le KiWi   " ) ;
-        plbTitle = gtk_label_new( "\n\nShapes choice\n______________" ) ;
-        gtk_container_add( GTK_CONTAINER( pfrTitle ), plbTitle ) ;
-        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pfrTitle, TRUE, FALSE, 25 ) ;
-        /* les boutons radios
-         ???    externaliser les textes dans un tableau de char
-                pour une construction dynamique ???*/
-        radio = gtk_radio_button_new_with_label( NULL, "Shape English" ) ;
-        gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( radio ), TRUE ) ;
-        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
-        radio = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( radio ), "Shape German" ) ;
-        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
-        radio = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( radio ), "Shape Diamond" ) ;
-        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), radio, FALSE, FALSE, 0 ) ;
+        plbTitle = gtk_label_new( TITLE_MAIN ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), plbTitle, TRUE, FALSE, boxMenuOptionPadding ) ;
+        GtkWidget *pRadio[sizeShapeName] ;
+        pRadio[0] = gtk_radio_button_new_with_label( NULL, shapeName[0] ) ;
+        for(k=1;k<=sizeShapeName;k++){
+            gtk_box_pack_start(GTK_BOX(pBoxMenuOption), pRadio[k-1], FALSE, FALSE, 0 ) ; // 
+            pRadio[k] = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( pRadio[k-1] ), shapeName[k] ) ;
+        } 
+        gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( pRadio[optK] ), TRUE) ;
+    
         // boutons <Quit> et <Play> ben oui au moins :)) */
-        pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 20 ) ;
+        pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
         pBtnMenuQuit = gtk_button_new_with_label( "Quit" ) ;
         pBtnMenuPlay = gtk_button_new_with_label( "Play" ) ;
         /* on ajoute les boutons */
-        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, 20 ) ;
-        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, 20 ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, boxMenuButtonSpacing ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, boxMenuButtonSpacing ) ;
         /* on ajoute box des boutons à la box des menu*/
-        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, 15 ) ;
+        gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), pBoxMenuButton, TRUE, FALSE, boxMenuOptionSpacing ) ;
         /* on ajoute les options */
-        gtk_container_add( GTK_CONTAINER( pBoxMenu ), pBoxMenuOption ) ;
+        gtk_container_add( GTK_CONTAINER(pBoxMenu ), pBoxMenuOption ) ;
         //les signaux 
         g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
-        g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), radio ) ;
+        g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), pRadio[0] ) ; //radio a la place de pRadio[0]
         //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
         // on se la montre...
         gtk_widget_show_all( pBoxMenu ) ;
-    }
+    
 }
 
 int
@@ -688,21 +707,18 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
 
 static void
 OnNewGame(GtkWidget *pWidget, gpointer pData){
-    scoreInit() ;
     _g_erase_displayMatrix() ;
-     //    Grille du Senku
-    _g_new_GridMatrix() ;
-//    pGridMatrix = gtk_grid_new( ) ;
-//    gtk_grid_attach( GTK_GRID( pGridMain ), pGridMatrix,0,0,1,1 ) ;
-//    gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
-//    gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
-    
-    _g_display_box_menu(NULL) ;
+    gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), BLANK );
+    gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
+    g_free( markup ) ;
+    _g_new_GridMatrix() ; //    Grille du Senku
+    _g_display_box_menu(NULL) ;// choix de la matrice
 }
 
 static void
 _g_new_GridMatrix(){
-    if(pGridMatrix) g_free(pGridMatrix) ;
+//    g_print("\nDEBUG :: _g_new_GridMatrix") ;
+    pGridMatrix = NULL ;
     pGridMatrix = gtk_grid_new( ) ;
     gtk_grid_attach( GTK_GRID( pGridMain ), pGridMatrix,0,0,1,1 ) ;
     gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
@@ -717,7 +733,7 @@ _g_displayUndoMatrix(pMemento pm){
                 pm->mvtStart.column,
                 pm->mvtEnd.row,
                 pm->mvtEnd.column);
-        GtkWidget *imgPegDelete = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
+        GtkWidget *imgPegDelete = gtk_image_new_from_file( IMG_PEG_DELETE_UNDO ) ;
         GtkWidget *imgPegMove_1 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
         GtkWidget *imgPegMove_2 = gtk_image_new_from_file( IMG_PEG_UNDO ) ;
         matrixUpdate(UNDO) ;
@@ -740,13 +756,10 @@ gboolean
 _firstSelectPeg(char* action, gboolean value){
     static gboolean firstSelectPeg = TRUE;
     if(!strcmp(action,"get") ){
-//            g_print("\nDEBUG :: action get firstSelectPeg %d", firstSelectPeg);
         return firstSelectPeg ;
     }
     else if(!strcmp(action,"set")){
         firstSelectPeg = value;
-//            g_print("\nDEBUG :: action set firstSelectPeg %d", firstSelectPeg);
-//            g_print("\nDEBUG :: action set value %d", value);
         return firstSelectPeg ; 
     }
     return -1 ;
@@ -755,14 +768,14 @@ _firstSelectPeg(char* action, gboolean value){
 void
 OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     static Coord pOld = {0, 0} ;
+    const int deltaConstantXY = 2 ;
     int remainingPeg = 0 ;
     int rank = 0 ;
     double elapseTimer = 0.0 ;
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
-    _g_labelSet( plbPegsValue, GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
-//    caretakerNew( ) ;
+    _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
     g_print( "\nDEBUG :: Coord Old X:%d Y:%d", pOld.x, pOld.y ) ;
     g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
@@ -792,13 +805,20 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d", deltaX, deltaY, sumDelta ) ;
                 g_print( "\nDEBUG :: pOldX: %d pOldY: %d px: %d py: %d", pOld.x, pOld.y, p->x, p->y ) ;
                 if (deltaX != deltaY && (sumDelta == 2 || sumDelta == -2)) {
-                    if (sumDelta == 2)
-                        action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
-                    else if (sumDelta == -2)
-                        action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
-                        if (matrixUpdate( action )) {
+                    
+                    if(deltaConstantXY == abs(deltaX)) 
+                        action = (deltaX>0)?ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_SOUTH ;
+                    else if(deltaConstantXY == abs(deltaY)) 
+                        action = (deltaY>0)?ACTION_SELECT_TAKE_WEST : ACTION_SELECT_TAKE_EAST ;
+                    
+//                    if (sumDelta == 2)
+//                        action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
+//                    else if (sumDelta == -2)
+//                        action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
+                        
+                    if (matrixUpdate( action )) {
                             _g_displayUpdateMatrix( action, p->x, p->y ) ;
-                            _g_labelSet( plbPegsValue, GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
+                            _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
                             pOld.x = p->x ;
                             pOld.y = p->y ;
                             if (matrixSelectPeg( pOld.x, pOld.y )) {
@@ -806,9 +826,10 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, pOld.x, pOld.y ) ;
                             }
                             scoreSetCalculateBonusElapseTimer( timerGetElapseClock( ) * 1000 ) ;
-                            _g_labelSet( plbBonusValue, GINT_TO_POINTER( scoreGetBonusTimeScore( ) ) ) ;
+                            _g_labelSet( plbValuesValue[LABEL_BONUS], GINT_TO_POINTER( scoreGetBonusTimeScore( ) ) ) ;
                         }
                         else if (matrixSelectPeg( p->x, p->y )) { //clique changement d'avis avec prise
+//                            g_print("\nDEBUG :: clique changement d'avis avec prise ") ;
                             _firstSelectPeg("set",FALSE) ;
                             _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
@@ -831,6 +852,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         resultScore = scoreGetSortScore() ;
                         _g_display_box_score(resultScore, rank) ;
                         g_free(resultScore) ;
+                        if(!rank) return NULL ; //exit(EXIT_FAILURE) ;
                     }
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
@@ -909,8 +931,10 @@ _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) {
 
 void
 OnPlay( GtkWidget* pWidget, gpointer pData ) {
-    GtkWidget *pWindow = gtk_widget_get_toplevel( GTK_WIDGET( pData ) ) ;
-    GtkRadioButton *radio = GTK_RADIO_BUTTON( pData ) ;
+    GtkWidget *pWindow = NULL ;
+    pWindow = gtk_widget_get_toplevel( GTK_WIDGET( pData ) ) ;
+    GtkRadioButton *radio = NULL ;
+    radio = GTK_RADIO_BUTTON( pData ) ;
     // equivalent while (!matrixLoad( num = __getMenuChoice( ) )) ;
     if (matrixLoad( which_radio_is_selected( gtk_radio_button_get_group( GTK_RADIO_BUTTON( radio ) ) ) )) {
         _g_displayMatrix( pMatrixLoad ) ;
@@ -931,7 +955,7 @@ _g_display_time( gpointer pData ) {
     stop = (timerStop) ? !stop : stop ;
     if (!stop) {
         gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,ds),i++);
-        //debug gtk_label_set_markup( GTK_LABEL( plbTimeValue ), markup ) ;
+        gtk_label_set_markup( plbValuesValue[LABEL_TIME], markup ) ;
         g_free( markup ) ;
         return TRUE ;
     }
@@ -967,21 +991,20 @@ _g_erase_displayMatrix(){
     gint i, k ;
     g_print( "\nDEBUG :: _g_displayMatrix ERASE" ) ;
     gtk_widget_destroy(  GTK_WIDGET( pGridMatrix ) ) ;
-//    for (k = 0 ; k < HOR_MAX ; k++) {
-//        for (i = 0 ; i < VER_MAX ; i++) {
-//            gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), i, k ) ) ;
-//            
-//        }
-//    }
 }
+
 void
 _g_displayMatrix( Matrix matrix ) {
     gint i, k ;
     GtkWidget *imgPeg = NULL ;
     GtkWidget *pMatrix_event[HOR_MAX][VER_MAX] ;
-    pEventCoord = (Coord *) g_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
-    pEventCoord = &eventCoord ;
-    g_print( "\nDEBUG :: _g_displayMatrix" ) ;
+    pEventCoord = (Coord *) g_try_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
+    if(pEventCoord) pEventCoord = &eventCoord ;
+    else {
+        g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
+        exit(EXIT_FAILURE) ;
+    }
+    g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
     for (k = 0 ; k < HOR_MAX ; k++) {
         for (i = 0 ; i < VER_MAX ; i++) {
             switch (matrix[k][i]) {
@@ -1023,7 +1046,7 @@ _g_display_box_score(pScore ps, const int rank){
     pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
     gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
     gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
-    gtk_window_set_position( GTK_WINDOW( pBoxScore ), GTK_WIN_POS_CENTER ) ;
+    gtk_window_set_position( GTK_WINDOW( pBoxScore ), GTK_WIN_POS_CENTER_ALWAYS ) ;
     gtk_window_set_decorated( GTK_WINDOW( pBoxScore ), TRUE ) ;
     gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), TRUE ) ;
     gtk_window_set_transient_for( GTK_WINDOW( pBoxScore ), GTK_WINDOW( pWindowMain ) ) ;
