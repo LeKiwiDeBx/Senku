@@ -7,7 +7,8 @@
 **/
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> /* memcpy */
+#include <string.h>
+//#include <gmessages.h> /* memcpy */
 #include "score.h"
 
 
@@ -167,6 +168,16 @@ __setNamePlayer(){
 	fgets(chaine, sizeof(chaine), stdin);
 	__clean(chaine, stdin);
 	strncpy(cursorScore->namePlayer, chaine, MAX_CAR_NAME);
+}
+
+void
+scoreSetNamePlayer(char *sName, int rank){
+ //tabSortScore[rank-1].namePlayer car le nom est cette fois-ci
+ //demandé après inscription dans le top 10
+    if(sName)
+        strlcpy(tabSortScore[rank-1].namePlayer, sName, MAX_CAR_NAME);
+    else
+        strlcpy(tabSortScore[rank-1].namePlayer, UNKNOWN, MAX_CAR_NAME);
 }
 
 static void

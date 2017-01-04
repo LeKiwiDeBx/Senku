@@ -11,6 +11,7 @@
 #define MAX_SEC_BONUS 60 //debug:: 7 valeur originale
 #define MIN_SEC_BONUS 0  //debug:: 2 valeur originale
 #define	SCORE_BEST_OF 10
+#define UNKNOWN       "No name"
 
 typedef struct s_Score {
 	int 	idScore ;
@@ -30,5 +31,6 @@ void scoreSetCalculateBonusElapseTimer(double ) ;
 int  scoreGetBonusTimeScore() ;
 void scoreResetBonusTimeScore() ;
 void scoreSetRemainingPeg(int );
+void scoreSetNamePlayer(char *, int) ;
 tabScore* scoreGetSortScore() ;
 #endif
