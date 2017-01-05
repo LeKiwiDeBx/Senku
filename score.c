@@ -109,7 +109,6 @@ scoreSetCalculateBonusElapseTimer(double elapseTimer){
 		//bonus = 5*(9-i) ;
         bonus = (MAX_SEC_BONUS - elapseTimer) ;
 		bonusTimeScore += bonus ;
-        g_print("DEBUG :: scoreSetCalculateBonusElapseTimer %f\n",elapseTimer) ;
 		__displaySetCalculateBonusElapseTimer(bonus) ;
 	}
 }
@@ -135,7 +134,7 @@ scoreSetRemainingPeg(int number){
 
 tabScore*
 scoreGetSortScore(){
-    return tabSortScore ;
+    return (tabScore * )tabSortScore ;
 }
 
 static void
@@ -171,7 +170,7 @@ __setNamePlayer(){
 }
 
 void
-scoreSetNamePlayer(char *sName, int rank){
+scoreSetNamePlayer(const char *sName, int rank){
  //tabSortScore[rank-1].namePlayer car le nom est cette fois-ci
  //demandé après inscription dans le top 10
     if(sName)
@@ -208,9 +207,11 @@ __calculateScore(const int  remainPeg, const double  timeBonus){
 void
 scoreInit(){
 	int i ;
+    const char* unknown = "Unknown" ;
+    char buffer[MAX_CAR_NAME+1] ;
 	for(i = 0; i < SCORE_BEST_OF; i++){
 		tabSortScore[i].idScore = 0 ;
-		strcpy(tabSortScore[i].namePlayer,"Unknown") ;
+		strlcpy(tabSortScore[i].namePlayer,unknown,sizeof(buffer)) ;
 		tabSortScore[i].remainingPeg = 0;
 		tabSortScore[i].scoreGame = 0 ;
 		tabSortScore[i].bonusElapseTime = 0 ;

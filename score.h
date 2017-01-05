@@ -31,6 +31,6 @@ void scoreSetCalculateBonusElapseTimer(double ) ;
 int  scoreGetBonusTimeScore() ;
 void scoreResetBonusTimeScore() ;
 void scoreSetRemainingPeg(int );
-void scoreSetNamePlayer(char *, int) ;
+void scoreSetNamePlayer(const char *, int) ;
 tabScore* scoreGetSortScore() ;
 #endif

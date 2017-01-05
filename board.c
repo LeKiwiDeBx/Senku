@@ -325,15 +325,12 @@ boardInit( ) {
     gtk_container_set_border_width( GTK_CONTAINER( pWindowMain ), APPLICATION_BORDER_WIDTH) ;
     /* signal fermeture l'application sur fermeture fenetre principale */
     g_signal_connect( G_OBJECT( pWindowMain ), "destroy", G_CALLBACK( OnDestroy ), NULL ) ;
-
     // Creation de la grille principale container */
     pGridMain = gtk_grid_new( ) ;
     gtk_grid_set_column_homogeneous( GTK_GRID( pGridMain ), FALSE ) ;
-    
     //    Grille du Senku
     _g_new_GridMatrix() ;
     gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
-    
     //Creation grille des valeurs à droite
     GtkWidget *pGridValues = gtk_grid_new( ) ;
     gtk_widget_set_margin_top( GTK_WIDGET( pGridValues ), 75 ) ;
@@ -341,8 +338,6 @@ boardInit( ) {
     char *plbValuesTitle[] = {LABEL_BONUS_TEXT, LABEL_PEG_TEXT, LABEL_TIME_TEXT} ;
     int sizeValueArray = (int)(sizeof(plbValuesTitle) /sizeof(char*)) ;
     if(sizeValueArray > MAX_LABEL) exit(0) ;
-//    GtkWidget *plbValues[sizeValueArray] ;
-//    GtkWidget *plbValuesValue[sizeValueArray] ; 
     int k =0, i = 0;
     const char* textInit = " 0 " ;
     const int valInit = 0 ;
@@ -357,43 +352,8 @@ boardInit( ) {
        gtk_grid_attach( GTK_GRID( pGridValues ), plbValues[k], 1, i++, 1, 1 ) ;
        gtk_grid_attach( GTK_GRID( pGridValues ), plbValuesValue[k],1,i++,1,1  ) ;
     }
-//    
-//    plbBonus = gtk_label_new( "Bonus" ) ;
-//    char *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),"Bonus");
-//    gtk_label_set_markup( GTK_LABEL( plbBonus ), markup ) ;
-//    g_free( markup ) ;
-//    plbBonusValue = gtk_label_new( " 0 " ) ;
-//    markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d), 0 );
-//    gtk_label_set_markup( GTK_LABEL( plbBonusValue ), markup ) ;
-//    g_free( markup ) ;
-//    plbPegs = gtk_label_new( "Pegs" ) ;
-//    markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),"Pegs");
-//    gtk_label_set_markup( GTK_LABEL( plbPegs ), markup ) ;
-//    g_free( markup ) ;
-//    plbPegsValue = gtk_label_new( " 0 " ) ;
-//    markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d), 0 );
-//    gtk_label_set_markup( GTK_LABEL( plbPegsValue ), markup ) ;
-//    g_free( markup ) ;
-//    plbTime = gtk_label_new( "Time" ) ;
-//    markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),"Time");
-//    gtk_label_set_markup( GTK_LABEL( plbTime ), markup ) ;
-//    g_free( markup ) ;
-//    plbTimeValue = gtk_label_new( " 0 " ) ;
-//    markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d),0 );
-//    gtk_label_set_markup( GTK_LABEL( plbTimeValue ), markup ) ;
-//    g_free( markup ) ;
-
-//    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonus, 1, 2, 1, 1 ) ;
-//    gtk_grid_attach( GTK_GRID( pGridValues ), plbBonusValue, 1, 3, 1, 1 ) ;
-//    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegs, 1, 4, 1, 1 ) ;
-//    gtk_grid_attach( GTK_GRID( pGridValues ), plbPegsValue, 1, 5, 1, 1 ) ;
-//    gtk_grid_attach( GTK_GRID( pGridValues ), plbTime, 1, 6, 1, 1 ) ;
-//    gtk_grid_attach( GTK_GRID( pGridValues ), plbTimeValue, 1, 7, 1, 1 ) ;
     gtk_container_add( GTK_CONTAINER( pGridMain ), pGridValues ) ;
     gtk_container_add( GTK_CONTAINER( pWindowMain ), pGridMain ) ;
-    /** 
-     * label comments game in progress 
-     */
     /* pour pouvoir ajouter en dessous la zone des commentaires*/
     gtk_orientable_set_orientation( GTK_ORIENTABLE( pGridMain ), GTK_ORIENTATION_VERTICAL ) ;
     pfrComments = gtk_frame_new( NULL ) ;
@@ -404,7 +364,6 @@ boardInit( ) {
     gtk_widget_set_halign( GTK_WIDGET( plbComments ), GTK_ALIGN_START ) ;
     /* ajoute sur deux cellules horizontale du GridMain (soit la totalité) */
     gtk_grid_attach( GTK_GRID( pGridMain ), pfrComments, 0, 1, 2, 1 ) ;
-
     /* Button bottom  <New Game> <Undo> <Quit> */
     pHbox = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, 0 ) ;
     gtk_widget_set_margin_top( GTK_WIDGET( pHbox ), 20 ) ;
@@ -423,13 +382,11 @@ boardInit( ) {
     g_signal_connect( G_OBJECT( pButtonQuit ),"clicked", G_CALLBACK( OnDestroy ), NULL ) ;
     g_signal_connect( G_OBJECT( pButtonUndo ),"clicked", G_CALLBACK( OnUndo ), NULL ) ;
     g_signal_connect( G_OBJECT( pButtonNewGame ),"clicked", G_CALLBACK( OnNewGame ), NULL ) ;
-
     _g_display_box_menu(NULL) ;
     onlyOneBoard.set = &currentMatrixOfBoard ;
     // on lance la boucle infernale
     gtk_main( ) ;
     EXIT_SUCCESS ;
-
             /***************************************************************************
              * __displayMenu()  ;
              * function console
@@ -468,8 +425,8 @@ _g_display_box_menu(gpointer pData){
     gint optK = (GPOINTER_TO_INT(pData))? GPOINTER_TO_INT(pData): 0 ;
     char *shapeName[]= {"Shape English","Shape German", "Shape Diamond" };
     int sizeShapeName = (int)(sizeof(shapeName)/sizeof(char*)) ;
-    const int boxMenuWidth = 280 ;
-    const int boxMenuHeight = 300 ;
+    const int boxMenuWidth = 360 ;
+    const int boxMenuHeight = 340 ;
     const int boxMenuOptionSpacing = 20 ;
     const int boxMenuOptionPadding = 25 ;
     const int boxMenuButtonSpacing = 20 ;
@@ -479,7 +436,7 @@ _g_display_box_menu(gpointer pData){
     gtk_window_set_title( GTK_WINDOW( pBoxMenu ), TITLE_MENU ) ;
     gtk_window_set_modal( GTK_WINDOW( pBoxMenu ), TRUE ) ;
     gtk_window_set_position( GTK_WINDOW( pBoxMenu ), GTK_WIN_POS_CENTER ) ;
-    gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), FALSE ) ;
+    gtk_window_set_decorated( GTK_WINDOW( pBoxMenu ), TRUE ) ;
     gtk_window_set_deletable( GTK_WINDOW( pBoxMenu ), FALSE ) ;
     /* rend la fenetre de choix dependante de la fenetre principale */
     gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
@@ -497,7 +454,6 @@ _g_display_box_menu(gpointer pData){
         pRadio[k] = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( pRadio[k-1] ), shapeName[k] ) ;
     } 
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( pRadio[optK] ), TRUE) ;
-
     // boutons <Quit> et <Play> ben oui au moins :)) */
     pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
     pBtnMenuQuit = gtk_button_new_with_label( labelQuit ) ;
@@ -512,7 +468,6 @@ _g_display_box_menu(gpointer pData){
     //les signaux 
     g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
     g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), pRadio[0] ) ; //radio a la place de pRadio[0]
-    //g_signal_connect( G_OBJECT( pBoxMenu ), "delete-event", G_CALLBACK( OnRadioToggled ), radio ) ;
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
 }
@@ -533,10 +488,10 @@ boardPlay( ) {
         if (*pRow == -1 || *pColumn == -1) {/* Appel de UNDO pour dernier mouvement */
             timerSetElapseTimer( ) ;
             if (originatorRestoreFromMemento( caretakerGetMemento( 1 ) )) {
-                printf( "You ask [UNDO] the last move!\n" ) ;
+//                printf( "You ask [UNDO] the last move!\n" ) ;
                 matrixUpdate( UNDO ) ;
             }
-            else printf( "There is no action to [UNDO] :( \n" ) ;
+//            else printf( "There is no action to [UNDO] :( \n" ) ;
             canDisplayBonusTimeScore = 0 ;
             }
         else {/* selection normale */
@@ -717,7 +672,6 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) {
-//    g_printf( "\nDEBUG :: OnUndo [UNDO] the last move!" ) ;
     pMemento pMementoUndo = malloc(sizeof(memento)) ;
     pMementoUndo = caretakerGetMemento(1) ;
     char * msg = (pMementoUndo)?ACTION_UNDO:NO_ACTION_UNDO ;
@@ -742,7 +696,6 @@ OnNewGame(GtkWidget *pWidget, gpointer pData){
 
 static void
 _g_new_GridMatrix(){
-//    g_print("\nDEBUG :: _g_new_GridMatrix") ;
     pGridMatrix = NULL ;
     pGridMatrix = gtk_grid_new( ) ;
     gtk_grid_attach( GTK_GRID( pGridMain ), pGridMatrix,0,0,1,1 ) ;
@@ -796,7 +749,6 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     const int deltaConstantXY = 2 ;
     int remainingPeg = 0 ;
     int rank = 0 ;
-    double elapseTimer = 0.0 ;
     actionSelect action ;
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
@@ -830,17 +782,10 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d", deltaX, deltaY, sumDelta ) ;
                 g_print( "\nDEBUG :: pOldX: %d pOldY: %d px: %d py: %d", pOld.x, pOld.y, p->x, p->y ) ;
                 if (deltaX != deltaY && (sumDelta == 2 || sumDelta == -2)) {
-                    
                     if(deltaConstantXY == abs(deltaX)) 
                         action = (deltaX>0)?ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_SOUTH ;
                     else if(deltaConstantXY == abs(deltaY)) 
                         action = (deltaY>0)?ACTION_SELECT_TAKE_WEST : ACTION_SELECT_TAKE_EAST ;
-                    
-//                    if (sumDelta == 2)
-//                        action = (deltaX) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_WEST ;
-//                    else if (sumDelta == -2)
-//                        action = (deltaX) ? ACTION_SELECT_TAKE_SOUTH : ACTION_SELECT_TAKE_EAST ;
-                        
                     if (matrixUpdate( action )) {
                             _g_displayUpdateMatrix( action, p->x, p->y ) ;
                             _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
@@ -854,7 +799,6 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                             _g_labelSet( plbValuesValue[LABEL_BONUS], GINT_TO_POINTER( scoreGetBonusTimeScore( ) ) ) ;
                         }
                         else if (matrixSelectPeg( p->x, p->y )) { //clique changement d'avis avec prise
-//                            g_print("\nDEBUG :: clique changement d'avis avec prise ") ;
                             _firstSelectPeg("set",FALSE) ;
                             _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                             _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
@@ -871,13 +815,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-                        //rank = scoreNew() ; // 0 si pas inserer sinon position insertion
-                        //@TODO affichage des scores et tester le retour de scoreNew()
                          if(rank = scoreNew()) _g_display_get_name(rank) ;
-//                        pScore resultScore =  (score*)malloc( SCORE_BEST_OF * sizeof(score)) ;
-//                        resultScore = scoreGetSortScore() ;
-//                        _g_display_box_score(resultScore, rank) ;
-//                        g_free(resultScore) ;
                     }
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 
@@ -980,7 +918,7 @@ _g_display_time( gpointer pData ) {
     stop = (timerStop) ? !stop : stop ;
     if (!stop) {
         gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,ds),i++);
-        gtk_label_set_markup( plbValuesValue[LABEL_TIME], markup ) ;
+        gtk_label_set_markup( GTK_LABEL(plbValuesValue[LABEL_TIME]), markup ) ;
         g_free( markup ) ;
         return TRUE ;
     }
@@ -1003,8 +941,6 @@ which_radio_is_selected( GSList *group ) {
         GtkRadioButton *radio = group->data ;
         i = g_slist_position( Group, group ) ;
         if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON( radio ) )) {
-//            g_print( "Hello :)\n" ) ;
-//            g_print( "DEBUG :: Radio button \"%s\" is the %d active\n", gtk_button_get_label( GTK_BUTTON( radio ) ), j - i ) ;
             return (j - i) ;
         }
     }
@@ -1061,14 +997,11 @@ _g_display_get_name(int rank){
     GtkWidget *pLabelName = NULL ;
     GtkWidget *pLabelMessage = NULL ;
     GtkWidget *pButtonOk = NULL ;
-    GtkWidget *pButtonClose = NULL ;
     GtkWidget *pGridGetName = NULL ;
     const char * labelNom = "Votre nom:" ;
     char * labelMessage = "\nCongratulations, " ;
     const char * labelInsideEntry = "Unknown" ;
     const char * topmost = g_strdup_printf("you're %d in topmost!\n", rank) ;
-    const char * labelButtonOk = "Enregistrer" ;
-    const char * labelButtonClose = "Fermer" ;
     pLabelName = gtk_label_new(labelNom) ;
     labelMessage = g_strconcat(labelMessage, topmost,NULL) ;
     pLabelMessage = gtk_label_new(labelMessage) ;
@@ -1084,8 +1017,7 @@ _g_display_get_name(int rank){
     gtk_grid_set_column_spacing(GTK_GRID(pGridGetName),10);
     gtk_grid_set_row_spacing(GTK_GRID(pGridGetName),10);
     gtk_grid_set_row_homogeneous(GTK_GRID(pGridGetName),FALSE) ;
-    pButtonOk = gtk_button_new_with_label(labelButtonOk) ;
-    pButtonClose = gtk_button_new_with_label(labelButtonClose) ;
+    pButtonOk = gtk_button_new_from_stock(GTK_STOCK_OK);
     pEntryName = gtk_entry_new() ;
     gtk_entry_set_text (GTK_ENTRY(pEntryName),labelInsideEntry) ;
     gtk_entry_set_max_length (GTK_ENTRY(pEntryName), MAX_CAR_NAME-1);
@@ -1094,7 +1026,6 @@ _g_display_get_name(int rank){
     gtk_grid_attach_next_to(GTK_GRID(pGridGetName), pLabelMessage, pLabelName,GTK_POS_TOP,3,1) ;
     gtk_grid_attach_next_to(GTK_GRID(pGridGetName), pEntryName, pLabelName,GTK_POS_RIGHT,1,1) ;
     gtk_grid_attach_next_to(GTK_GRID(pGridGetName), pButtonOk, pEntryName, GTK_POS_RIGHT,1,1) ;
-    gtk_grid_attach_next_to(GTK_GRID(pGridGetName), pButtonClose, pEntryName,GTK_POS_BOTTOM,1,1) ;
     pDataName = (dataName *) malloc(1*(sizeof(dataName))) ;
     if(pDataName){
         pDataName->pWidgetName = pEntryName ;
@@ -1103,7 +1034,6 @@ _g_display_get_name(int rank){
     }
     else exit(EXIT_FAILURE) ;
     g_signal_connect(G_OBJECT(pWindowGetName), "destroy", G_CALLBACK(OnDestroyGetName),GINT_TO_POINTER(rank)) ;
-    g_signal_connect(G_OBJECT(pButtonClose), "clicked", G_CALLBACK(OnDestroyGetName), GINT_TO_POINTER(rank) );
     gtk_container_add(GTK_CONTAINER(pWindowGetName), pGridGetName) ;
     gtk_window_set_position( GTK_WINDOW( pWindowGetName ), GTK_WIN_POS_CENTER_ALWAYS ) ;
     gtk_widget_show_all(pWindowGetName) ;
@@ -1111,11 +1041,14 @@ _g_display_get_name(int rank){
 
 void
 OnSetName(GtkWidget *pWidget, dataName* pData ){
-    gchar *sName;
     int rank = pData->rang;
-    sName = gtk_entry_get_text(GTK_ENTRY(pData->pWidgetName));
+    const gchar * sName = gtk_entry_get_text(GTK_ENTRY(pData->pWidgetName));
     scoreSetNamePlayer(sName, rank) ;
-    g_print("\nDEBUG le nom est %s", sName );
+    pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
+    gtk_widget_destroy(pWidget) ;
+    if(resultScore)resultScore = (pScore) scoreGetSortScore( ) ;
+     _g_display_box_score(resultScore,rank) ;
+    g_free(resultScore) ;
 }
 
 void
@@ -1123,7 +1056,7 @@ OnDestroyGetName( GtkWidget *pWidget, gpointer pData ) {
     pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
     int rank = GPOINTER_TO_INT(pData) ;
     gtk_widget_destroy(pWidget) ;
-    if(resultScore)resultScore = scoreGetSortScore( ) ;
+    if(resultScore)resultScore = (pScore)scoreGetSortScore( ) ;
 //    g_print("\nDEBUG le nom cursor est %s", resultScore[0].namePlayer );
     _g_display_box_score(resultScore,rank) ;
     g_free(resultScore) ;
@@ -1162,10 +1095,9 @@ _g_display_box_score(pScore ps, const int rank){
 //    g_printf("\n%*s\t%-*s\t%*s\t%*s\n",5,"ORDER",12,"   PLAYER   ",3,"PEG",5,"SCORE");
     for(k=0; k < sizeArray; k++)
         lbScore[k] = gtk_label_new(scoreTitle[k]) ;
-    gtk_grid_attach(pGridScore,lbScore[0] , 0,0,1,1) ; //plbScoreOrder
-//    gtk_grid_attach_next_to(pGridScore, lbScore[0],NULL,GTK_POS_BOTTOM,1,1) ;
+    gtk_grid_attach(GTK_GRID(pGridScore),lbScore[0] , 0,0,1,1) ; //plbScoreOrder
     for(k=0; k < sizeArray-1;k++)
-        gtk_grid_attach_next_to(pGridScore, lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
+        gtk_grid_attach_next_to(GTK_GRID(pGridScore), lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
 	for (i = 1; i <= SCORE_BEST_OF; i++){
             r = (i==rank)? "@":"" ;
             lbScore[0] = gtk_label_new(g_strdup_printf("%d",i)) ;
@@ -1173,13 +1105,11 @@ _g_display_box_score(pScore ps, const int rank){
             lbScore[2] = gtk_label_new(g_strdup_printf("%d", ps->remainingPeg)) ;
             lbScore[3] = gtk_label_new(g_strdup_printf("%.f", ps->scoreGame)) ;
             lbScore[4] = gtk_label_new(r) ;
-            gtk_grid_attach(pGridScore, lbScore[0], 0,i,1,1) ;
-//            gtk_grid_attach_next_to(pGridScore, lbScore[0],NULL,GTK_POS_TOP,1,1) ;
+            gtk_grid_attach(GTK_GRID(pGridScore), lbScore[0], 0,i,1,1) ;
             for(k=0;k<sizeArray-1;k++)
-                gtk_grid_attach_next_to(pGridScore, lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
+                gtk_grid_attach_next_to(GTK_GRID(pGridScore), lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
 //            g_printf("%d\t%-12s\t%-3d\t%.f%s\n",i,ps->namePlayer, ps->remainingPeg, ps->scoreGame, r);
             ps++ ;
 		}
     gtk_widget_show_all( pBoxScore ) ;
-   
 }
