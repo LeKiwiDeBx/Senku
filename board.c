@@ -122,6 +122,7 @@ typedef struct s_dataName{
     } dataName ;
 dataName *pDataName ;
 
+static pMemento pMementoUndo ;
 /* *****************************************************************************
  * And the Widget's land begin here... 
  * ****************************************************************************/
@@ -678,8 +679,10 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) {
-    pMemento pMementoUndo = malloc(sizeof(memento)) ;
-    pMementoUndo = caretakerGetMemento(1) ;
+    pMementoUndo = (pMemento)(sizeof(memento)) ;
+    if(pMementoUndo )
+        pMementoUndo = caretakerGetMemento(1) ;
+    else exit(EXIT_FAILURE) ;
     char * msg = (pMementoUndo)?ACTION_UNDO:NO_ACTION_UNDO ;
     if(pMementoUndo){
         originatorRestoreFromMemento( pMementoUndo ) ;
@@ -688,7 +691,6 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
     gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
     gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
     g_free( markup ) ;
-    free(pMementoUndo) ;
 }
 
 static void
@@ -829,7 +831,8 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         action = (deltaX>0)?ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_SOUTH ;
                     else if(deltaConstantXY == abs(deltaY)) 
                         action = (deltaY>0)?ACTION_SELECT_TAKE_WEST : ACTION_SELECT_TAKE_EAST ;
-                    if (matrixUpdate( action )) {
+                    if (matrixUpdate( action )){ 
+                            
                             _g_displayUpdateMatrix( action, p->x, p->y ) ;
                             _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
                             pOld.x = p->x ;
