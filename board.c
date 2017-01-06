@@ -303,6 +303,12 @@ _g_new_GridMatrix() ;
  */
 void
 _g_display_get_name(int rank) ;
+/**
+ * @brief redessinne les peg et trou sans point rouge ni croix (signe du last undo)
+ * @param pm le memento des images à redessiner sans les symboles du Undo
+ */
+static void
+_setLastMementoUndoRedrawNormal(const pMemento) ;
 
 int
 boardInit( ) {
@@ -682,6 +688,40 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
     gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
     gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
     g_free( markup ) ;
+    free(pMementoUndo) ;
+}
+
+static void
+_setLastMementoUndoRedrawNormal(const pMemento pm){
+    static Coord pegUndo ={-1,-1}, pegDeleteUndo={-1,-1}, pegUndoCenter={-1,-1} ;
+    int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
+    x = pm->mvtEnd.row ;
+    y = pm->mvtEnd.column ;
+    coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
+    coefColumn = pm->mvtBetween.column - pm->mvtStart.column ;
+    GtkWidget *imgPegDelete = gtk_image_new_from_file( IMG_PEG_DELETE ) ;   //blanc
+    GtkWidget *imgPegMove_2 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
+    GtkWidget *imgPegMove_3 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
+    if(pegUndo.x != -1 && pegUndo.y != -1){
+    gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegDeleteUndo.y, pegDeleteUndo.x ) ) ;
+    gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegUndoCenter.y, pegUndoCenter.x)) ;
+    gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegUndo.y, pegUndo.x ) ) ;
+    gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete, pegDeleteUndo.y, pegDeleteUndo.x, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_2, pegUndoCenter.y, pegUndoCenter.x, 1, 1 ) ;
+    gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_3, pegUndo.y, pegUndo.x, 1, 1 ) ;
+    }
+    if(mementoIsEmpty()) {
+        pegUndo.x = -1 ;
+        pegUndo.y = -1 ;
+    }
+    else{
+        pegDeleteUndo.x = x ;
+        pegDeleteUndo.y = y ;
+        pegUndoCenter.x = x - 1 * coefRow ;
+        pegUndoCenter.y = y - 1 * coefColumn ;
+        pegUndo.x = x - 2 * coefRow ;
+        pegUndo.y = y - 2 * coefColumn ;
+    }
 }
 
 static void
@@ -705,7 +745,6 @@ _g_new_GridMatrix(){
 void
 _g_displayUndoMatrix(pMemento pm){
     int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
-    static Coord pegUndo ={-1,-1}, pegDeleteUndo={-1,-1}, pegUndoCenter={-1,-1} ;
      if(pm){
         g_print("\nDEBUG :: x depart %d | y depart %d | x arrive %d | y arrive %d", 
                 pm->mvtStart.row, 
@@ -714,36 +753,16 @@ _g_displayUndoMatrix(pMemento pm){
                 pm->mvtEnd.column);
         GtkWidget *imgPegDeleteUndo = gtk_image_new_from_file( IMG_PEG_DELETE_UNDO ) ; //blanc cross
         GtkWidget *imgPegMove_1 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
-        GtkWidget *imgPegMove_2 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
-        GtkWidget *imgPegMove_3 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
-        GtkWidget *imgPegUndo = gtk_image_new_from_file( IMG_PEG_UNDO ) ;       //gold point
-        GtkWidget *imgPegDelete = gtk_image_new_from_file( IMG_PEG_DELETE ) ;   //blanc
+        GtkWidget *imgPegUndo   = gtk_image_new_from_file( IMG_PEG_UNDO ) ;     //gold point
         matrixUpdate(UNDO) ;
         _firstSelectPeg("set", TRUE) ;
         x = pm->mvtEnd.row ;
         y = pm->mvtEnd.column ;
         coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
         coefColumn = pm->mvtBetween.column - pm->mvtStart.column ;
-        if(pegUndo.x != -1 && pegUndo.y != -1){
-            gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegDeleteUndo.y, pegDeleteUndo.x ) ) ;
-            gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegUndoCenter.y, pegUndoCenter.x)) ;
-            gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegUndo.y, pegUndo.x ) ) ;
-            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete, pegDeleteUndo.y, pegDeleteUndo.x, 1, 1 ) ;
-            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_2, pegUndoCenter.y, pegUndoCenter.x, 1, 1 ) ;
-            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_3, pegUndo.y, pegUndo.x, 1, 1 ) ;
-        }
-        if(mementoIsEmpty()) {
-            pegUndo.x = -1 ;
-            pegUndo.y = -1 ;
-        }
-        else{
-            pegDeleteUndo.x = x ;
-            pegDeleteUndo.y = y ;
-            pegUndoCenter.x = x - 1 * coefRow ;
-            pegUndoCenter.y = y - 1 * coefColumn ;
-            pegUndo.x = x - 2 * coefRow ;
-            pegUndo.y = y - 2 * coefColumn ;
-        }
+        
+        _setLastMementoUndoRedrawNormal(pm) ;
+        
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 1 * coefColumn, x - 1 * coefRow ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 2 * coefColumn, x - 2 * coefRow ) ) ;
