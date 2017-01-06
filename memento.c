@@ -1,7 +1,7 @@
 /*
  * File:   memento.c
  * Author: Administrateur
- *
+ * implementation en C inspirée du pattern GOF memento
  * Created on 6 novembre 2016, 19:06
  */
 
@@ -45,7 +45,6 @@ caretakerAddMemento( pMemento pmArray ) {
         }
         else if(i == NB_UNDO -2) {
             //decalage vers la gauche du tableau --> FIFO
-//            printf( "FIFO\n" ) ;
             memmove( mArrayList, mArrayList + 1, (NB_UNDO - 2) * sizeof (pMemento) ) ;
             mArrayList[NB_UNDO - 2] = pmArray ;
             break;
@@ -74,6 +73,16 @@ caretakerGetMemento( int undo ) {
     }   
     return NULL ;
 }
+
+/**
+ * @brief Si la liste des mementos est vide
+ * @return 1 vrai sinon faux
+ */
+int
+mementoIsEmpty(){
+    return (!mArrayList[0])?1:0;
+}
+
 
 /**
  * @brief positionne la variable static de l'etat à sauver

@@ -88,7 +88,6 @@
       <item path="matrix.c" ex="false" tool="0" flavor2="3">
         <cTool>
           <incDir>
-            <pElem>../../../../../../GTK_SRC</pElem>
             <pElem>../../../../../../GTK/include/gtk-3.0</pElem>
             <pElem>../../../../../../GTK/include/cairo</pElem>
             <pElem>../../../../../../GTK/include/pango-1.0</pElem>
@@ -102,20 +101,13 @@
             <pElem>../../../../../../GTK/lib/glib-2.0/include</pElem>
             <pElem></pElem>
           </incDir>
-          <incFile>
-            <pElem>../../../../../../GTK_SRC/widgets.h</pElem>
-          </incFile>
         </cTool>
       </item>
       <item path="memento.c" ex="false" tool="0" flavor2="3">
         <cTool>
           <incDir>
-            <pElem>../../../../../../GTK_SRC</pElem>
             <pElem></pElem>
           </incDir>
-          <incFile>
-            <pElem>../../../../../../GTK_SRC/widgets.h</pElem>
-          </incFile>
         </cTool>
       </item>
       <item path="peg.c" ex="false" tool="0" flavor2="3">

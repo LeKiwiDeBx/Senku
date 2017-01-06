@@ -40,5 +40,5 @@ void caretakerNew() ;                   // initialise le caretaker
 void caretakerAddMemento(pMemento pm) ; // ajoute un pointeur dans mementoArrayList
 pMemento caretakerGetMemento(int) ;     // retourne pointeur memento à l'indice donné
                                         // faudra gérer la Liste en detruisant juste après le numero UNDO?
-
+int mementoIsEmpty() ; //retourne 1 si vide sinon 0
 #endif /* MEMENTO_H */
