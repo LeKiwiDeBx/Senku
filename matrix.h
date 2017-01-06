@@ -8,6 +8,9 @@
 #ifndef _MATRIX_H_
 #define _MATRIX_H_
 
+#include "peg.h"
+#include "memento.h"
+
 /*
  * Constants
 */
@@ -43,7 +46,7 @@ matrixOfBoard currentMatrixOfBoard ;
 */
 int matrixLoad(int) ;
 int matrixSelectPeg(int, int) ;
-int matrixUpdate()  ;
+void matrixUpdate()  ;
 int matrixCanMovePeg() ;
 int matrixCountRemainPeg() ;
 

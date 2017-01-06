@@ -182,12 +182,13 @@ matrixSelectPeg(int row, int column){
 return nbMove ;
 }
 
-int
+void
 matrixUpdate(Peg_Direction where){
 	int i;
     int coefRow = 0, coefColumn = 0;
 	int row, column ;
     Peg_Memento pegMemento;
+    
 	if(where == DEFAULT){
 		i = pegReturnDefaultPeg();
 		where = tab_Peg[i].direction ;
@@ -227,8 +228,7 @@ matrixUpdate(Peg_Direction where){
 	pMatrixLoad[row][column] = 1 ;
     pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
 	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//
-    
-	//mecanisme memento UNDO:: memorisation
+    //mecanisme memento UNDO:: memorisation
         pegMemento.coordStart.row = row + 2*coefRow ;
         pegMemento.coordStart.column = column + 2*coefColumn ;
         pegMemento.coordBetween.row = row + coefRow ;

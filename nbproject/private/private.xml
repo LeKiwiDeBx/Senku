@@ -7,37 +7,32 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="26">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="27">
         <file>
             <url>board.c</url>
             <bookmark id="19">
                 <name/>
-                <line>384</line>
-                <key/>
-            </bookmark>
-            <bookmark id="23">
-                <name/>
-                <line>687</line>
+                <line>390</line>
                 <key/>
             </bookmark>
             <bookmark id="18">
                 <name/>
-                <line>841</line>
+                <line>860</line>
                 <key/>
             </bookmark>
             <bookmark id="20">
                 <name/>
-                <line>842</line>
+                <line>861</line>
                 <key/>
             </bookmark>
             <bookmark id="21">
                 <name/>
-                <line>977</line>
+                <line>996</line>
                 <key/>
             </bookmark>
             <bookmark id="26">
                 <name/>
-                <line>1017</line>
+                <line>1036</line>
                 <key/>
             </bookmark>
         </file>
