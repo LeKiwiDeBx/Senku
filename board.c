@@ -122,7 +122,9 @@ typedef struct s_dataName{
     } dataName ;
 dataName *pDataName ;
 
-static pMemento pMementoUndo ;
+static 
+pMemento pMementoLastUndo ; //retiens le dernier undo
+
 /* *****************************************************************************
  * And the Widget's land begin here... 
  * ****************************************************************************/
@@ -309,12 +311,13 @@ _g_display_get_name(int rank) ;
  * @param pm le memento des images à redessiner sans les symboles du Undo
  */
 static void
-_setLastMementoUndoRedrawNormal(const pMemento) ;
+_setLastMementoUndoRedrawNormal(pMemento) ;
 
 int
 boardInit( ) {
     // init table des scores
     scoreInit( ) ;
+    
     //do {
     //	#ifdef _LINUX_
     //		system("clear");
@@ -392,6 +395,8 @@ boardInit( ) {
     _g_display_box_menu(NULL) ;
     onlyOneBoard.set = &currentMatrixOfBoard ;
     // on lance la boucle infernale
+    pMementoLastUndo = (pMemento)malloc(sizeof(memento)) ;
+    if(pMementoLastUndo == NULL) exit(EXIT_FAILURE) ;
     gtk_main( ) ;
     EXIT_SUCCESS ;
             /***************************************************************************
@@ -679,50 +684,57 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) {
-    pMementoUndo = (pMemento)(sizeof(memento)) ;
-    if(pMementoUndo )
-        pMementoUndo = caretakerGetMemento(1) ;
-    else exit(EXIT_FAILURE) ;
-    char * msg = (pMementoUndo)?ACTION_UNDO:NO_ACTION_UNDO ;
-    if(pMementoUndo){
-        originatorRestoreFromMemento( pMementoUndo ) ;
-        _g_displayUndoMatrix( pMementoUndo) ;
+    pMementoLastUndo = caretakerGetMemento(1) ;
+    char * msg = (pMementoLastUndo)?ACTION_UNDO:NO_ACTION_UNDO ;
+    if(pMementoLastUndo != NULL){
+        originatorRestoreFromMemento( pMementoLastUndo ) ;
+        _g_displayUndoMatrix( pMementoLastUndo) ;
     }
     gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
     gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
     g_free( markup ) ;
 }
 
-static void
-_setLastMementoUndoRedrawNormal(const pMemento pm){
-    static Coord pegUndo ={-1,-1}, pegDeleteUndo={-1,-1}, pegUndoCenter={-1,-1} ;
+void _setLastMementoUndoRedrawNormal( pMemento pm){
+    //static Coord pegUndo ={-1,-1}, pegDeleteUndo={-1,-1}, pegUndoCenter={-1,-1} ;
     int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
-    x = pm->mvtEnd.row ;
-    y = pm->mvtEnd.column ;
-    coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
-    coefColumn = pm->mvtBetween.column - pm->mvtStart.column ;
-    GtkWidget *imgPegDelete = gtk_image_new_from_file( IMG_PEG_DELETE ) ;   //blanc
-    GtkWidget *imgPegMove_2 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
-    GtkWidget *imgPegMove_3 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
-    if(pegUndo.x != -1 && pegUndo.y != -1){
-    gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegDeleteUndo.y, pegDeleteUndo.x ) ) ;
-    gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegUndoCenter.y, pegUndoCenter.x)) ;
-    gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pegUndo.y, pegUndo.x ) ) ;
-    gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete, pegDeleteUndo.y, pegDeleteUndo.x, 1, 1 ) ;
-    gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_2, pegUndoCenter.y, pegUndoCenter.x, 1, 1 ) ;
-    gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_3, pegUndo.y, pegUndo.x, 1, 1 ) ;
-    }
-    if(mementoIsEmpty()) {
-        pegUndo.x = -1 ;
-        pegUndo.y = -1 ;
-    }
-    else{
-        pegDeleteUndo.x = x ;
-        pegDeleteUndo.y = y ;
-        pegUndoCenter.x = x - 1 * coefRow ;
-        pegUndoCenter.y = y - 1 * coefColumn ;
-        pegUndo.x = x - 2 * coefRow ;
-        pegUndo.y = y - 2 * coefColumn ;
+    if(pm != NULL){
+        x = pm->mvtEnd.row ;
+        y = pm->mvtEnd.column ;
+        coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
+        coefColumn = pm->mvtBetween.column - pm->mvtStart.column ;
+        GtkWidget *imgPegDelete = gtk_image_new_from_file( IMG_PEG_DELETE ) ;   //blanc
+        GtkWidget *imgPegMove_2 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
+        GtkWidget *imgPegMove_3 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
+        if(/*pegUndo.x != -1 && pegUndo.y != -1*/pMementoLastUndo != NULL){
+            gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pMementoLastUndo->mvtEnd.column, pMementoLastUndo->mvtEnd.row ) ) ;
+            gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pMementoLastUndo->mvtBetween.row, pMementoLastUndo->mvtBetween.row)) ;
+            gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), pMementoLastUndo->mvtStart.column, pMementoLastUndo->mvtStart.row  ) ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete, pMementoLastUndo->mvtEnd.column, pMementoLastUndo->mvtEnd.row, 1, 1 ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_2, pMementoLastUndo->mvtBetween.row, pMementoLastUndo->mvtBetween.row, 1, 1 ) ;
+            gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_3, pMementoLastUndo->mvtStart.column, pMementoLastUndo->mvtStart.row , 1, 1 ) ;
+        }
+        if(mementoIsEmpty()) {/*
+            pegUndo.x = -1 ;
+            pegUndo.y = -1 ;
+                               */
+            pMementoLastUndo = NULL ;
+        }
+        else{/*
+            pegDeleteUndo.x = x ;
+            pegDeleteUndo.y = y ;
+            pegUndoCenter.x = x - 1 * coefRow ;
+            pegUndoCenter.y = y - 1 * coefColumn ;
+            pegUndo.x = x - 2 * coefRow ;
+            pegUndo.y = y - 2 * coefColumn ;
+               */
+            pMementoLastUndo->mvtEnd.row = x ;
+            pMementoLastUndo->mvtEnd.column = y ;
+            pMementoLastUndo->mvtBetween.row = x - 1 * coefRow ;
+            pMementoLastUndo->mvtBetween.column = y - 1 * coefColumn ;
+            pMementoLastUndo->mvtStart.row = x - 2 * coefRow ;
+            pMementoLastUndo->mvtStart.column = y - 2 * coefColumn ;
+        }
     }
 }
 
@@ -762,15 +774,13 @@ _g_displayUndoMatrix(pMemento pm){
         y = pm->mvtEnd.column ;
         coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
         coefColumn = pm->mvtBetween.column - pm->mvtStart.column ;
-        
-        _setLastMementoUndoRedrawNormal(pm) ;
-        
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y, x ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 1 * coefColumn, x - 1 * coefRow ) ) ;
         gtk_widget_destroy( gtk_grid_get_child_at( GTK_GRID( pGridMatrix ), y - 2 * coefColumn, x - 2 * coefRow ) ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDeleteUndo, y, x, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegUndo, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
+        _setLastMementoUndoRedrawNormal( pMementoLastUndo ) ;
         gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
     }
 }
@@ -832,7 +842,11 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     else if(deltaConstantXY == abs(deltaY)) 
                         action = (deltaY>0)?ACTION_SELECT_TAKE_WEST : ACTION_SELECT_TAKE_EAST ;
                     if (matrixUpdate( action )){ 
-                            
+//                            if(pMementoLastUndo){
+//                                g_print("\nDEBUG :: x %d y %d",pMementoLastUndo->mvtStart.row, pMementoLastUndo->mvtStart.column) ;
+//                                _setLastMementoUndoRedrawNormal(pMementoLastUndo) ;
+//                                pMementoLastUndo = NULL ;
+//                            }
                             _g_displayUpdateMatrix( action, p->x, p->y ) ;
                             _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
                             pOld.x = p->x ;
@@ -861,7 +875,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
-                         if(rank = scoreNew()) _g_display_get_name(rank) ;
+                        if(rank = scoreNew()) _g_display_get_name(rank) ;
                     }
                 }
                 else if (sumDelta == 0 && (deltaX != -deltaY)) { //on reclic sur le meme que le premier 

@@ -12,27 +12,27 @@
             <url>board.c</url>
             <bookmark id="19">
                 <name/>
-                <line>390</line>
+                <line>391</line>
                 <key/>
             </bookmark>
             <bookmark id="18">
                 <name/>
-                <line>860</line>
+                <line>863</line>
                 <key/>
             </bookmark>
             <bookmark id="20">
                 <name/>
-                <line>861</line>
+                <line>864</line>
                 <key/>
             </bookmark>
             <bookmark id="21">
                 <name/>
-                <line>996</line>
+                <line>999</line>
                 <key/>
             </bookmark>
             <bookmark id="26">
                 <name/>
-                <line>1036</line>
+                <line>1039</line>
                 <key/>
             </bookmark>
         </file>
@@ -55,10 +55,11 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/memento.h</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/score.c</file>
+            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/memento.h</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/matrix.c</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/board.c</file>
+            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/matrix.h</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/memento.c</file>
         </group>
     </open-files>

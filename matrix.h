@@ -46,7 +46,7 @@ matrixOfBoard currentMatrixOfBoard ;
 */
 int matrixLoad(int) ;
 int matrixSelectPeg(int, int) ;
-void matrixUpdate()  ;
+int matrixUpdate()  ;
 int matrixCanMovePeg() ;
 int matrixCountRemainPeg() ;
 

@@ -182,7 +182,7 @@ matrixSelectPeg(int row, int column){
 return nbMove ;
 }
 
-void
+int
 matrixUpdate(Peg_Direction where){
 	int i;
     int coefRow = 0, coefColumn = 0;
