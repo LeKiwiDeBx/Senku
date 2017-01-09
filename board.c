@@ -312,7 +312,13 @@ _g_display_get_name(int rank) ;
  */
 static void
 _setLastMementoUndoRedrawNormal(pMemento) ;
-
+/**
+ * @brief fermeture de BoxScore
+ * @param pWidget le button close
+ * @param pData le widget window pBoxScore
+ */
+void
+OnCloseBoxScore( GtkWidget *pWidget, gpointer pData ) ;
 int
 boardInit( ) {
     // init table des scores
@@ -705,6 +711,7 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
             originatorRestoreFromMemento( pMementoUndo ) ;
             _g_displayUndoMatrix( pMementoUndo) ;
 //            memcpy(pMementoLastUndo,pMementoUndo,sizeof(memento) ) ;
+            free(pMementoUndo) ;
         }
         g_free( markup ) ;
     }
@@ -1122,6 +1129,8 @@ _g_display_box_score(pScore ps, const int rank){
     char *r = "";
     char *scoreTitle[] ={"RANK", "PLAYER", "PEG", "SCORE", "LAST" } ;
     int sizeArray =0 ;
+    gchar *markup ;
+    GtkWidget *pButtonOk = NULL ;
     GtkWidget *plbScoreOrder    = NULL ;
     GtkWidget *plbScorePlayer   = NULL ;
     GtkWidget *plbScorePeg      = NULL ;
@@ -1146,24 +1155,44 @@ _g_display_box_score(pScore ps, const int rank){
     gtk_grid_set_row_spacing( GTK_GRID( pGridScore ), 5 ) ;
     gtk_grid_set_column_spacing( GTK_GRID( pGridScore ), 7 ) ;
     gtk_grid_set_column_homogeneous(GTK_GRID(pGridScore), TRUE) ;
-//    g_printf("\n%*s\t%-*s\t%*s\t%*s\n",5,"ORDER",12,"   PLAYER   ",3,"PEG",5,"SCORE");
-    for(k=0; k < sizeArray; k++)
+    for(k=0; k < sizeArray; k++){
         lbScore[k] = gtk_label_new(scoreTitle[k]) ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),scoreTitle[k]);
+        gtk_label_set_markup( GTK_LABEL(lbScore[k]), markup ) ;
+    }
     gtk_grid_attach(GTK_GRID(pGridScore),lbScore[0] , 0,0,1,1) ; //plbScoreOrder
     for(k=0; k < sizeArray-1;k++)
         gtk_grid_attach_next_to(GTK_GRID(pGridScore), lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
 	for (i = 1; i <= SCORE_BEST_OF; i++){
-            r = (i==rank)? "@":"" ;
+            r = (i==rank)? "<":"" ;
             lbScore[0] = gtk_label_new(g_strdup_printf("%d",i)) ;
+            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d),i);
+            gtk_label_set_markup( GTK_LABEL(lbScore[0]), markup ) ;
             lbScore[1] = gtk_label_new(ps->namePlayer) ;
+            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s),ps->namePlayer);
+            gtk_label_set_markup( GTK_LABEL(lbScore[1]), markup ) ;
             lbScore[2] = gtk_label_new(g_strdup_printf("%d", ps->remainingPeg)) ;
+            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d), ps->remainingPeg);
+            gtk_label_set_markup( GTK_LABEL(lbScore[2]), markup ) ;
             lbScore[3] = gtk_label_new(g_strdup_printf("%.f", ps->scoreGame)) ;
+            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,.f), ps->scoreGame);
+            gtk_label_set_markup( GTK_LABEL(lbScore[3]), markup ) ; 
             lbScore[4] = gtk_label_new(r) ;
+            markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s), r);
+            gtk_label_set_markup( GTK_LABEL(lbScore[4]), markup ) ; 
             gtk_grid_attach(GTK_GRID(pGridScore), lbScore[0], 0,i,1,1) ;
             for(k=0;k<sizeArray-1;k++)
                 gtk_grid_attach_next_to(GTK_GRID(pGridScore), lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
-//            g_printf("%d\t%-12s\t%-3d\t%.f%s\n",i,ps->namePlayer, ps->remainingPeg, ps->scoreGame, r);
             ps++ ;
 		}
+    pButtonOk = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+    gtk_grid_attach(GTK_GRID(pGridScore), pButtonOk,2,11,1,1) ;
+    g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnCloseBoxScore),pBoxScore) ;
+    g_free( markup ) ;
     gtk_widget_show_all( pBoxScore ) ;
+}
+
+void
+OnCloseBoxScore( GtkWidget *pWidget, gpointer pData ) {
+    gtk_widget_destroy(GTK_WIDGET(pData)) ;
 }
