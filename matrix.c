@@ -229,12 +229,12 @@ matrixUpdate(Peg_Direction where){
     pMatrixLoad[row + coefRow][column + coefColumn] = 0;//erase
 	pMatrixLoad[row + 2*coefRow][column + 2*coefColumn] = 0;//
     //mecanisme memento UNDO:: memorisation
-        pegMemento.coordStart.row = row + 2*coefRow ;
-        pegMemento.coordStart.column = column + 2*coefColumn ;
-        pegMemento.coordBetween.row = row + coefRow ;
-        pegMemento.coordBetween.column = column + coefColumn ;
-        pegMemento.coordEnd.row = row ;
-        pegMemento.coordEnd.column = column ;
+    pegMemento.coordStart.row = row + 2*coefRow ;
+    pegMemento.coordStart.column = column + 2*coefColumn ;
+    pegMemento.coordBetween.row = row + coefRow ;
+    pegMemento.coordBetween.column = column + coefColumn ;
+    pegMemento.coordEnd.row = row ;
+    pegMemento.coordEnd.column = column ;
 	originatorSet(pegMemento);
 	caretakerAddMemento(originatorSaveToMemento());
     //fin memento UNDO

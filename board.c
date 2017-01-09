@@ -123,7 +123,7 @@ typedef struct s_dataName{
 dataName *pDataName ;
 
 static 
-pMemento pMementoLastUndo ; //retiens le dernier undo
+pMemento pMementoLastUndo = NULL ; //retiens le dernier undo
 
 /* *****************************************************************************
  * And the Widget's land begin here... 
@@ -395,7 +395,7 @@ boardInit( ) {
     _g_display_box_menu(NULL) ;
     onlyOneBoard.set = &currentMatrixOfBoard ;
     // on lance la boucle infernale
-    pMementoLastUndo = (pMemento)malloc(sizeof(memento)) ;
+    pMementoLastUndo = malloc(1*sizeof(memento)) ;
     if(pMementoLastUndo == NULL) exit(EXIT_FAILURE) ;
     gtk_main( ) ;
     EXIT_SUCCESS ;
@@ -684,21 +684,42 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) {
 
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) {
-    pMementoLastUndo = caretakerGetMemento(1) ;
-    char * msg = (pMementoLastUndo)?ACTION_UNDO:NO_ACTION_UNDO ;
-    if(pMementoLastUndo != NULL){
-        originatorRestoreFromMemento( pMementoLastUndo ) ;
-        _g_displayUndoMatrix( pMementoLastUndo) ;
+    char * msg ;
+    gchar *markup ;
+    pMemento pMementoUndo = NULL ;
+    pMementoUndo = malloc(1*sizeof(memento)) ;
+    if(pMementoLastUndo->mvtEnd.row != 0 && pMementoLastUndo != NULL){
+        g_print("\nDEBUG pMementoLastUndo end.row %d end.column %d",pMementoLastUndo->mvtEnd.row,pMementoLastUndo->mvtEnd.column) ;
     }
-    gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
-    gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
-    g_free( markup ) ;
+    if(pMementoUndo = caretakerGetMemento(1) ){
+        msg = ACTION_UNDO ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
+        gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
+        if(!strcmp(msg,NO_ACTION_UNDO)) {
+            g_print("\nDEBUG Last Undo memento = NULL") ;
+//            pMementoLastUndo = NULL ;
+        }
+        else if (pMementoUndo != NULL && !strcmp(msg,ACTION_UNDO)){
+//            if(pMementoLastUndo->mvtEnd.row != 0 && pMementoLastUndo != NULL)
+//                _setLastMementoUndoRedrawNormal(pMementoLastUndo) ;
+            originatorRestoreFromMemento( pMementoUndo ) ;
+            _g_displayUndoMatrix( pMementoUndo) ;
+//            memcpy(pMementoLastUndo,pMementoUndo,sizeof(memento) ) ;
+        }
+        g_free( markup ) ;
+    }
+    else {
+        msg = NO_ACTION_UNDO ;
+        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
+        gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
+        g_free( markup ) ;
+    }
+    g_free(pMementoUndo) ;
 }
 
 void _setLastMementoUndoRedrawNormal( pMemento pm){
-    //static Coord pegUndo ={-1,-1}, pegDeleteUndo={-1,-1}, pegUndoCenter={-1,-1} ;
     int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
-    if(pm != NULL){
+    if(pm != NULL && pm->mvtEnd.row != 0){
         x = pm->mvtEnd.row ;
         y = pm->mvtEnd.column ;
         coefRow = pm->mvtBetween.row - pm->mvtStart.row ;
@@ -713,27 +734,6 @@ void _setLastMementoUndoRedrawNormal( pMemento pm){
             gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDelete, pMementoLastUndo->mvtEnd.column, pMementoLastUndo->mvtEnd.row, 1, 1 ) ;
             gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_2, pMementoLastUndo->mvtBetween.row, pMementoLastUndo->mvtBetween.row, 1, 1 ) ;
             gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_3, pMementoLastUndo->mvtStart.column, pMementoLastUndo->mvtStart.row , 1, 1 ) ;
-        }
-        if(mementoIsEmpty()) {/*
-            pegUndo.x = -1 ;
-            pegUndo.y = -1 ;
-                               */
-            pMementoLastUndo = NULL ;
-        }
-        else{/*
-            pegDeleteUndo.x = x ;
-            pegDeleteUndo.y = y ;
-            pegUndoCenter.x = x - 1 * coefRow ;
-            pegUndoCenter.y = y - 1 * coefColumn ;
-            pegUndo.x = x - 2 * coefRow ;
-            pegUndo.y = y - 2 * coefColumn ;
-               */
-            pMementoLastUndo->mvtEnd.row = x ;
-            pMementoLastUndo->mvtEnd.column = y ;
-            pMementoLastUndo->mvtBetween.row = x - 1 * coefRow ;
-            pMementoLastUndo->mvtBetween.column = y - 1 * coefColumn ;
-            pMementoLastUndo->mvtStart.row = x - 2 * coefRow ;
-            pMementoLastUndo->mvtStart.column = y - 2 * coefColumn ;
         }
     }
 }
@@ -765,9 +765,9 @@ _g_displayUndoMatrix(pMemento pm){
                 pm->mvtStart.column,
                 pm->mvtEnd.row,
                 pm->mvtEnd.column);
-        GtkWidget *imgPegDeleteUndo = gtk_image_new_from_file( IMG_PEG_DELETE_UNDO ) ; //blanc cross
-        GtkWidget *imgPegMove_1 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;     //gold
-        GtkWidget *imgPegUndo   = gtk_image_new_from_file( IMG_PEG_UNDO ) ;     //gold point
+        GtkWidget *imgPegDeleteUndo = gtk_image_new_from_file( IMG_PEG_DELETE_UNDO ) ;  //blanc cross
+        GtkWidget *imgPegMove_1 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;             //gold
+        GtkWidget *imgPegUndo   = gtk_image_new_from_file( IMG_PEG_UNDO ) ;             //gold point
         matrixUpdate(UNDO) ;
         _firstSelectPeg("set", TRUE) ;
         x = pm->mvtEnd.row ;
@@ -780,7 +780,6 @@ _g_displayUndoMatrix(pMemento pm){
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegDeleteUndo, y, x, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegMove_1, y - 1 * coefColumn, x - 1 * coefRow, 1, 1 ) ;
         gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPegUndo, y - 2 * coefColumn, x - 2 * coefRow, 1, 1 ) ;
-        _setLastMementoUndoRedrawNormal( pMementoLastUndo ) ;
         gtk_widget_show_all( GTK_WIDGET( pGridMatrix ) ) ;
     }
 }
@@ -842,11 +841,6 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     else if(deltaConstantXY == abs(deltaY)) 
                         action = (deltaY>0)?ACTION_SELECT_TAKE_WEST : ACTION_SELECT_TAKE_EAST ;
                     if (matrixUpdate( action )){ 
-//                            if(pMementoLastUndo){
-//                                g_print("\nDEBUG :: x %d y %d",pMementoLastUndo->mvtStart.row, pMementoLastUndo->mvtStart.column) ;
-//                                _setLastMementoUndoRedrawNormal(pMementoLastUndo) ;
-//                                pMementoLastUndo = NULL ;
-//                            }
                             _g_displayUpdateMatrix( action, p->x, p->y ) ;
                             _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
                             pOld.x = p->x ;
