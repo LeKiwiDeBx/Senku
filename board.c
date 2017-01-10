@@ -39,7 +39,7 @@
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 #define SENKU_ABS(x) ((x))?(x):(-x)
 
-#define TITLE_MAIN          "   Senku GTK Alpha 2.0   (c) 2016   [°} Le KiWi   "
+#define TITLE_MAIN          "   Senku GTK Beta 2.0   (c) 2016   [°} Le KiWi   "
 #define TITLE_MENU          "Shapes choice"
 #define TIMER_DELAY         1000
 #define IMG_PEG_MOVE        "image/circle_gold32.png"
@@ -124,6 +124,8 @@ dataName *pDataName ;
 
 static 
 pMemento pMementoLastUndo = NULL ; //retiens le dernier undo
+static 
+guint handleTimeout = 0 ;          //handle de la fonction g_timeout_add()
 
 /* *****************************************************************************
  * And the Widget's land begin here... 
@@ -161,7 +163,8 @@ GtkWidget *pBoxScore = NULL ;
 GtkWidget *pGridScore = NULL ;
 GtkWidget *plbValues[MAX_LABEL] ;
 GtkWidget *plbValuesValue[MAX_LABEL] ; 
-
+GtkWidget *pDialogBoxQuit = NULL ;
+GtkWidget *pWindowGetName = NULL ;
 /**
  * @brief Appel selection image avec un clic souris
  * @param pWidget boxEvent qui encapsule l'image
@@ -684,7 +687,14 @@ __displayPlayAgain( ) {
 
 void
 OnDestroy( GtkWidget *pWidget, gpointer pData ) {
-    gtk_main_quit( ) ;
+    pDialogBoxQuit = gtk_message_dialog_new(GTK_WINDOW(pWindowMain),GTK_DIALOG_MODAL,GTK_MESSAGE_QUESTION,GTK_BUTTONS_OK_CANCEL,"Quit Senku ?") ;
+    gint result = gtk_dialog_run((GTK_DIALOG(pDialogBoxQuit))) ;
+    switch(result){
+    case GTK_RESPONSE_OK:
+        gtk_main_quit( ) ;
+        break;
+    }
+    gtk_widget_destroy (pDialogBoxQuit);
 }
 
 void
@@ -719,6 +729,7 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
         markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
         g_free( markup ) ;
+        gtk_widget_set_state_flags(pButtonUndo, GTK_STATE_FLAG_INSENSITIVE,TRUE) ;
     }
     g_free(pMementoUndo) ;
 }
@@ -747,7 +758,6 @@ void _setLastMementoUndoRedrawNormal( pMemento pm){
 static void
 OnNewGame(GtkWidget *pWidget, gpointer pData){
     _g_erase_displayMatrix() ;
-//    timerStopClock() ;
     scoreResetBonusTimeScore( ) ;
     gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), currentMatrixOfBoard.name );
     gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
@@ -866,6 +876,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     if (matrixUpdate( action )){ 
                             _g_displayUpdateMatrix( action, p->x, p->y ) ;
                             _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
+                            gtk_widget_set_state_flags(pButtonUndo, GTK_STATE_FLAG_NORMAL,TRUE) ;
                             pOld.x = p->x ;
                             pOld.y = p->y ;
                             if (matrixSelectPeg( pOld.x, pOld.y )) {
@@ -891,8 +902,12 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), NO_MORE_MOVE );
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
+                        gtk_widget_set_state_flags(pButtonUndo, GTK_STATE_FLAG_INSENSITIVE,TRUE) ;
                         timerStopClock() ;
-                        g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
+                        if(handleTimeout) {
+                            g_source_remove(handleTimeout) ;
+                            g_timeout_add( TIMER_DELAY, _g_display_time, GINT_TO_POINTER( FALSE ) );
+                        }
                         if(rank = scoreNew()) _g_display_get_name(rank) ;
                     }
                 }
@@ -977,6 +992,7 @@ OnPlay( GtkWidget* pWidget, gpointer pData ) {
     GtkRadioButton *radio = NULL ;
     radio = GTK_RADIO_BUTTON( pData ) ;
     // equivalent while (!matrixLoad( num = __getMenuChoice( ) )) ;
+    gtk_widget_set_state_flags(pButtonUndo, GTK_STATE_FLAG_INSENSITIVE,TRUE) ;
     if (matrixLoad( which_radio_is_selected( gtk_radio_button_get_group( GTK_RADIO_BUTTON( radio ) ) ) )) {
         _g_displayMatrix( pMatrixLoad ) ;
         gtk_widget_show_all( pWindowMain ) ;
@@ -988,7 +1004,12 @@ OnPlay( GtkWidget* pWidget, gpointer pData ) {
         gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), currentMatrixOfBoard.name );
         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
         g_free( markup ) ;
-        g_timeout_add( TIMER_DELAY, _g_display_time, GINT_TO_POINTER( FALSE ) ) ;
+        if(handleTimeout) {
+            g_source_remove(handleTimeout) ;
+            g_timeout_add( TIMER_DELAY, _g_display_time, GINT_TO_POINTER( FALSE ) );
+            _g_labelSet(plbValuesValue[LABEL_TIME],GINT_TO_POINTER(0)) ;
+        }
+        handleTimeout = g_timeout_add( TIMER_DELAY, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
     }
     gtk_widget_destroy( pWindow ) ;
 }
@@ -996,14 +1017,11 @@ OnPlay( GtkWidget* pWidget, gpointer pData ) {
 gboolean
 _g_display_time( gpointer pData ) {
     static int i = 1 ;
-    static gboolean stop = FALSE ;
-    int timerStop = GPOINTER_TO_INT( pData ) ;
-    stop = (timerStop) ? !stop : stop ;
-    if (!stop) {
-        _g_labelSet( plbValuesValue[LABEL_TIME],GINT_TO_POINTER(i++)) ;
-        return TRUE ;
-    }
-    return FALSE ;
+    gboolean start = GPOINTER_TO_INT(pData) ;
+    if(start){
+         _g_labelSet( plbValuesValue[LABEL_TIME],GINT_TO_POINTER(i++)) ;
+    } else i = 1;
+    return start;
 }
 
 int
@@ -1073,7 +1091,6 @@ _g_displayMatrix( Matrix matrix ) {
 
 void
 _g_display_get_name(int rank){
-    GtkWidget *pWindowGetName = NULL ;
     GtkWidget *pEntryName = NULL ;
     GtkWidget *pLabelName = NULL ;
     GtkWidget *pLabelMessage = NULL ;
@@ -1126,7 +1143,8 @@ OnSetName(GtkWidget *pWidget, dataName* pData ){
     const gchar * sName = gtk_entry_get_text(GTK_ENTRY(pData->pWidgetName));
     scoreSetNamePlayer(sName, rank) ;
     pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
-    gtk_widget_destroy(pWidget) ;
+    g_free(pWindowGetName) ;
+    gtk_widget_destroy(pWindowGetName) ;
     if(resultScore)resultScore = (pScore) scoreGetSortScore( ) ;
      _g_display_box_score(resultScore,rank) ;
     g_free(resultScore) ;
@@ -1136,7 +1154,8 @@ void
 OnDestroyGetName( GtkWidget *pWidget, gpointer pData ) {
     pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
     int rank = GPOINTER_TO_INT(pData) ;
-    gtk_widget_destroy(pWidget) ;
+    g_free(pWindowGetName) ;
+    gtk_widget_destroy(pWindowGetName) ;
     if(resultScore)resultScore = (pScore)scoreGetSortScore( ) ;
 //    g_print("\nDEBUG le nom cursor est %s", resultScore[0].namePlayer );
     _g_display_box_score(resultScore,rank) ;
@@ -1158,7 +1177,6 @@ _g_display_box_score(pScore ps, const int rank){
     GtkWidget *plbScoreRank     = NULL ;
     GtkWidget *lbScore[] = {plbScoreOrder, plbScorePlayer, plbScorePeg, plbScoreScore, plbScoreRank} ;
     sizeArray = (int)(sizeof(lbScore)/sizeof(GtkWidget*))  ;
-    
     pBoxScore = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
     gtk_window_set_title( GTK_WINDOW( pBoxScore ), BOX_SCORE_TITLE ) ;
     gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
@@ -1210,9 +1228,11 @@ _g_display_box_score(pScore ps, const int rank){
     g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnCloseBoxScore),pBoxScore) ;
     g_free( markup ) ;
     gtk_widget_show_all( pBoxScore ) ;
+//    g_free(pBoxScore) ; 
+    g_free(pBoxScore) ;
 }
 
 void
 OnCloseBoxScore( GtkWidget *pWidget, gpointer pData ) {
-    gtk_widget_destroy(GTK_WIDGET(pData)) ;
+    gtk_widget_destroy(pBoxScore) ;
 }
