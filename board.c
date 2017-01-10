@@ -35,7 +35,7 @@
 #define LABEL_COLOR_TITLE #385998
 #define LABEL_COLOR_TEXT  #FF6600 
 //#385998
-#define SENKU_PANGO_CONCAT_STR(color,type) "<span size=\"xx-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
+#define SENKU_PANGO_CONCAT_STR(color,type) "<span size=\"x-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 #define SENKU_ABS(x) ((x))?(x):(-x)
 
@@ -462,7 +462,6 @@ _g_display_box_menu(gpointer pData){
     // options
     pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, boxMenuOptionSpacing ) ;
     gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
-    /* ??? peut etre mettre toutes les options dans le frame ???*/
     plbTitle = gtk_label_new( TITLE_MAIN ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), plbTitle, TRUE, FALSE, boxMenuOptionPadding ) ;
     GtkWidget *pRadio[sizeShapeName] ;
@@ -748,11 +747,18 @@ void _setLastMementoUndoRedrawNormal( pMemento pm){
 static void
 OnNewGame(GtkWidget *pWidget, gpointer pData){
     _g_erase_displayMatrix() ;
-    gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), BLANK );
+//    timerStopClock() ;
+    scoreResetBonusTimeScore( ) ;
+    gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), currentMatrixOfBoard.name );
     gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
     g_free( markup ) ;
-    _g_new_GridMatrix() ; //    Grille du Senku
-    _g_display_box_menu(NULL) ;// choix de la matrice
+    _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( 0 ) ) ;
+    _g_labelSet( plbValuesValue[LABEL_BONUS], GINT_TO_POINTER( 0 ) ) ;
+    _g_labelSet( plbValuesValue[LABEL_TIME], GINT_TO_POINTER( 0 ) ) ;
+    _g_new_GridMatrix() ;       // Grille du Senku
+    _g_display_box_menu(NULL) ; // Choix de la matrice
+    _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
+    caretakerNew( ) ;
 }
 
 static void
@@ -763,6 +769,7 @@ _g_new_GridMatrix(){
     gtk_grid_set_row_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
     gtk_grid_set_column_spacing( GTK_GRID( pGridMatrix ), 0 ) ;
 }
+
 void
 _g_displayUndoMatrix(pMemento pm){
     int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
@@ -772,9 +779,18 @@ _g_displayUndoMatrix(pMemento pm){
                 pm->mvtStart.column,
                 pm->mvtEnd.row,
                 pm->mvtEnd.column);
-        GtkWidget *imgPegDeleteUndo = gtk_image_new_from_file( IMG_PEG_DELETE_UNDO ) ;  //blanc cross
+     /*
+     * DEBUG FROZEN VERSION
+     */
+//        GtkWidget *imgPegDeleteUndo = gtk_image_new_from_file( IMG_PEG_DELETE_UNDO ) ;      //blanc cross
+//        GtkWidget *imgPegMove_1 =     gtk_image_new_from_file( IMG_PEG_MOVE ) ;             //gold
+//        GtkWidget *imgPegUndo   =     gtk_image_new_from_file( IMG_PEG_UNDO ) ;             //gold point
+     /*
+     * END DEBUG FROZEN VERSION
+     */   
+        GtkWidget *imgPegDeleteUndo = gtk_image_new_from_file( IMG_PEG_DELETE ) ;       //blanc 
         GtkWidget *imgPegMove_1 = gtk_image_new_from_file( IMG_PEG_MOVE ) ;             //gold
-        GtkWidget *imgPegUndo   = gtk_image_new_from_file( IMG_PEG_UNDO ) ;             //gold point
+        GtkWidget *imgPegUndo   = gtk_image_new_from_file( IMG_PEG_MOVE ) ;             //gold
         matrixUpdate(UNDO) ;
         _firstSelectPeg("set", TRUE) ;
         x = pm->mvtEnd.row ;
@@ -875,6 +891,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), NO_MORE_MOVE );
                         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
                         g_free( markup ) ;
+                        timerStopClock() ;
                         g_timeout_add( 1000, _g_display_time, GINT_TO_POINTER( TRUE ) ) ;
                         if(rank = scoreNew()) _g_display_get_name(rank) ;
                     }
@@ -966,6 +983,11 @@ OnPlay( GtkWidget* pWidget, gpointer pData ) {
         onlyOneBoard.set = &currentMatrixOfBoard ;
         caretakerNew( ) ; //pattern memento du mecanisme pour le Undo
         scoreResetBonusTimeScore( ) ;
+        timerStartClock() ;
+        _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
+        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), currentMatrixOfBoard.name );
+        gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
+        g_free( markup ) ;
         g_timeout_add( TIMER_DELAY, _g_display_time, GINT_TO_POINTER( FALSE ) ) ;
     }
     gtk_widget_destroy( pWindow ) ;
@@ -973,14 +995,12 @@ OnPlay( GtkWidget* pWidget, gpointer pData ) {
 
 gboolean
 _g_display_time( gpointer pData ) {
-    static int i = 0 ;
+    static int i = 1 ;
     static gboolean stop = FALSE ;
     int timerStop = GPOINTER_TO_INT( pData ) ;
     stop = (timerStop) ? !stop : stop ;
     if (!stop) {
-        gchar *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,ds),i++);
-        gtk_label_set_markup( GTK_LABEL(plbValuesValue[LABEL_TIME]), markup ) ;
-        g_free( markup ) ;
+        _g_labelSet( plbValuesValue[LABEL_TIME],GINT_TO_POINTER(i++)) ;
         return TRUE ;
     }
     return FALSE ;
@@ -1154,7 +1174,7 @@ _g_display_box_score(pScore ps, const int rank){
     gtk_container_add( GTK_CONTAINER( pBoxScore ), pGridScore ) ;
     gtk_grid_set_row_spacing( GTK_GRID( pGridScore ), 5 ) ;
     gtk_grid_set_column_spacing( GTK_GRID( pGridScore ), 7 ) ;
-    gtk_grid_set_column_homogeneous(GTK_GRID(pGridScore), TRUE) ;
+    gtk_grid_set_column_homogeneous(GTK_GRID(pGridScore), FALSE) ;
     for(k=0; k < sizeArray; k++){
         lbScore[k] = gtk_label_new(scoreTitle[k]) ;
         markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),scoreTitle[k]);
@@ -1164,7 +1184,7 @@ _g_display_box_score(pScore ps, const int rank){
     for(k=0; k < sizeArray-1;k++)
         gtk_grid_attach_next_to(GTK_GRID(pGridScore), lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
 	for (i = 1; i <= SCORE_BEST_OF; i++){
-            r = (i==rank)? "<":"" ;
+            r = (i==rank)? "<":"    " ;
             lbScore[0] = gtk_label_new(g_strdup_printf("%d",i)) ;
             markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d),i);
             gtk_label_set_markup( GTK_LABEL(lbScore[0]), markup ) ;
@@ -1186,7 +1206,7 @@ _g_display_box_score(pScore ps, const int rank){
             ps++ ;
 		}
     pButtonOk = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
-    gtk_grid_attach(GTK_GRID(pGridScore), pButtonOk,2,11,1,1) ;
+    gtk_grid_attach(GTK_GRID(pGridScore), pButtonOk,4,11,1,1) ;
     g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnCloseBoxScore),pBoxScore) ;
     g_free( markup ) ;
     gtk_widget_show_all( pBoxScore ) ;
