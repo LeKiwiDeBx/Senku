@@ -39,7 +39,7 @@
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 #define SENKU_ABS(x) ((x))?(x):(-x)
 
-#define TITLE_MAIN          "   Senku GTK Beta 2.0   (c) 2016   [°} Le KiWi   "
+#define TITLE_MAIN          "Senku GTK \u03B2 2.0 (c) 2016 \n\n          [°} Le KiWi \u262D"
 #define TITLE_MENU          "Shapes choice"
 #define TIMER_DELAY         1000
 #define IMG_PEG_MOVE        "image/circle_gold32.png"
@@ -53,7 +53,7 @@
 #define ACTION_UNDO         "[Undo] last move"
 #define BLANK               ""
 #define BOX_SCORE_TITLE     " Score "
-#define APPLICATION_TITLE   "Senku GTK Alpha 2.0"
+#define APPLICATION_TITLE   "Senku 'GTK' \u03B2 2.0"
 #define APPLICATION_SIZE_WIDTH 360
 #define APPLICATION_SIZE_HEIGHT 340
 #define APPLICATION_BORDER_WIDTH 10
@@ -398,7 +398,7 @@ boardInit( ) {
     /* on ajoute les boutons */
     gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 0, 3, 1, 3 ) ;
     /* les signaux des boutons */
-    g_signal_connect( G_OBJECT( pButtonQuit ),"clicked", G_CALLBACK( OnDestroy ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonQuit ),"clicked", G_CALLBACK( OnDestroy ), pWindowMain ) ;
     g_signal_connect( G_OBJECT( pButtonUndo ),"clicked", G_CALLBACK( OnUndo ), NULL ) ;
     g_signal_connect( G_OBJECT( pButtonNewGame ),"clicked", G_CALLBACK( OnNewGame ), NULL ) ;
     _g_display_box_menu(NULL) ;
@@ -486,7 +486,7 @@ _g_display_box_menu(gpointer pData){
     /* on ajoute les options */
     gtk_container_add( GTK_CONTAINER(pBoxMenu ), pBoxMenuOption ) ;
     //les signaux 
-    g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), NULL ) ;
+    g_signal_connect( G_OBJECT( pBtnMenuQuit ), "clicked", G_CALLBACK( OnDestroy ), pBoxMenu ) ;
     g_signal_connect( G_OBJECT( pBtnMenuPlay ), "clicked", G_CALLBACK( OnPlay ), pRadio[0] ) ; //radio a la place de pRadio[0]
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
@@ -687,7 +687,10 @@ __displayPlayAgain( ) {
 
 void
 OnDestroy( GtkWidget *pWidget, gpointer pData ) {
-    pDialogBoxQuit = gtk_message_dialog_new(GTK_WINDOW(pWindowMain),GTK_DIALOG_MODAL,GTK_MESSAGE_QUESTION,GTK_BUTTONS_OK_CANCEL,"Quit Senku ?") ;
+    pDialogBoxQuit = gtk_message_dialog_new(GTK_WINDOW(pWindowMain),GTK_DIALOG_MODAL,GTK_MESSAGE_QUESTION,GTK_BUTTONS_OK_CANCEL,"Do you Really wish to Quit Senku ?") ;
+    gtk_window_set_title(GTK_WINDOW(pDialogBoxQuit),"Confirm QUIT") ;
+    gtk_window_set_transient_for (GTK_WINDOW(pDialogBoxQuit),GTK_WINDOW(pData));
+    gtk_window_set_position(GTK_WINDOW(pDialogBoxQuit), GTK_WIN_POS_CENTER_ON_PARENT);
     gint result = gtk_dialog_run((GTK_DIALOG(pDialogBoxQuit))) ;
     switch(result){
     case GTK_RESPONSE_OK:
@@ -1099,7 +1102,7 @@ _g_display_get_name(int rank){
     const char * labelNom = "Votre nom:" ;
     char * labelMessage = "\nCongratulations, " ;
     const char * labelInsideEntry = "Unknown" ;
-    const char * topmost = g_strdup_printf("you're %d in topmost!\n", rank) ;
+    const char * topmost = g_strdup_printf("you're number %d in topmost!\n", rank) ;
     pLabelName = gtk_label_new(labelNom) ;
     labelMessage = g_strconcat(labelMessage, topmost,NULL) ;
     pLabelMessage = gtk_label_new(labelMessage) ;
