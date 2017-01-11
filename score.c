@@ -174,9 +174,9 @@ scoreSetNamePlayer(const char *sName, int rank){
  //tabSortScore[rank-1].namePlayer car le nom est cette fois-ci
  //demandé après inscription dans le top 10
     if(sName)
-        strlcpy(tabSortScore[rank-1].namePlayer, sName, MAX_CAR_NAME);
+        strncpy(tabSortScore[rank-1].namePlayer, sName, MAX_CAR_NAME);
     else
-        strlcpy(tabSortScore[rank-1].namePlayer, UNKNOWN, MAX_CAR_NAME);
+        strncpy(tabSortScore[rank-1].namePlayer, UNKNOWN, MAX_CAR_NAME);
 }
 
 static void
@@ -211,7 +211,7 @@ scoreInit(){
     char buffer[MAX_CAR_NAME+1] ;
 	for(i = 0; i < SCORE_BEST_OF; i++){
 		tabSortScore[i].idScore = 0 ;
-		strlcpy(tabSortScore[i].namePlayer,unknown,sizeof(buffer)) ;
+		strncpy(tabSortScore[i].namePlayer,unknown,sizeof(buffer)) ;
 		tabSortScore[i].remainingPeg = 0;
 		tabSortScore[i].scoreGame = 0 ;
 		tabSortScore[i].bonusElapseTime = 0 ;

@@ -1107,6 +1107,7 @@ _g_display_get_name(int rank){
     gtk_container_set_border_width( GTK_CONTAINER( pWindowGetName ), APPLICATION_BORDER_WIDTH) ;
     gtk_window_set_default_size (GTK_WINDOW(pWindowGetName), 200,150 );
     gtk_window_set_resizable(GTK_WINDOW(pWindowGetName), FALSE) ;
+    gtk_window_set_deletable( GTK_WINDOW( pWindowGetName ), FALSE ) ;
     pGridGetName = gtk_grid_new() ;
     gtk_widget_set_margin_top( GTK_WIDGET( pGridGetName ), 5 ) ;
     gtk_widget_set_margin_right( GTK_WIDGET( pGridGetName ), 5 ) ;
@@ -1143,23 +1144,20 @@ OnSetName(GtkWidget *pWidget, dataName* pData ){
     const gchar * sName = gtk_entry_get_text(GTK_ENTRY(pData->pWidgetName));
     scoreSetNamePlayer(sName, rank) ;
     pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
-    g_free(pWindowGetName) ;
-    gtk_widget_destroy(pWindowGetName) ;
     if(resultScore)resultScore = (pScore) scoreGetSortScore( ) ;
      _g_display_box_score(resultScore,rank) ;
     g_free(resultScore) ;
+    g_free(pWindowGetName) ;
+    gtk_widget_destroy(pWindowGetName) ;
 }
 
 void
 OnDestroyGetName( GtkWidget *pWidget, gpointer pData ) {
-    pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
-    int rank = GPOINTER_TO_INT(pData) ;
-    g_free(pWindowGetName) ;
-    gtk_widget_destroy(pWindowGetName) ;
-    if(resultScore)resultScore = (pScore)scoreGetSortScore( ) ;
-//    g_print("\nDEBUG le nom cursor est %s", resultScore[0].namePlayer );
-    _g_display_box_score(resultScore,rank) ;
-    g_free(resultScore) ;
+//    pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
+//    int rank = GPOINTER_TO_INT(pData) ;
+//    if(resultScore)resultScore = (pScore)scoreGetSortScore( ) ;
+//    _g_display_box_score(resultScore,rank) ;
+//    g_free(resultScore) ;
 }
 
 void
@@ -1182,7 +1180,7 @@ _g_display_box_score(pScore ps, const int rank){
     gtk_window_set_modal( GTK_WINDOW( pBoxScore ), TRUE ) ;
     gtk_window_set_position( GTK_WINDOW( pBoxScore ), GTK_WIN_POS_CENTER_ALWAYS ) ;
     gtk_window_set_decorated( GTK_WINDOW( pBoxScore ), TRUE ) ;
-    gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), TRUE ) ;
+    gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), FALSE ) ;
     gtk_window_set_transient_for( GTK_WINDOW( pBoxScore ), GTK_WINDOW( pWindowMain ) ) ;
     gtk_window_resize( GTK_WINDOW( pBoxScore ), 280, 300 ) ;
     /** 
@@ -1223,13 +1221,12 @@ _g_display_box_score(pScore ps, const int rank){
                 gtk_grid_attach_next_to(GTK_GRID(pGridScore), lbScore[k+1],lbScore[k],GTK_POS_RIGHT ,1,1 ) ;
             ps++ ;
 		}
-    pButtonOk = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
+    pButtonOk = gtk_button_new_from_stock(GTK_STOCK_OK);
     gtk_grid_attach(GTK_GRID(pGridScore), pButtonOk,4,11,1,1) ;
-    g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnCloseBoxScore),pBoxScore) ;
+    g_signal_connect(G_OBJECT(pButtonOk), "clicked", G_CALLBACK(OnCloseBoxScore),NULL) ;
     g_free( markup ) ;
     gtk_widget_show_all( pBoxScore ) ;
-//    g_free(pBoxScore) ; 
-    g_free(pBoxScore) ;
+    g_free(pBoxScore);
 }
 
 void
