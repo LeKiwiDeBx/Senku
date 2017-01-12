@@ -133,8 +133,8 @@ scoreSetRemainingPeg(int number){
 }
 
 tabScore*
-scoreGetSortScore(){
-    return (tabScore * )tabSortScore ;
+scoreGetSortScore(int rank){
+    return (!rank)?(tabScore * )&tabSortScore[0]: (tabScore *)&tabSortScore[rank-1];
 }
 
 static void

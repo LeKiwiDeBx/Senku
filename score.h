@@ -32,5 +32,5 @@ int  scoreGetBonusTimeScore() ;
 void scoreResetBonusTimeScore() ;
 void scoreSetRemainingPeg(int );
 void scoreSetNamePlayer(const char *, int) ;
-tabScore* scoreGetSortScore() ;
+tabScore* scoreGetSortScore(int ) ;
 #endif

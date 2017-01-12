@@ -39,7 +39,7 @@
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 #define SENKU_ABS(x) ((x))?(x):(-x)
 
-#define TITLE_MAIN          "Senku GTK \u03B2 2.0 (c) 2016 \n\n          [°} Le KiWi \u262D"
+#define TITLE_MAIN          "Senku GTK \u03B2 2.0 (c) 2016 \n\n          [°} Le KiWi"
 #define TITLE_MENU          "Shapes choice"
 #define TIMER_DELAY         1000
 #define IMG_PEG_MOVE        "image/circle_gold32.png"
@@ -336,14 +336,20 @@ boardInit( ) {
      * __displayHeader() ;
      * function console
      **********************************************************************/
+    /**
+     * CSS How-To
+     * http://stackoverflow.com/questions/37609381/how-to-set-a-specific-css-class-to-a-widget-in-gtk3-c
+     */
     //  Creation window main
     pWindowMain = gtk_window_new( GTK_WINDOW_TOPLEVEL ) ;
     gtk_window_set_position( GTK_WINDOW( pWindowMain ), GTK_WIN_POS_CENTER ) ;
     gtk_window_set_title( GTK_WINDOW( pWindowMain ), APPLICATION_TITLE ) ;
     gtk_window_set_default_size( GTK_WINDOW( pWindowMain ), APPLICATION_SIZE_WIDTH, APPLICATION_SIZE_HEIGHT) ;
+    gtk_window_set_resizable(GTK_WINDOW(pWindowMain), FALSE);
     gtk_container_set_border_width( GTK_CONTAINER( pWindowMain ), APPLICATION_BORDER_WIDTH) ;
+    
     /* signal fermeture l'application sur fermeture fenetre principale */
-    g_signal_connect( G_OBJECT( pWindowMain ), "destroy", G_CALLBACK( OnDestroy ), NULL ) ;
+    g_signal_connect( G_OBJECT( pWindowMain ), "delete-event", G_CALLBACK( OnDestroy ), NULL ) ;
     // Creation de la grille principale container */
     pGridMain = gtk_grid_new( ) ;
     gtk_grid_set_column_homogeneous( GTK_GRID( pGridMain ), FALSE ) ;
@@ -462,6 +468,7 @@ _g_display_box_menu(gpointer pData){
     /* rend la fenetre de choix dependante de la fenetre principale */
     gtk_window_set_transient_for( GTK_WINDOW( pBoxMenu ), GTK_WINDOW( pWindowMain ) ) ;
     gtk_window_resize( GTK_WINDOW( pBoxMenu ), boxMenuWidth, boxMenuHeight ) ;
+    gtk_container_set_border_width( GTK_CONTAINER( pBoxMenu ), APPLICATION_BORDER_WIDTH) ;
     // options
     pBoxMenuOption = gtk_box_new( GTK_ORIENTATION_VERTICAL, boxMenuOptionSpacing ) ;
     gtk_box_set_homogeneous( GTK_BOX( pBoxMenuOption ), FALSE ) ;
@@ -636,13 +643,11 @@ __displaySetCoordToMove( ) {
         i = 6 ;
     }
     printf( "You choose direction %s\n", sDir[i] ) ;
-
     return i ;
 }
 
 void
 __displayTimer( double elapseTimer, double totalTimer ) {
-
     printf( "  _\n" ) ;
             printf( " \\ /  Elapsed Time of Reflexion: %2.f sec.\n", elapseTimer ) ;
             printf( " /_\\  Total Time: %2.fmin %02.fsec\n", timerGetMktime( totalTimer )->mkt_min, timerGetMktime( totalTimer )->mkt_sec ) ;
@@ -650,7 +655,6 @@ __displayTimer( double elapseTimer, double totalTimer ) {
 
 static void
 __displayBonusTimeScore( ) {
-
     printf( "\n" ) ;
             printf( "  ~~~\n" ) ;
             printf( " |@ @| Extra Bonus Time: %d\n", scoreGetBonusTimeScore( ) ) ;
@@ -689,8 +693,12 @@ void
 OnDestroy( GtkWidget *pWidget, gpointer pData ) {
     pDialogBoxQuit = gtk_message_dialog_new(GTK_WINDOW(pWindowMain),GTK_DIALOG_MODAL,GTK_MESSAGE_QUESTION,GTK_BUTTONS_OK_CANCEL,"Do you Really wish to Quit Senku ?") ;
     gtk_window_set_title(GTK_WINDOW(pDialogBoxQuit),"Confirm QUIT") ;
-    gtk_window_set_transient_for (GTK_WINDOW(pDialogBoxQuit),GTK_WINDOW(pData));
-    gtk_window_set_position(GTK_WINDOW(pDialogBoxQuit), GTK_WIN_POS_CENTER_ON_PARENT);
+    if(pData != NULL) {
+        //gtk_window_set_transient_for(GTK_WINDOW(pDialogBoxQuit), pData);
+        gtk_window_set_position(GTK_WINDOW(pDialogBoxQuit), GTK_WIN_POS_CENTER_ON_PARENT);
+    }
+    else 
+        gtk_window_set_position(GTK_WINDOW(pDialogBoxQuit), GTK_WIN_POS_CENTER_ALWAYS);
     gint result = gtk_dialog_run((GTK_DIALOG(pDialogBoxQuit))) ;
     switch(result){
     case GTK_RESPONSE_OK:
@@ -1102,7 +1110,15 @@ _g_display_get_name(int rank){
     const char * labelNom = "Votre nom:" ;
     char * labelMessage = "\nCongratulations, " ;
     const char * labelInsideEntry = "Unknown" ;
-    const char * topmost = g_strdup_printf("you're number %d in topmost!\n", rank) ;
+    score* findRecord = scoreGetSortScore(rank) ;
+    const char * title = "Enregistrer le score" ; 
+    const char * msgAdd ;
+    if(findRecord->remainingPeg == 1)
+        msgAdd = "\n\t\tYeaah!  You're a real SENKU";
+    else if(findRecord->remainingPeg == 2)
+        msgAdd = "\n\t\tThe victory is imminent!";
+    else msgAdd ="\n\t\tNobody is perfect :)" ;
+    const char * topmost = g_strdup_printf("you're number %d in topmost!\n%s", rank, msgAdd) ;
     pLabelName = gtk_label_new(labelNom) ;
     labelMessage = g_strconcat(labelMessage, topmost,NULL) ;
     pLabelMessage = gtk_label_new(labelMessage) ;
@@ -1111,6 +1127,7 @@ _g_display_get_name(int rank){
     gtk_window_set_default_size (GTK_WINDOW(pWindowGetName), 200,150 );
     gtk_window_set_resizable(GTK_WINDOW(pWindowGetName), FALSE) ;
     gtk_window_set_deletable( GTK_WINDOW( pWindowGetName ), FALSE ) ;
+    gtk_window_set_title(GTK_WINDOW( pWindowGetName ), title) ;
     pGridGetName = gtk_grid_new() ;
     gtk_widget_set_margin_top( GTK_WIDGET( pGridGetName ), 5 ) ;
     gtk_widget_set_margin_right( GTK_WIDGET( pGridGetName ), 5 ) ;
@@ -1147,7 +1164,7 @@ OnSetName(GtkWidget *pWidget, dataName* pData ){
     const gchar * sName = gtk_entry_get_text(GTK_ENTRY(pData->pWidgetName));
     scoreSetNamePlayer(sName, rank) ;
     pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
-    if(resultScore)resultScore = (pScore) scoreGetSortScore( ) ;
+    if(resultScore)resultScore = (pScore) scoreGetSortScore( NULL) ;
      _g_display_box_score(resultScore,rank) ;
     g_free(resultScore) ;
     g_free(pWindowGetName) ;
@@ -1186,6 +1203,8 @@ _g_display_box_score(pScore ps, const int rank){
     gtk_window_set_deletable( GTK_WINDOW( pBoxScore ), FALSE ) ;
     gtk_window_set_transient_for( GTK_WINDOW( pBoxScore ), GTK_WINDOW( pWindowMain ) ) ;
     gtk_window_resize( GTK_WINDOW( pBoxScore ), 280, 300 ) ;
+    gtk_window_set_resizable(GTK_WINDOW(pBoxScore), FALSE) ;
+    gtk_container_set_border_width( GTK_CONTAINER( pBoxScore ), APPLICATION_BORDER_WIDTH) ;
     /** 
      * Grille du Score 
      */
