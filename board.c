@@ -34,12 +34,15 @@
 /* MACROS PANGO*/
 #define LABEL_COLOR_TITLE #385998
 #define LABEL_COLOR_TEXT  #FF6600 
+#define LABEL_COLOR_LOGO  "#E0777D"
+#define LABEL_COLOR_BG_LOGO  "#2D3047" 
+
 //#385998
 #define SENKU_PANGO_CONCAT_STR(color,type) "<span size=\"x-large\" weight=\"bold\" color=\""#color"\">%"#type"</span>"
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 #define SENKU_ABS(x) ((x))?(x):(-x)
 
-#define TITLE_MAIN          "Senku GTK \u03B2 2.0 (c) 2016 \n\n          [°} Le KiWi"
+#define TITLE_MAIN          "  Senku GTK \u03B2 2.0\n\n[°} Le KiWi (c) 2016"
 #define TITLE_MENU          "Shapes choice"
 #define TIMER_DELAY         1000
 #define IMG_PEG_MOVE        "image/circle_gold32.png"
@@ -61,6 +64,8 @@
 #define LABEL_BONUS_TEXT    "Bonus"
 #define LABEL_PEG_TEXT      "Pegs"
 #define LABEL_TIME_TEXT     "Time"
+#define LABEL_LOGO          "  [°} Le KiWi \u2126 " //apl sûr
+
 static void
 __displayHeader( ) ;
 static void
@@ -152,6 +157,7 @@ GtkWidget *pHbox = NULL ;
 GtkWidget *pButtonNewGame = NULL ;
 GtkWidget *pButtonUndo = NULL ;
 GtkWidget *pButtonQuit = NULL ;
+GtkWidget *pButtonScore = NULL ;
 GtkWidget *pfrTitle = NULL ;
 GtkWidget *pBoxMenuOption = NULL ;
 GtkWidget *plbTitle = NULL ;
@@ -165,6 +171,7 @@ GtkWidget *plbValues[MAX_LABEL] ;
 GtkWidget *plbValuesValue[MAX_LABEL] ; 
 GtkWidget *pDialogBoxQuit = NULL ;
 GtkWidget *pWindowGetName = NULL ;
+GtkWidget *plbLogo = NULL ;
 /**
  * @brief Appel selection image avec un clic souris
  * @param pWidget boxEvent qui encapsule l'image
@@ -363,20 +370,26 @@ boardInit( ) {
     char *plbValuesTitle[] = {LABEL_BONUS_TEXT, LABEL_PEG_TEXT, LABEL_TIME_TEXT} ;
     int sizeValueArray = (int)(sizeof(plbValuesTitle) /sizeof(char*)) ;
     if(sizeValueArray > MAX_LABEL) exit(0) ;
-    int k =0, i = 0;
+    int k = 0, i = 0;
     const char* textInit = " 0 " ;
     const int valInit = 0 ;
+    char *markup ;
     for(k=0; k < sizeValueArray; k++){
        plbValues[k] = gtk_label_new(plbValuesTitle[k]) ;
-       char *markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),plbValuesTitle[k]);
+       markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TITLE,s),plbValuesTitle[k]);
        gtk_label_set_markup( GTK_LABEL( plbValues[k] ), markup ) ;
        plbValuesValue[k] = gtk_label_new( textInit ) ;
        markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,d), valInit );
        gtk_label_set_markup( GTK_LABEL( plbValuesValue[k] ), markup ) ;
-       g_free( markup ) ;
+       //g_free( markup ) ;
        gtk_grid_attach( GTK_GRID( pGridValues ), plbValues[k], 1, i++, 1, 1 ) ;
        gtk_grid_attach( GTK_GRID( pGridValues ), plbValuesValue[k],1,i++,1,1  ) ;
     }
+    plbLogo = gtk_label_new(LABEL_LOGO) ;
+    markup = g_markup_printf_escaped( "<span size=\"large\" weight=\"light\" bgcolor=\"%s\" color=\"%s\">%s</span>",LABEL_COLOR_BG_LOGO,LABEL_COLOR_LOGO,LABEL_LOGO);
+    gtk_label_set_markup( GTK_LABEL( plbLogo ), markup ) ;
+    g_free(markup) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbLogo,1,i++,1,1  ) ;
     gtk_container_add( GTK_CONTAINER( pGridMain ), pGridValues ) ;
     gtk_container_add( GTK_CONTAINER( pWindowMain ), pGridMain ) ;
     /* pour pouvoir ajouter en dessous la zone des commentaires*/
@@ -691,10 +704,11 @@ __displayPlayAgain( ) {
 
 void
 OnDestroy( GtkWidget *pWidget, gpointer pData ) {
-    pDialogBoxQuit = gtk_message_dialog_new(GTK_WINDOW(pWindowMain),GTK_DIALOG_MODAL,GTK_MESSAGE_QUESTION,GTK_BUTTONS_OK_CANCEL,"Do you Really wish to Quit Senku ?") ;
+    const gchar* msg = "Do you Really wish to Quit Senku ?" ;
+    pDialogBoxQuit = gtk_message_dialog_new(GTK_WINDOW(pWindowMain),GTK_DIALOG_MODAL,GTK_MESSAGE_QUESTION,GTK_BUTTONS_OK_CANCEL,msg) ;
     gtk_window_set_title(GTK_WINDOW(pDialogBoxQuit),"Confirm QUIT") ;
     if(pData != NULL) {
-        //gtk_window_set_transient_for(GTK_WINDOW(pDialogBoxQuit), pData);
+        gtk_window_set_transient_for(GTK_WINDOW(pDialogBoxQuit), pData);
         gtk_window_set_position(GTK_WINDOW(pDialogBoxQuit), GTK_WIN_POS_CENTER_ON_PARENT);
     }
     else 
@@ -1107,11 +1121,11 @@ _g_display_get_name(int rank){
     GtkWidget *pLabelMessage = NULL ;
     GtkWidget *pButtonOk = NULL ;
     GtkWidget *pGridGetName = NULL ;
-    const char * labelNom = "Votre nom:" ;
+    const char * labelNom = "Your name " ;
     char * labelMessage = "\nCongratulations, " ;
     const char * labelInsideEntry = "Unknown" ;
-    score* findRecord = scoreGetSortScore(rank) ;
-    const char * title = "Enregistrer le score" ; 
+    score* findRecord = (score *)scoreGetSortScore(rank) ;
+    const char * title = "Saving score" ; 
     const char * msgAdd ;
     if(findRecord->remainingPeg == 1)
         msgAdd = "\n\t\tYeaah!  You're a real SENKU";
