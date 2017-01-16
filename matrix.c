@@ -20,39 +20,39 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 
- Matrix matrixEnglish = {  // TEST TEST TEST
+// Matrix matrixEnglish = {  // TEST TEST TEST
 //	0  1  2  3  4  5  6  7  8  9  10
-	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, //0
-	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//1
-	{-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//2
-	{-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//3
-    {-1,-1, 0, 0, 1, 0, 1, 0, 0,-1,-1},	//4
-    {-1,-1, 0, 0, 0, 1, 1, 0, 0,-1,-1},	//5
-    {-1,-1, 0, 0, 0, 1, 0, 0, 0,-1,-1},	//6
-    {-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//7
-	{-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1},	//8
-	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//9
-	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}	//10
- } ;
+//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, //0
+//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//1
+//	{-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//2
+//	{-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//3
+//    {-1,-1, 0, 0, 1, 0, 1, 0, 0,-1,-1},	//4
+//    {-1,-1, 0, 0, 0, 1, 1, 0, 0,-1,-1},	//5
+//    {-1,-1, 0, 0, 0, 1, 0, 0, 0,-1,-1},	//6
+//    {-1,-1,-1,-1, 0, 1, 0,-1,-1,-1,-1},	//7
+//	{-1,-1,-1,-1, 0, 0, 0,-1,-1,-1,-1},	//8
+//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//9
+//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}	//10
+ //} ;
 /**
  * @brief schema du shape dit Anglais
  *         matrice carrée 11 x 11
  * @Matrix type de tableau 2D de integer (int)
  */
-//Matrix matrixEnglish = {
+Matrix matrixEnglish = {
 	//0  1  2  3  4  5  6  7  8  9  10
-//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, //0
-//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//1
-//	{-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//2
-//	{-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//3
-//    {-1,-1, 1, 1, 1, 1, 1, 1, 1,-1,-1},	//4
-//    {-1,-1, 1, 1, 1, 0, 1, 1, 1,-1,-1},	//5
-//    {-1,-1, 1, 1, 1, 1, 1, 1, 1,-1,-1},	//6
-//    {-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//7
-//	{-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//8
-//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//9
-//	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}	//10
-//} ;
+	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, //0
+	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//1
+	{-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//2
+	{-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//3
+    {-1,-1, 1, 1, 1, 1, 1, 1, 1,-1,-1},	//4
+    {-1,-1, 1, 1, 1, 0, 1, 1, 1,-1,-1},	//5
+    {-1,-1, 1, 1, 1, 1, 1, 1, 1,-1,-1},	//6
+    {-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//7
+	{-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1},	//8
+	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},	//9
+	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}	//10
+} ;
 
 Matrix matrixGerman = {
 	//0  1  2  3  4  5  6  7  8  9  10
@@ -86,6 +86,7 @@ Matrix matrixDiamond = {
 
 // Matrix matrixCopy ;
 
+/*
 static void
 __displayMatrix(Matrix) ;
 
@@ -100,6 +101,7 @@ __getCoordPegWhereWeGo(int)  ;
 
 static void
 __displayPegFromTo(int, int, int, Peg_Direction, int);
+*/
 
 /*
  *
@@ -172,7 +174,7 @@ matrixSelectPeg(int row, int column){
 			if(row_arrival != row || column_arrival != column){
 				nbMove++ ;
 				PegGoTo = pegBuildPeg(row_arrival,column_arrival, direction);
-				__displayPegFromTo(PegGoTo, row, column, direction, nbMove);
+//				__displayPegFromTo(PegGoTo, row, column, direction, nbMove);
 			}
 			else{
 				pegFirstPeg(row, column);
@@ -194,14 +196,14 @@ matrixUpdate(Peg_Direction where){
 		where = tab_Peg[i].direction ;
 	}
     else if(where == UNDO){
-        __displayMatrix(pMatrixLoad);
+//        __displayMatrix(pMatrixLoad);
         return 0;
     }
 	else{
 		i = __getCoordPegWhereWeGo(where) ;
 		if(!i)	{
-			printf("Is not a valid direction, do NOTHING ! :((\n");
-			__displayMatrix(pMatrixLoad);
+//			printf("Is not a valid direction, do NOTHING ! :((\n");
+//			__displayMatrix(pMatrixLoad);
 			return 0 ;
 		}
 	}
@@ -238,7 +240,7 @@ matrixUpdate(Peg_Direction where){
 	originatorSet(pegMemento);
 	caretakerAddMemento(originatorSaveToMemento());
     //fin memento UNDO
-	__displayMatrix(pMatrixLoad);
+//	__displayMatrix(pMatrixLoad);
 	return 1 ;
 }
 
@@ -290,6 +292,7 @@ matrixCountRemainPeg(){
 	return count ;
 }
 
+/*
 void
 __displayPegFromTo(int whereToGo,int row, int column, Peg_Direction direction, int nbMove){
 	char *sDir[] = {"","[N|n]ORTH","[E|e]AST","[S|s]OUTH","[W|w]EST"} ;
@@ -299,6 +302,7 @@ __displayPegFromTo(int whereToGo,int row, int column, Peg_Direction direction, i
 	printf("| => Go to [row: %d column: %d] %s\n",tab_Peg[whereToGo].coord.row,tab_Peg[whereToGo].coord.column, sDir[0]);
 	printf("|----------------------------------------------------|\n") ;
 }
+*/
 
 int
 __getCoordPegWhereWeGo(int where){
@@ -310,12 +314,15 @@ __getCoordPegWhereWeGo(int where){
 	return 0;
 }
 
+/*
 void
 __displayLoadChoice(const char * shapeName){
 //	printf("Loading %s...\n", shapeName);
 	g_print("DEBUG :: Loading %s...\n", shapeName);
 }
+*/
 
+/*
 void
 __displayMatrix(Matrix matrix){
 	int row, column;
@@ -334,9 +341,9 @@ __displayMatrix(Matrix matrix){
 	printf("\n");
 	}
 }
+*/
 
-
-
+/*
 char
 *__selectItem(int item){
 	char *ret ;
@@ -363,3 +370,4 @@ char
 	}
 	return ret ;
 }
+*/

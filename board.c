@@ -64,8 +64,8 @@
 #define LABEL_BONUS_TEXT    "Bonus"
 #define LABEL_PEG_TEXT      "Pegs"
 #define LABEL_TIME_TEXT     "Time"
-#define LABEL_LOGO          "  [°} Le KiWi \u2126 " //apl sûr
-
+#define LABEL_LOGO          " [°} Le KiiWii \u2126 "
+/*
 static void
 __displayHeader( ) ;
 static void
@@ -94,6 +94,7 @@ __displayTimer( double, double ) ;
 
 static void
 __displayBonusTimeScore( ) ;
+*/
 
 Board onlyOneBoard ;
 
@@ -216,7 +217,7 @@ OnSetName(GtkWidget *pWidget, dataName *pData ) ;
  * @brief appel par OnUndo pour retablir l'affichage des pions undo
  * @param pm les coordonnées des étapes du undo
  */
-static void
+void
 _g_displayUndoMatrix(pMemento pm) ;
 
 /**
@@ -224,7 +225,7 @@ _g_displayUndoMatrix(pMemento pm) ;
  * @param pWidget appel du bouton New Game
  * @param pData NULL (pour le moment:))
  */
-static void
+void
 OnNewGame(GtkWidget *pWidget, gpointer pData) ;
 
 /**
@@ -232,7 +233,7 @@ OnNewGame(GtkWidget *pWidget, gpointer pData) ;
  * @param pWidget pWindowGetName
  * @param pData rank position du joueur du topmost
  */
-static void
+void
 OnDestroyGetName( GtkWidget *pWidget, gpointer pData ) ;
 /**
  * @ Not use (???)
@@ -284,31 +285,31 @@ _g_labelSet( GtkWidget *pWidget, gpointer pData ) ;
  * @param value booelen à positionner
  * @return return la valeur de firstSelectPeg ou -1 si Pbleme
  */
-static gboolean 
+gboolean 
 _firstSelectPeg(char* action, gboolean value) ;
 /**
  * @brief affiche les scores 
  * @param pointeur sur le tableau des scores
  * @param rang dans le top rated
  */
-static void
+void
 _g_display_box_score(pScore ps, const int rank) ;
 /**
  *@brief Dialog box Menu 
  *       choix des shapes modale et sans decoration (style screen splash)
  *@param determine l'option par defaut 
 */
-static void
+void
 _g_display_box_menu(gpointer pData) ;
 /**
  * @brief efface l'affichage de la matrice
  */
-static void
+void
 _g_erase_displayMatrix() ;
 /**
  * @brief construit gridMatrix pour contenir la matrice
  */
-static void
+void
 _g_new_GridMatrix() ;
 /**
  * @brief demande le nom pour le score
@@ -320,7 +321,7 @@ _g_display_get_name(int rank) ;
  * @brief redessinne les peg et trou sans point rouge ni croix (signe du last undo)
  * @param pm le memento des images à redessiner sans les symboles du Undo
  */
-static void
+void
 _setLastMementoUndoRedrawNormal(pMemento) ;
 /**
  * @brief fermeture de BoxScore
@@ -329,6 +330,7 @@ _setLastMementoUndoRedrawNormal(pMemento) ;
  */
 void
 OnCloseBoxScore( GtkWidget *pWidget, gpointer pData ) ;
+
 int
 boardInit( ) {
     // init table des scores
@@ -459,7 +461,7 @@ boardInit( ) {
  *       choix des shapes modale et sans decoration (style screen splash)
  *@param determine l'option par defaut 
 */
-static void
+void
 _g_display_box_menu(gpointer pData){
     int k = 0 ;
     gint optK = (GPOINTER_TO_INT(pData))? GPOINTER_TO_INT(pData): 0 ;
@@ -489,7 +491,7 @@ _g_display_box_menu(gpointer pData){
     gtk_box_pack_start( GTK_BOX( pBoxMenuOption ), plbTitle, TRUE, FALSE, boxMenuOptionPadding ) ;
     GtkWidget *pRadio[sizeShapeName] ;
     pRadio[0] = gtk_radio_button_new_with_label( NULL, shapeName[0] ) ;
-    for(k=1;k<=sizeShapeName;k++){
+    for(k = 1; k <= sizeShapeName; k++){
         gtk_box_pack_start(GTK_BOX(pBoxMenuOption), pRadio[k-1], FALSE, FALSE, 0 ) ; // 
         pRadio[k] = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON( pRadio[k-1] ), shapeName[k] ) ;
     } 
@@ -511,7 +513,7 @@ _g_display_box_menu(gpointer pData){
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
 }
-
+/*
 int
 boardPlay( ) {
     int row = 0, column = 0, nbMove = 0, remainingPeg = 0 ;
@@ -524,8 +526,8 @@ boardPlay( ) {
             caretakerNew( ) ;
     while (matrixCanMovePeg( )) {
         timerSetElapseTimer( ) ;
-        __displaySetCoordToSelect( pRow, pColumn ) ;
-        if (*pRow == -1 || *pColumn == -1) {/* Appel de UNDO pour dernier mouvement */
+//        __displaySetCoordToSelect( pRow, pColumn ) ;
+        if (*pRow == -1 || *pColumn == -1) {// Appel de UNDO pour dernier mouvement 
             timerSetElapseTimer( ) ;
             if (originatorRestoreFromMemento( caretakerGetMemento( 1 ) )) {
 //                printf( "You ask [UNDO] the last move!\n" ) ;
@@ -534,7 +536,7 @@ boardPlay( ) {
 //            else printf( "There is no action to [UNDO] :( \n" ) ;
             canDisplayBonusTimeScore = 0 ;
             }
-        else {/* selection normale */
+        else {// selection normale 
             timerSetElapseTimer( ) ;
                     nbMove = matrixSelectPeg( *pRow, *pColumn ) ;
             if (nbMove) {
@@ -544,20 +546,22 @@ boardPlay( ) {
         }
         elapseTimer = timerGetElapseTimer( ) ;
         totalTimer = timerGetTotalTimer( ) ;
-        __displayTimer( elapseTimer, totalTimer ) ;
+//        __displayTimer( elapseTimer, totalTimer ) ;
         if (canDisplayBonusTimeScore) {
             scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
             __displayBonusTimeScore( ) ;
         }
         canDisplayBonusTimeScore = 0 ;
-    }/* while() */
+    }// while() 
     timerSetStopTimer( ) ;
     remainingPeg = matrixCountRemainPeg( ) ;
     scoreSetRemainingPeg( remainingPeg ) ;
     __displayResult( remainingPeg ) ;
     return 1 ;
 }
+*/
 
+/*
 void
 __displayHeader( ) {
 
@@ -576,7 +580,9 @@ __displayHeader( ) {
             printf( "\n" ) ;
 
 }
+*/
 
+/*
 void
 __displayMenu( ) {
 
@@ -589,7 +595,9 @@ __displayMenu( ) {
             printf( "!==\t\t\t# [4] Quit                \t\t==!\n" ) ;
             printf( "!==\t\t\t\t       \t\t\t\t==!\n" ) ;
 }
+*/
 
+/*
 int
 __getMenuChoice( ) {
     int num = 0, c ;
@@ -603,7 +611,9 @@ __getMenuChoice( ) {
 
     return num ;
 }
+*/
 
+/*
 void
 __displaySetCoordToSelect( int *numX, int *numY ) {
     int c ;
@@ -619,11 +629,12 @@ __displaySetCoordToSelect( int *numX, int *numY ) {
     scanf( "%*[^\n]" ) ;
             getchar( ) ; // enleve '\n' restant
 }
-
+*/
 /**
  * 
  * @return retourne le texte de la direction
  */
+/*
 int
 __displaySetCoordToMove( ) {
     char *sDir[] = {"", "NORTH", "EAST", "SOUTH", "WEST", "the first BY DEFAULT", "unknown!"} ;
@@ -658,22 +669,28 @@ __displaySetCoordToMove( ) {
     printf( "You choose direction %s\n", sDir[i] ) ;
     return i ;
 }
+*/
 
+/*
 void
 __displayTimer( double elapseTimer, double totalTimer ) {
     printf( "  _\n" ) ;
             printf( " \\ /  Elapsed Time of Reflexion: %2.f sec.\n", elapseTimer ) ;
             printf( " /_\\  Total Time: %2.fmin %02.fsec\n", timerGetMktime( totalTimer )->mkt_min, timerGetMktime( totalTimer )->mkt_sec ) ;
 }
+*/
 
-static void
+/*
+void
 __displayBonusTimeScore( ) {
     printf( "\n" ) ;
             printf( "  ~~~\n" ) ;
             printf( " |@ @| Extra Bonus Time: %d\n", scoreGetBonusTimeScore( ) ) ;
             printf( "  (o)\n" ) ;
 }
+*/
 
+/*
 void
 __displayResult( int remainingPegs ) {
     printf( "|-------------------------------------------------|\n" ) ;
@@ -687,7 +704,9 @@ __displayResult( int remainingPegs ) {
             printf( "  Remaining Pegs: %d\n", remainingPegs ) ;
             printf( "|-------------------------------------------------|\n" ) ;
     }
+*/
 
+/*
 int
 __displayPlayAgain( ) {
     char buffer[] = {'\0'} ;
@@ -701,6 +720,7 @@ __displayPlayAgain( ) {
     getchar( ) ;
     return ( !strncmp( buffer, "Y", 1 ) || !strncmp( buffer, "y", 1 )) ? 1 : 0 ;
 }
+*/
 
 void
 OnDestroy( GtkWidget *pWidget, gpointer pData ) {
@@ -729,14 +749,14 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
     pMemento pMementoUndo = NULL ;
     pMementoUndo = malloc(1*sizeof(memento)) ;
     if(pMementoLastUndo->mvtEnd.row != 0 && pMementoLastUndo != NULL){
-        g_print("\nDEBUG pMementoLastUndo end.row %d end.column %d",pMementoLastUndo->mvtEnd.row,pMementoLastUndo->mvtEnd.column) ;
+//        g_print("\nDEBUG pMementoLastUndo end.row %d end.column %d",pMementoLastUndo->mvtEnd.row,pMementoLastUndo->mvtEnd.column) ;
     }
     if(pMementoUndo = caretakerGetMemento(1) ){
         msg = ACTION_UNDO ;
         markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL(LABEL_COLOR_TEXT,s), msg);
         gtk_label_set_markup( GTK_LABEL( plbComments ), markup ) ;
         if(!strcmp(msg,NO_ACTION_UNDO)) {
-            g_print("\nDEBUG Last Undo memento = NULL") ;
+//            g_print("\nDEBUG Last Undo memento = NULL") ;
 //            pMementoLastUndo = NULL ;
         }
         else if (pMementoUndo != NULL && !strcmp(msg,ACTION_UNDO)){
@@ -759,7 +779,8 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
     g_free(pMementoUndo) ;
 }
 
-void _setLastMementoUndoRedrawNormal( pMemento pm){
+void 
+_setLastMementoUndoRedrawNormal( pMemento pm){
     int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
     if(pm != NULL && pm->mvtEnd.row != 0){
         x = pm->mvtEnd.row ;
@@ -780,7 +801,7 @@ void _setLastMementoUndoRedrawNormal( pMemento pm){
     }
 }
 
-static void
+void
 OnNewGame(GtkWidget *pWidget, gpointer pData){
     _g_erase_displayMatrix() ;
     scoreResetBonusTimeScore( ) ;
@@ -796,7 +817,7 @@ OnNewGame(GtkWidget *pWidget, gpointer pData){
     caretakerNew( ) ;
 }
 
-static void
+void
 _g_new_GridMatrix(){
     pGridMatrix = NULL ;
     pGridMatrix = gtk_grid_new( ) ;
@@ -809,11 +830,11 @@ void
 _g_displayUndoMatrix(pMemento pm){
     int coefRow = 0, coefColumn = 0, x = 0, y =0 ;
      if(pm){
-        g_print("\nDEBUG :: x depart %d | y depart %d | x arrive %d | y arrive %d", 
-                pm->mvtStart.row, 
-                pm->mvtStart.column,
-                pm->mvtEnd.row,
-                pm->mvtEnd.column);
+//        g_print("\nDEBUG :: x depart %d | y depart %d | x arrive %d | y arrive %d", 
+//                pm->mvtStart.row, 
+//                pm->mvtStart.column,
+//                pm->mvtEnd.row,
+//                pm->mvtEnd.column);
      /*
      * DEBUG FROZEN VERSION
      */
@@ -865,11 +886,11 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     Coord *p = g_malloc( sizeof (Coord) ) ;
     p = (Coord *) pData ;
     _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
-    g_print( "\nDEBUG :: Coord Old X:%d Y:%d", pOld.x, pOld.y ) ;
-    g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
+//    g_print( "\nDEBUG :: Coord Old X:%d Y:%d", pOld.x, pOld.y ) ;
+//    g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
         if ( _firstSelectPeg("get",FALSE) ) { //premier clic de selection
-            g_print("\nDEBUG :: premier selection clic") ;
+//            g_print("\nDEBUG :: premier selection clic") ;
             timerStartClock( ) ;
             if (matrixSelectPeg( p->x, p->y )) {
                 _firstSelectPeg("set",FALSE) ;
@@ -882,17 +903,17 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
             }
         }
         else {//seconde selection cliquée
-            g_print("\nDEBUG :: seconde selection clic") ;
+//            g_print("\nDEBUG :: seconde selection clic") ;
             timerStopClock( ) ;
-            g_printf( "\nDEBUG :: Elapse %f", timerGetElapseClock( ) * 1000 ) ;
+//            g_printf( "\nDEBUG :: Elapse %f", timerGetElapseClock( ) * 1000 ) ;
             if (matrixSelectPeg( pOld.x, pOld.y )) { //si prise possible
                 int deltaX = 0, deltaY = 0, sumDelta = 0 ;
                 deltaX = pOld.x - p->x ;
                 deltaY = pOld.y - p->y ;
                 sumDelta = deltaX + deltaY ;
                 _firstSelectPeg("set",TRUE) ;
-                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d", deltaX, deltaY, sumDelta ) ;
-                g_print( "\nDEBUG :: pOldX: %d pOldY: %d px: %d py: %d", pOld.x, pOld.y, p->x, p->y ) ;
+//                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d", deltaX, deltaY, sumDelta ) ;
+//                g_print( "\nDEBUG :: pOldX: %d pOldY: %d px: %d py: %d", pOld.x, pOld.y, p->x, p->y ) ;
                 if (deltaX != deltaY && (sumDelta == 2 || sumDelta == -2)) {
                     if(deltaConstantXY == abs(deltaX)) 
                         action = (deltaX>0)?ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_SOUTH ;
@@ -942,7 +963,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     }
                 }
                 else { //ni prise ni meme peg de depart
-                    g_print( "\nDEBUG :: change selection de depart si prise possible\n" ) ;
+//                    g_print( "\nDEBUG :: change selection de depart si prise possible\n" ) ;
                     _firstSelectPeg("set",FALSE) ;
                     if (matrixSelectPeg( p->x, p->y )) {//si une prise possible
                         _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
@@ -952,7 +973,8 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                     }
                 }
             }
-        else g_print( "\nDEBUG :: prise impossible " ) ;
+//        else 
+//            g_print( "\nDEBUG :: prise impossible " ) ;
         }
     gtk_widget_show_all( GTK_WIDGET( pGridMain ) ) ;
     }
@@ -1054,6 +1076,7 @@ OnRadioToggled( GtkWidget* pWidget, GdkEvent *event, gpointer pData ) {
     //    GtkRadioButton *radioBtn =  pData ; /* we passed a radio button as data */
     //    which_radio_is_selected( gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioBtn) ) ) ;
     //    return FALSE ;
+    return 0;
 }
 
 int
@@ -1071,9 +1094,9 @@ which_radio_is_selected( GSList *group ) {
     return 0 ;
 }
 
-static void
+void
 _g_erase_displayMatrix(){
-    g_print( "\nDEBUG :: _g_displayMatrix ERASE" ) ;
+//    g_print( "\nDEBUG :: _g_displayMatrix ERASE" ) ;
     gtk_widget_destroy(  GTK_WIDGET( pGridMatrix ) ) ;
 }
 
@@ -1085,10 +1108,10 @@ _g_displayMatrix( Matrix matrix ) {
     pEventCoord = (Coord *) g_try_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
     if(pEventCoord) pEventCoord = &eventCoord ;
     else {
-        g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
+//        g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
         exit(EXIT_FAILURE) ;
     }
-    g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
+//    g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
     for (k = 0 ; k < HOR_MAX ; k++) {
         for (i = 0 ; i < VER_MAX ; i++) {
             switch (matrix[k][i]) {

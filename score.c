@@ -39,20 +39,20 @@ static void 	__setNamePlayer() ;
 static void 	__setBonusElapseTime(int) ;
 static void		__setIdScore(int ) ;
 static void		__setScoreGame(int ) ;
-static void 	__clean(const char *buffer, FILE *fp) ;
-static void		__displaySortScore(int ) ;
-static void		__displaySetNamePlayer() ;
-static void		__displaySetCalculateBonusElapseTimer(double bonus) ;
+//static void 	__clean(const char *buffer, FILE *fp) ;
+//static void		__displaySortScore(int ) ;
+//static void		__displaySetNamePlayer() ;
+//static void		__displaySetCalculateBonusElapseTimer(double bonus) ;
 
 int
 scoreNew(){
 	static int id = 0, ret = 0 ;
 	inputScore.idScore = ++id;
 	ret = __insertRecord(&inputScore) ;
-	__displaySortScore(ret) ; //version terminal
+//	__displaySortScore(ret) ; //version terminal
     return ret ;
 }
-
+/*
 static void
 __displaySortScore(int topScore){
 	int i;
@@ -67,7 +67,7 @@ __displaySortScore(int topScore){
 	printf("%d\t%-12s\t%-3d\t%.f\n",i+1,tabSortScore[i].namePlayer, tabSortScore[i].remainingPeg, tabSortScore[i].scoreGame);
 		}
 }
-
+*/
 static int
 __insertRecord(score *inputScore){
 	int i, scoreGame ;
@@ -109,14 +109,16 @@ scoreSetCalculateBonusElapseTimer(double elapseTimer){
 		//bonus = 5*(9-i) ;
         bonus = (MAX_SEC_BONUS - elapseTimer) ;
 		bonusTimeScore += bonus ;
-		__displaySetCalculateBonusElapseTimer(bonus) ;
+//		__displaySetCalculateBonusElapseTimer(bonus) ;
 	}
 }
 
+/*
 static void
 __displaySetCalculateBonusElapseTimer(double bonus){
 	printf("\n Yep! Bonus: + %d points!\n", (int)bonus) ;
 }
+*/
 
 int
 scoreGetBonusTimeScore(){
@@ -160,14 +162,16 @@ __setScoreGame(int scoreGame){
 		cursorScore->scoreGame = scoreGame ;
 }
 
+/*
 static void
 __setNamePlayer(){
 	char chaine[MAX_CAR_NAME] = "\0";
-	__displaySetNamePlayer() ;
-	fgets(chaine, sizeof(chaine), stdin);
-	__clean(chaine, stdin);
+//	__displaySetNamePlayer() ;
+//	fgets(chaine, sizeof(chaine), stdin);
+//	__clean(chaine, stdin);
 	strncpy(cursorScore->namePlayer, chaine, MAX_CAR_NAME);
 }
+*/
 
 void
 scoreSetNamePlayer(const char *sName, int rank){
@@ -179,11 +183,13 @@ scoreSetNamePlayer(const char *sName, int rank){
         strncpy(tabSortScore[rank-1].namePlayer, UNKNOWN, MAX_CAR_NAME);
 }
 
+/*
 static void
 __displaySetNamePlayer(){
 	printf("\nWho is the happiest person in this world?\nYour name, please: ");
 }
-
+*/
+/*
 static void
 __clean(const char *buffer, FILE *fp){
     char *p = strchr(buffer,'\n');
@@ -194,6 +200,7 @@ __clean(const char *buffer, FILE *fp){
         while ((c = fgetc(fp)) != '\n' && c != EOF);
     }
 }
+*/
 
 static double
 __calculateScore(const int  remainPeg, const double  timeBonus){
