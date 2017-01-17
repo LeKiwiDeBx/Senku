@@ -9,10 +9,11 @@
 #define _BOARD_H_
 #include "matrix.h"
 
-typedef struct s_Board{;
-	matrixOfBoard *set;
+typedef struct s_Board {
+    ;
+    matrixOfBoard *set;
 } Board;
 
-int boardInit() ;
-int boardPlay() ;
+int boardInit();
+int boardPlay();
 #endif

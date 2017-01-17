@@ -21,10 +21,10 @@ static mementoArrayList mArrayList = {NULL} ; //tableau de pointeur de memento
  * @brief re/initialise la mArrayList à NULL
  * 
  */
-void 
-caretakerNew(){
-    int i ;
-    for (i = 0 ; i < SIZE_TAB(mArrayList) ; i++) {
+void
+caretakerNew( ) {
+    unsigned int i ;
+    for (i = 0 ; i < SIZE_TAB( mArrayList ) ; i++) {
         mArrayList[i] = NULL ;
     }
 }
@@ -43,11 +43,11 @@ caretakerAddMemento( pMemento pmArray ) {
             mArrayList[i] = pmArray ;
             break ;
         }
-        else if(i == NB_UNDO -2) {
+        else if (i == NB_UNDO - 2) {
             //decalage vers la gauche du tableau --> FIFO
             memmove( mArrayList, mArrayList + 1, (NB_UNDO - 2) * sizeof (pMemento) ) ;
             mArrayList[NB_UNDO - 2] = pmArray ;
-            break;
+            break ;
         }
     }
 }
@@ -61,16 +61,16 @@ pMemento
 caretakerGetMemento( int undo ) {
     int j ;
     if (undo) {
-        if (!mArrayList[0]) return NULL ;  //liste vide
+        if (!mArrayList[0]) return NULL ; //liste vide
         for (j = 1 ; j < NB_UNDO ; j++) {
-            if (mArrayList[j] == NULL)  {
+            if (mArrayList[j] == NULL) {
                 if (memcpy( pm, mArrayList[j - 1], sizeof (memento) ) != NULL) {
                     mArrayList[j - 1] = NULL ;
                     return pm ;
                 }
             }
         }
-    }   
+    }
     return NULL ;
 }
 
@@ -79,10 +79,9 @@ caretakerGetMemento( int undo ) {
  * @return 1 vrai sinon faux
  */
 int
-mementoIsEmpty(){
-    return (!mArrayList[0])?1:0;
+mementoIsEmpty( ) {
+    return (!mArrayList[0]) ? 1 : 0 ;
 }
-
 
 /**
  * @brief positionne la variable static de l'etat à sauver
@@ -114,10 +113,10 @@ originatorSaveToMemento( ) {
  * @param le memento à restaurer
  * @return succes ou pas
  */
-int 
+int
 originatorRestoreFromMemento( pMemento pm ) {
     Peg_Memento state ;
-    if(pm != NULL) {
+    if (pm != NULL) {
         state = mementoGetSaveState( pm ) ;
         pMatrixLoad[state.coordStart.row][state.coordStart.column] = 1 ;
         pMatrixLoad[state.coordBetween.row][state.coordBetween.column] = 1 ;
@@ -133,7 +132,7 @@ originatorRestoreFromMemento( pMemento pm ) {
  */
 Peg_Memento
 mementoGetSaveState( pMemento pm ) {
-    if(pm != NULL) {
+    if (pm != NULL) {
         statePeg.coordStart.row = pm->mvtStart.row ;
         statePeg.coordStart.column = pm->mvtStart.column ;
         statePeg.coordBetween.row = pm->mvtBetween.row ;
@@ -141,7 +140,8 @@ mementoGetSaveState( pMemento pm ) {
         statePeg.coordEnd.row = pm->mvtEnd.row ;
         statePeg.coordEnd.column = pm->mvtEnd.column ;
         return statePeg ;
-    } else return statePeg ;
+    }
+    else return statePeg ;
 }
 
 /**

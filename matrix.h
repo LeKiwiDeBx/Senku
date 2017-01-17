@@ -13,16 +13,17 @@
 
 /*
  * Constants
-*/
+ */
 #define HOR_MAX 11 /* nb rows    */
 #define VER_MAX 11 /* nb columns */
 
 /*
  *	Types & Vars
-*/
-typedef int Matrix[HOR_MAX][VER_MAX] ;
-int (*pMatrixLoad)[VER_MAX] ; //pointeur sur le tableau Matrix multidimensionnel
-Matrix matrixCopy ;
+ */
+typedef int Matrix[HOR_MAX][VER_MAX];
+int (*pMatrixLoad)[VER_MAX]; //pointeur sur le tableau Matrix multidimensionnel
+Matrix matrixCopy;
+
 /**
  * @name typedef struct s_matrixOfBoard
  * @brief structure de la matrice du jeu (shape)
@@ -30,24 +31,24 @@ Matrix matrixCopy ;
  * @char nom humain(!)
  * @pShape pointeur sur un tableau de type Matrix (schema du shape)
  */
-typedef struct s_matrixOfBoard{
-	int id ;
-	char *name ;
-	Matrix *pShape ;
+typedef struct s_matrixOfBoard {
+    int id;
+    char *name;
+    Matrix *pShape;
 } matrixOfBoard;
 /**
  * @brief structure qui contient la matrice (shape) en cours du jeu
  *        de type matrixOfBoard
  */
-matrixOfBoard currentMatrixOfBoard ;
+matrixOfBoard currentMatrixOfBoard;
 
 /*
  *	Functions
-*/
-int matrixLoad(int) ;
-int matrixSelectPeg(int, int) ;
-int matrixUpdate()  ;
-int matrixCanMovePeg() ;
-int matrixCountRemainPeg() ;
+ */
+int matrixLoad(int);
+int matrixSelectPeg(int, int);
+int matrixUpdate();
+int matrixCanMovePeg();
+int matrixCountRemainPeg();
 
 #endif
