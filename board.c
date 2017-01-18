@@ -56,7 +56,7 @@
 #define ACTION_UNDO         "[Undo] last move"
 #define BLANK               ""
 #define BOX_SCORE_TITLE     " Score "
-#define APPLICATION_TITLE   "Senku 'GTK' \u03B2 2.0"
+#define APPLICATION_TITLE   "Senku 'GTK' \u03B2 2.0a"
 #define APPLICATION_SIZE_WIDTH 360
 #define APPLICATION_SIZE_HEIGHT 340
 #define APPLICATION_BORDER_WIDTH 10
@@ -331,6 +331,13 @@ _setLastMementoUndoRedrawNormal( pMemento ) ;
  */
 void
 OnCloseBoxScore( GtkWidget *pWidget, gpointer pData ) ;
+/**
+ * @brief affiche la fiche de score
+ * @param pWidget le button score
+ * @param pData NULL
+ */
+void
+OnDisplayScore(GtkWidget *pWidget, dataName* pData );
 
 int
 boardInit( ) {
@@ -392,7 +399,7 @@ boardInit( ) {
     markup = g_markup_printf_escaped( "<span size=\"x-large\" weight=\"bold\" bgcolor=\"%s\" color=\"%s\">%s</span>", LABEL_COLOR_BG_LOGO, LABEL_COLOR_LOGO, LABEL_LOGO ) ;
     gtk_label_set_markup( GTK_LABEL( plbLogo ), markup ) ;
     g_free( markup ) ;
-    gtk_grid_attach( GTK_GRID( pGridValues ), plbLogo, 1, i++, 1, 1) ;
+    gtk_grid_attach( GTK_GRID( pGridValues ), plbLogo, 1, i++, 1, 1 ) ;
     gtk_container_add( GTK_CONTAINER( pGridMain ), pGridValues ) ;
     gtk_container_add( GTK_CONTAINER( pWindowMain ), pGridMain ) ;
     /* pour pouvoir ajouter en dessous la zone des commentaires*/
@@ -414,15 +421,19 @@ boardInit( ) {
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonNewGame, FALSE, FALSE, 15 ) ;
     pButtonUndo = gtk_button_new_with_label( "Undo" ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonUndo, FALSE, FALSE, 15 ) ;
+    /* bouton Score caler à droite */
+    pButtonScore = gtk_button_new_with_label( "Score" ) ;
+    gtk_box_pack_start( GTK_BOX( pHbox ), pButtonScore, FALSE, FALSE, 15 ) ;
     /* bouton Quit caler à droite */
     pButtonQuit = gtk_button_new_with_label( "Quit" ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonQuit, FALSE, FALSE, 15 ) ;
     /* on ajoute les boutons */
     gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 0, 3, 1, 3 ) ;
     /* les signaux des boutons */
-    g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), pWindowMain ) ;
-    g_signal_connect( G_OBJECT( pButtonUndo ), "clicked", G_CALLBACK( OnUndo ), NULL ) ;
-    g_signal_connect( G_OBJECT( pButtonNewGame ), "clicked", G_CALLBACK( OnNewGame ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonScore ),  "clicked", G_CALLBACK( OnDisplayScore ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonQuit ),   "clicked", G_CALLBACK( OnDestroy ), pWindowMain ) ;
+    g_signal_connect( G_OBJECT( pButtonUndo ),   "clicked", G_CALLBACK( OnUndo ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonNewGame ),"clicked", G_CALLBACK( OnNewGame ), NULL ) ;
     _g_display_box_menu( NULL ) ;
     onlyOneBoard.set = &currentMatrixOfBoard ;
     // on lance la boucle infernale
@@ -896,7 +907,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
             if (matrixSelectPeg( p->x, p->y )) {
                 _firstSelectPeg( "set", FALSE ) ;
                 _g_displayUpdateMatrix( ACTION_SELECT_PEG, p->x, p->y ) ;
-                if (/*(pOld.x || pOld.y) &&*/ (pMatrixLoad[pOld.x][pOld.y] == 1)) { /* unselect si l'ancien si existe */
+                if ((pOld.x || pOld.y) && (pMatrixLoad[pOld.x][pOld.y] == 1)) { /* unselect si l'ancien si existe */
                     _g_displayUpdateMatrix( ACTION_SELECT_UNSELECT_PEG, pOld.x, pOld.y ) ;
                 }
                 pOld.x = p->x ;
@@ -916,9 +927,9 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                 //                g_print( "\nDEBUG :: deltaX: %d deltaY: %d sumDelta: %d", deltaX, deltaY, sumDelta ) ;
                 //                g_print( "\nDEBUG :: pOldX: %d pOldY: %d px: %d py: %d", pOld.x, pOld.y, p->x, p->y ) ;
                 if (deltaX != deltaY && (sumDelta == 2 || sumDelta == -2)) {
-                    if (deltaConstantXY == abs( deltaX ))
+                    if (deltaConstantXY == abs( deltaX ) && (deltaY == 0))
                         action = (deltaX > 0) ? ACTION_SELECT_TAKE_NORTH : ACTION_SELECT_TAKE_SOUTH ;
-                    else if (deltaConstantXY == abs( deltaY ))
+                    else if ((deltaConstantXY == abs( deltaY )) && (deltaX == 0)) //bug deltaX !=0
                         action = (deltaY > 0) ? ACTION_SELECT_TAKE_WEST : ACTION_SELECT_TAKE_EAST ;
                     if (matrixUpdate( action )) {
                         _g_displayUpdateMatrix( action, p->x, p->y ) ;
@@ -1208,6 +1219,14 @@ OnSetName( GtkWidget *pWidget, dataName* pData ) {
     g_free( resultScore ) ;
     g_free( pWindowGetName ) ;
     gtk_widget_destroy( pWindowGetName ) ;
+}
+
+void
+OnDisplayScore(GtkWidget *pWidget, dataName* pData ){
+    pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
+    if (resultScore) resultScore = (pScore) scoreGetSortScore( (int) NULL ) ;
+    _g_display_box_score( resultScore, 0 ) ;
+    g_free( resultScore ) ;
 }
 
 void

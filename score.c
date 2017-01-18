@@ -38,7 +38,7 @@ static void __setRemainingPeg( int ) ;
 static void __setBonusElapseTime( int ) ;
 static void __setIdScore( int ) ;
 static void __setScoreGame( int ) ;
-//static void 	__clean(const char *buffer, FILE *fp) ;
+//static void       __clean(const char *buffer, FILE *fp) ;
 //static void		__displaySortScore(int ) ;
 //static void		__displaySetNamePlayer() ;
 //static void		__displaySetCalculateBonusElapseTimer(double bonus) ;
