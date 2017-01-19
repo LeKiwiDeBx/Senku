@@ -341,6 +341,10 @@ OnDisplayScore(GtkWidget *pWidget, dataName* pData );
 
 int
 boardInit( ) {
+    const char* lbNewGame = "New Game" ;
+    const char* lbUndo = "Undo" ;
+    const char* lbScore = "Score" ;
+    const char* lbQuit = "Quit" ;
     // init table des scores
     scoreInit( ) ;
 
@@ -417,15 +421,15 @@ boardInit( ) {
     gtk_widget_set_margin_top( GTK_WIDGET( pHbox ), 20 ) ;
     /* on ajoute à partir de la fin */
     gtk_widget_set_halign( GTK_WIDGET( pHbox ), GTK_ALIGN_CENTER ) ;
-    pButtonNewGame = gtk_button_new_with_label( "New Game" ) ;
+    pButtonNewGame = gtk_button_new_with_label( lbNewGame ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonNewGame, FALSE, FALSE, 15 ) ;
-    pButtonUndo = gtk_button_new_with_label( "Undo" ) ;
+    pButtonUndo = gtk_button_new_with_label( lbUndo ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonUndo, FALSE, FALSE, 15 ) ;
     /* bouton Score caler à droite */
-    pButtonScore = gtk_button_new_with_label( "Score" ) ;
+    pButtonScore = gtk_button_new_with_label( lbScore ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonScore, FALSE, FALSE, 15 ) ;
     /* bouton Quit caler à droite */
-    pButtonQuit = gtk_button_new_with_label( "Quit" ) ;
+    pButtonQuit = gtk_button_new_with_label( lbQuit ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonQuit, FALSE, FALSE, 15 ) ;
     /* on ajoute les boutons */
     gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 0, 3, 1, 3 ) ;
