@@ -3,29 +3,31 @@ PROG = senku
 
 CC = gcc 
 
-CFLAGS = -O3 -Wall -Wextra -o 
+CFLAGS = -g3 -gdwarf-2 -Wall -Wextra -o
 
-LDFLAGS= -mwindows
+LDFLAGS = -mwindows
 
 OBJECTS = main.o board.o peg.o matrix.o timer.o score.o memento.o
 
-PKG_CONFIG = `pkg-config --cflags --libs gtk+-3.0`
+PKG_CONFIG = `C:/GTK/bin/pkg-config --cflags --libs gtk+-3.0`
+
+XML = `C:/GTK/bin/pkg-config --cflags --libs libxml-2.0`
 
 install: all
 
 all: $(PROG)
 
 $(PROG): $(OBJECTS)
-	$(CC) $(CFLAGS) $(PROG) $(OBJECTS) $(PKG_CONFIG) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(PROG) $(OBJECTS) $(PKG_CONFIG) $(LDFLAGS) $(XML)
 
 board.o: board.c board.h matrix.h timer.h score.h
 	$(CC) $(CFLAGS) board.o -c board.c $(PKG_CONFIG)
 
 main.o: main.c board.h matrix.h
-	$(CC) $(CFLAGS) main.o -c main.c $(PKG_CONFIG)
+	$(CC) $(CFLAGS) main.o -c main.c $(PKG_CONFIG) 
 
 matrix.o: matrix.c matrix.h peg.h memento.h
-	$(CC) $(CFLAGS) matrix.o -c matrix.c $(PKG_CONFIG)
+	$(CC) $(CFLAGS) matrix.o -c matrix.c $(PKG_CONFIG) $(XML)
 
 peg.o: peg.c peg.h
 	$(CC) $(CFLAGS) peg.o -c peg.c 

@@ -337,7 +337,7 @@ OnCloseBoxScore( GtkWidget *pWidget, gpointer pData ) ;
  * @param pData NULL
  */
 void
-OnDisplayScore(GtkWidget *pWidget, dataName* pData );
+OnDisplayScore( GtkWidget *pWidget, dataName* pData ) ;
 
 int
 boardInit( ) {
@@ -434,10 +434,10 @@ boardInit( ) {
     /* on ajoute les boutons */
     gtk_grid_attach( GTK_GRID( pGridMain ), pHbox, 0, 3, 1, 3 ) ;
     /* les signaux des boutons */
-    g_signal_connect( G_OBJECT( pButtonScore ),  "clicked", G_CALLBACK( OnDisplayScore ), NULL ) ;
-    g_signal_connect( G_OBJECT( pButtonQuit ),   "clicked", G_CALLBACK( OnDestroy ), pWindowMain ) ;
-    g_signal_connect( G_OBJECT( pButtonUndo ),   "clicked", G_CALLBACK( OnUndo ), NULL ) ;
-    g_signal_connect( G_OBJECT( pButtonNewGame ),"clicked", G_CALLBACK( OnNewGame ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonScore ), "clicked", G_CALLBACK( OnDisplayScore ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), pWindowMain ) ;
+    g_signal_connect( G_OBJECT( pButtonUndo ), "clicked", G_CALLBACK( OnUndo ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonNewGame ), "clicked", G_CALLBACK( OnNewGame ), NULL ) ;
     _g_display_box_menu( NULL ) ;
     onlyOneBoard.set = &currentMatrixOfBoard ;
     // on lance la boucle infernale
@@ -513,9 +513,9 @@ _g_display_box_menu( gpointer pData ) {
     }
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( pRadio[optK] ), TRUE ) ;
     // boutons <Quit> et <Play> ben oui au moins :)) */
-    pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
-    pBtnMenuQuit = gtk_button_new_with_label( labelQuit ) ;
-    pBtnMenuPlay = gtk_button_new_with_label( labelPlay ) ;
+    pBoxMenuButton  = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
+    pBtnMenuQuit    = gtk_button_new_with_label( labelQuit ) ;
+    pBtnMenuPlay    = gtk_button_new_with_label( labelPlay ) ;
     /* on ajoute les boutons */
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, boxMenuButtonSpacing ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, boxMenuButtonSpacing ) ;
@@ -1226,7 +1226,7 @@ OnSetName( GtkWidget *pWidget, dataName* pData ) {
 }
 
 void
-OnDisplayScore(GtkWidget *pWidget, dataName* pData ){
+OnDisplayScore( GtkWidget *pWidget, dataName* pData ) {
     pScore resultScore = (score*) malloc( SCORE_BEST_OF * sizeof (score) ) ;
     if (resultScore) resultScore = (pScore) scoreGetSortScore( (int) NULL ) ;
     _g_display_box_score( resultScore, 0 ) ;
