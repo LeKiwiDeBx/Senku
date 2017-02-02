@@ -9,6 +9,7 @@
       <in>peg.c</in>
       <in>score.c</in>
       <in>timer.c</in>
+      <in>xfile.c</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -128,6 +129,14 @@
       <item path="timer.c" ex="false" tool="0" flavor2="3">
         <cTool>
           <incDir>
+            <pElem></pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="xfile.c" ex="false" tool="0" flavor2="3">
+        <cTool>
+          <incDir>
+            <pElem>../../../../../../GTK/include/libxml2</pElem>
             <pElem></pElem>
           </incDir>
         </cTool>

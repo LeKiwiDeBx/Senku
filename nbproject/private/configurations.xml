@@ -17,6 +17,8 @@
       <in>score.h</in>
       <in>timer.c</in>
       <in>timer.h</in>
+      <in>xfile.c</in>
+      <in>xfile.h</in>
     </df>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
