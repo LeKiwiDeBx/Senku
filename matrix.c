@@ -191,13 +191,40 @@ __getCoordPegWhereWeGo( int ) ;
 int
 matrixLoad( int choice ) {
     void* pXfile ;
-    char buffer[1024] ;
+    char * buffer[255] ;
+    char * pBuffer ;
+    pBuffer = (char *)malloc(255 * sizeof(char)) ;
+    pBuffer = &buffer[0] ;
     pXfile = xfileNew("matrix.xml") ;
     xfileRead(pXfile, buffer , "//matrix/name/text()") ;         // on veut tous les noms
-    g_print("\ndebug:: buffer name :%s\n", buffer) ;
+    int i = 0 ;
+    while(buffer[i] !=  NULL){
+        g_print("\ndebug:: buffer name :%s\n", buffer[i]) ;
+        i++ ;
+    }
     xfileRead(pXfile, buffer , g_strdup_printf("//matrix[%d]/row/column/text()", choice)) ;   // on veut les valeurs du matrix choisie
-    xfileRead(pXfile, buffer , g_strdup_printf("//matrix[%d]/name/text()", choice)) ;   // on veut le nom du matrix choisie
+    i = 0 ;
+    while(buffer[i] !=  NULL){
+        g_print("\ndebug:: buffer name :%s\n", buffer[i]) ;
+        i++ ;
+    }
+    char c ;
+    int j ;
+    for(j = 0; j < 12; j++){
+        for(i = 0 ; i < 12 ; i++){ //les colonnes de la ligne
+              c = *buffer[j] ;
+              g_print("%d-", atoi( &c ) );
+              *buffer[j]++ ;
+        }
+        g_print("\n") ;
+    }
     
+    xfileRead(pXfile, buffer , g_strdup_printf("//matrix[%d]/name/text()", choice)) ;   // on veut le nom du matrix choisie
+    i = 0 ;
+    while(buffer[i] !=  NULL){
+        g_print("\ndebug:: buffer name :%s\n", buffer[i]) ;
+        i++ ;
+    }
 //    _xpathNodes("matrix.xml","//matrix") ;
 //    _xpathNodes("matrix.xml","//matrix[@index='0']") ;
 //    _xpathNodes("matrix.xml","//matrix[2]/row") ;

@@ -29,6 +29,6 @@ xfileNew(const char* xfile) ;
  * @param xpath la requete XPath
  */
 void
-xfileRead(xmlXPathContextPtr xpc,char buffer[], const char* xpath) ;
+xfileRead(xmlXPathContextPtr xpc,char * buffer[], const char* xpath) ;
 #endif /* XFILE_H */
 
