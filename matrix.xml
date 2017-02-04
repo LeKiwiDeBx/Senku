@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <senku xmlns:xml="http://www.w3.org/XML/1998/namespace">
   <matrix index="0">
-      <name>English Shape</name>
+      <name>English Shape matrix</name>
     <row size="12">
-      <column  size="12">000010000000</column>
+      <column  size="12">200010000000</column>
       <column  size="12">000010000000</column>
       <column  size="12">000000000000</column>
       <column  size="12">000000000000</column>
@@ -18,7 +18,7 @@
      </row>
   </matrix> 
   <matrix index="1">
-      <name>German Shape</name>
+      <name>German Shape matrix</name>
     <row size="12">
       <column  size="12">0,0,0,0,2,0,0,0,0,0,0,0</column>
       <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
@@ -35,7 +35,7 @@
      </row>
   </matrix> 
   <matrix index="2">
-      <name>Diamond Shape</name>
+      <name>Diamond Shape matrix</name>
     <row size="12">
       <column  size="12">0,0,0,0,3,0,0,0,0,0,0,0</column>
       <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
