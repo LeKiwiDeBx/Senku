@@ -20,6 +20,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gprintf.h>
+#include <glib-2.0/glib/gprintf.h>
 
 
 /**
@@ -97,12 +98,13 @@ Matrix matrixDiamond = {
     {-1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1}, //9
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} //10
 } ;
+
 /**
  * structure du noeud matrix selectionné de matrix.xml 
  */
 typedef struct s_NodeMatrix {
-    char * name;
-    Matrix data;
+    char * name ;
+    Matrix data ;
 } NodeMatrix ;
 
 NodeMatrix *pCurrentNodeMatrix ;
@@ -192,53 +194,56 @@ int
 matrixLoad( int choice ) {
     void* pXfile ;
     char * buffer[255] ;
-    char * pBuffer ;
-    pBuffer = (char *)malloc(255 * sizeof(char)) ;
-    pBuffer = &buffer[0] ;
-    pXfile = xfileNew("matrix.xml") ;
-    xfileRead(pXfile, buffer , "//matrix/name/text()") ;         // on veut tous les noms
-    int i = 0 ;
-    while(buffer[i] !=  NULL){
-        g_print("\ndebug:: buffer name :%s\n", buffer[i]) ;
+    pXfile = xfileNew( "matrix.xml" ) ;
+    
+    xfileRead( pXfile, buffer, "//matrix/name/text()" ) ; // on veut tous les noms
+    int i = 0, k = 0 ;
+    char *nameShape[255] ;
+    while (buffer[i] != NULL) {
+        g_print( "\ndebug:: buffer name :%s\n", buffer[i] ) ;
         i++ ;
     }
-    xfileRead(pXfile, buffer , g_strdup_printf("//matrix[%d]/row/column/text()", choice)) ;   // on veut les valeurs du matrix choisie
+    nameShape[0] = "Unknown" ;
+    for (k = 0 ; k < i ; k++) {
+        nameShape[k + 1] = buffer[k] ;
+        g_print( "\ndebug:: nameShape :%s %d\n", nameShape[k + 1], k+1 ) ;
+    }
+    
+    xfileRead( pXfile, buffer, g_strdup_printf( "//matrix[%d]/row/column/text()", choice ) ) ; // on veut les valeurs du matrix choisie
     i = 0 ;
-    while(buffer[i] !=  NULL){
-        g_print("\ndebug:: buffer name :%s\n", buffer[i]) ;
+    while (buffer[i] != NULL) {
+        g_print( "\ndebug:: buffer matrix :%s\n", buffer[i] ) ;
         i++ ;
     }
     char c ;
-    int j ;
-    for(j = 0; j < 12; j++){
-        for(i = 0 ; i < 12 ; i++){ //les colonnes de la ligne
-              c = *buffer[j] ;
-              g_print("%d-", atoi( &c ) );
-              *buffer[j]++ ;
+    int j , value ;
+    Matrix  xlmMatrix  ;
+    for (j = 0 ; j < 12 ; j++) {
+        for (i = 0 ; i < 12 ; i++) { //les colonnes de la ligne
+            c = *buffer[j] ;
+            value = atoi( &c ) ;
+            value = (value == 0 || value == 1)? value: -1 ;
+            g_print( "%d-", value ) ;
+            xlmMatrix[j][i] = value  ;
+            *buffer[j]++ ;
         }
-        g_print("\n") ;
+        g_print( "\n" ) ;
     }
     
-    xfileRead(pXfile, buffer , g_strdup_printf("//matrix[%d]/name/text()", choice)) ;   // on veut le nom du matrix choisie
+    xfileRead( pXfile, buffer, g_strdup_printf( "//matrix[%d]/name/text()", choice ) ) ; // on veut le nom du matrix choisie
     i = 0 ;
-    while(buffer[i] !=  NULL){
-        g_print("\ndebug:: buffer name :%s\n", buffer[i]) ;
+    while (buffer[i] != NULL) {
+        g_print( "\ndebug:: buffer name :%s\n", buffer[i] ) ;
         i++ ;
     }
-//    _xpathNodes("matrix.xml","//matrix") ;
-//    _xpathNodes("matrix.xml","//matrix[@index='0']") ;
-//    _xpathNodes("matrix.xml","//matrix[2]/row") ;
-//    _xpathNodes("matrix.xml","//matrix[1]/row/column[@value]") ;
-    
-//    _xpathNodes("matrix.xml","//matrix/row") ;
-//    _xpathNodes("matrix.xml","//matrix/row/entry") ;
-    
-    char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
-    Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
+   
+    //DEBUG XLM char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
+    //DEBUG Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
     if (choice >= 0 && choice <= 4) {
         switch (choice) {
         case 1:case 2:case 3:
-            currentMatrixOfBoard.pShape = matrixType[choice] ;
+            //DEBUG XLM currentMatrixOfBoard.pShape = matrixType[choice] ;
+            currentMatrixOfBoard.pShape = &xlmMatrix ;
             break ;
         case 4:
             //			printf("\n Thank you, Good bye! ;)" );
@@ -247,6 +252,7 @@ matrixLoad( int choice ) {
         default:
             return 0 ;
         }
+        g_print("\nDEBUG nom choisit %d", choice) ;
         currentMatrixOfBoard.name = nameShape[choice] ;
         //		__displayLoadChoice(currentMatrixOfBoard.name) ;
         currentMatrixOfBoard.id = choice ;
