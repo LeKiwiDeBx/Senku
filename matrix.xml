@@ -3,53 +3,50 @@
   <matrix index="0">
       <name>English Shape matrix</name>
     <row size="12">
-      <column  size="12">200010000000</column>
-      <column  size="12">000010000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
-      <column  size="12">000000000000</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">22111011122</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
      </row>
   </matrix> 
   <matrix index="1">
       <name>German Shape matrix</name>
     <row size="12">
-      <column  size="12">0,0,0,0,2,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111011112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22222222222</column>
      </row>
   </matrix> 
   <matrix index="2">
       <name>Diamond Shape matrix</name>
     <row size="12">
-      <column  size="12">0,0,0,0,3,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
-      <column  size="12">0,0,0,0,0,0,0,0,0,0,0,0</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222122222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22211111222</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">21111011112</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">22211111222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22222122222</column>
+      <column  size="12">22222222222</column>
      </row>
   </matrix> 
-  
 </senku>
