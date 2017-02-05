@@ -85,11 +85,11 @@ xfileRead(xmlXPathContextPtr xpc, char * buffer[],const char* xpath){
     }
     xmlNodeSetPtr nodes = xpathObj->nodesetval ;
     int size = (nodes) ? nodes->nodeNr : 0;
-    fprintf(stdout, "\nResult (%d nodes):\n", size);
+    // fprintf(stdout, "\nResult (%d nodes):\n", size);
     int k = 0 ;
     for(i = 0; i < size; ++i) {
         cur = nodes->nodeTab[i]; 
-        fprintf(stdout, "content %s sizeof %d\n", cur->content,sizeof(cur->content));
+       // fprintf(stdout, "content %s sizeof %d\n", cur->content,sizeof(cur->content));
         buffer[i] = cur->content ;
         if(nodes->nodeTab[i]->type == XML_ELEMENT_NODE) { //XML_ELEMENT_NODE
 //            xmlChar * pContentProp = xmlGetProp(cur, (xmlChar *) "value");
