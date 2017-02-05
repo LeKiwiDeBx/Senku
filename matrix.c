@@ -208,7 +208,7 @@ matrixLoad( int choice ) {
     nameShape[0] = g_strdup( "Unknown" );
     for (k = 0 ; k < i ; k++) {
         nameShape[k + 1] = g_strdup(bufferNames[k] ) ;
-        g_print( "\ndebug:: nameShape :%s\n", nameShape[k + 1]) ;
+        //g_print( "\ndebug:: nameShape :%s\n", nameShape[k + 1]) ;
     }
     
     xfileRead( pXfile, bufferMatrix, g_strdup_printf( "//matrix[%d]/row/column/text()", choice ) ) ; // on veut les valeurs du matrix choisie
@@ -219,35 +219,34 @@ matrixLoad( int choice ) {
     }
     char c ;
     int j , value ;
-    Matrix * xmlMatrix  ;
-    xmlMatrix = (Matrix *)malloc(sizeof(Matrix)) ;
-    for (j = 0 ; j < 12 ; j++) {
-        for (i = 0 ; i < 12 ; i++) { //les colonnes de la ligne
+    Matrix  xmlMatrix  ;
+    for (j = 0 ; j < 11 ; j++) {
+        for (i = 0 ; i < 11 ; i++) { //les colonnes de la ligne
             c = *bufferMatrix[j]++ ;
             value = atoi( &c) ;
             value = (value == 0 || value == 1)? value: -1 ;
-            g_print( "%2d ", value ) ;
-            memcpy(xmlMatrix[j][i] , &value, sizeof(int))  ;
-            g_print( "%2d \n", *xmlMatrix[j][i] ) ;
+            //g_print( "%2d ", value ) ;
+            xmlMatrix[j][i] = value ;
+            //g_print( "%2d \n", xmlMatrix[j][i] ) ;
         }
         g_print( "\n" ) ;
     }
     
     xfileRead( pXfile, bufferName, g_strdup_printf( "//matrix[%d]/name/text()", choice ) ) ; // on veut le nom du matrix choisie
-    i = 0 ;
-    while (bufferName[i] != NULL) {
-        g_print( "\ndebug:: buffer name choisit :%s\n", bufferName[i] ) ;
-        i++ ;
-    }
+//    i = 0 ;
+//    while (bufferName[i] != NULL) {
+//        g_print( "\ndebug:: buffer name choisit :%s\n", bufferName[i] ) ;
+//        i++ ;
+//    }
    
     //DEBUG XLM char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
-    Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
+    //          Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
     
     if (choice >= 0 && choice <= 4) {
         switch (choice) {
         case 1:case 2:case 3:
-          currentMatrixOfBoard.pShape = matrixType[choice] ;
-          //  memcpy(currentMatrixOfBoard.pShape , &xmlMatrix, HOR_MAX * VER_MAX * sizeof (int) );
+          //currentMatrixOfBoard.pShape = matrixType[choice] ;
+          currentMatrixOfBoard.pShape = &xmlMatrix ;
             break ;
         case 4:
             //			printf("\n Thank you, Good bye! ;)" );
@@ -258,12 +257,11 @@ matrixLoad( int choice ) {
         }
         
         currentMatrixOfBoard.name = g_strdup( nameShape[choice] ) ;
-        g_print("\nDEBUG +--------> nom choisit %s", currentMatrixOfBoard.name ) ;
+        //g_print("\nDEBUG +--------> nom choisit %s", currentMatrixOfBoard.name ) ;
         //		__displayLoadChoice(currentMatrixOfBoard.name) ;
         currentMatrixOfBoard.id = choice ;
         memcpy( matrixCopy, currentMatrixOfBoard.pShape, HOR_MAX * VER_MAX * sizeof (int) ) ;
        // memcpy( matrixCopy, xmlMatrix, HOR_MAX * VER_MAX * sizeof (int) ) ;
-        
         pMatrixLoad = matrixCopy ;
         //		__displayMatrix(matrixCopy) ;
         return 1 ;
