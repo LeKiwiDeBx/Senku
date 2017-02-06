@@ -49,4 +49,20 @@
       <column  size="12">22222222222</column>
      </row>
   </matrix> 
+  <matrix index="3">
+      <name>TEST Shape matrix</name>
+    <row size="12">
+      <column  size="12">11022222222</column>
+      <column  size="12">22222122222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22211111222</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">21111011112</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">22211111222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22222122222</column>
+      <column  size="12">22222222222</column>
+     </row>
+  </matrix> 
 </senku>

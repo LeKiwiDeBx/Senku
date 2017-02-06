@@ -182,6 +182,28 @@ __getCoordPegWhereWeGo( int ) ;
 //    xmlCleanupParser();
 //    return(1) ;
 //}
+/**
+ * @brief DRAFT liste les matrices existantes
+ */
+void
+matrixListMatrix(char **ns , int *size ){
+    const char * rqst = "//matrix/name/text()" ;
+    char * bufferNs[128] ;
+    void * pXfile ;
+    int i = 0, k = 0 ;
+    pXfile = xfileNew("matrix.xml") ;
+    xfileRead( pXfile, bufferNs, rqst) ;
+    g_print("retour ns OK\n") ;
+    while (bufferNs[i] != NULL) {
+        i++ ;
+    }
+    *size = i ;
+    g_print("retour ns size = %d\n", *size) ;
+    for (k = 0 ; k < i ; k++) {
+       ns[k] = bufferNs[k] ;
+       //g_print("retour ns %s", ns[k]) ;
+    }
+}
 
 /*
  *
@@ -198,8 +220,12 @@ matrixLoad( int choice ) {
     char * bufferName[128] ;
     pXfile = xfileNew( "matrix.xml" ) ;
     int i = 0, k = 0 ;
-    
-    xfileRead( pXfile, bufferNames, "//matrix/name/text()" ) ; // on veut tous les noms
+    /**
+     *  
+     * on veut tous les noms
+     *      
+     */
+    xfileRead( pXfile, bufferNames, "//matrix/name/text()" ) ;
     char * nameShape[128] = {NULL} ;
     while (bufferNames[i] != NULL) {
         //g_print( "\ndebug:: buffer name :%s\n", buffer[i] ) ;
@@ -210,8 +236,12 @@ matrixLoad( int choice ) {
         nameShape[k + 1] = g_strdup(bufferNames[k] ) ;
         //g_print( "\ndebug:: nameShape :%s\n", nameShape[k + 1]) ;
     }
-    
-    xfileRead( pXfile, bufferMatrix, g_strdup_printf( "//matrix[%d]/row/column/text()", choice ) ) ; // on veut les valeurs du matrix choisie
+    /**
+     *  
+     * on veut les valeurs du matrix choisie
+     *      
+     */
+    xfileRead( pXfile, bufferMatrix, g_strdup_printf( "//matrix[%d]/row/column/text()", choice ) ) ;
     i = 0 ;
     while (bufferMatrix[i] != NULL) {
         //g_print( "\ndebug:: buffer matrix :%s\n", bufferMatrix[i] ) ;
@@ -220,19 +250,24 @@ matrixLoad( int choice ) {
     char c ;
     int j , value ;
     Matrix  xmlMatrix  ;
-    for (j = 0 ; j < 11 ; j++) {
-        for (i = 0 ; i < 11 ; i++) { //les colonnes de la ligne
+    for (j = 0 ; j < VER_MAX ; j++) {
+        for (i = 0 ; i < HOR_MAX ; i++) { //les colonnes de la ligne
             c = *bufferMatrix[j]++ ;
-            value = atoi( &c) ;
-            value = (value == 0 || value == 1)? value: -1 ;
+            value = atoi(&c) ;
+            //value = (value == 0 || value == 1)? value: -1 ;
             //g_print( "%2d ", value ) ;
-            xmlMatrix[j][i] = value ;
+            xmlMatrix[j][i] = (value == 0 || value == 1)? value: -1 ;
             //g_print( "%2d \n", xmlMatrix[j][i] ) ;
         }
-        g_print( "\n" ) ;
+        //g_print( "\n" ) ;
     }
     
-    xfileRead( pXfile, bufferName, g_strdup_printf( "//matrix[%d]/name/text()", choice ) ) ; // on veut le nom du matrix choisie
+    /**
+     *  
+     * on veut le nom de la matrice
+     *      
+     */
+    xfileRead( pXfile, bufferName, g_strdup_printf( "//matrix[%d]/name/text()", choice ) ) ;
 //    i = 0 ;
 //    while (bufferName[i] != NULL) {
 //        g_print( "\ndebug:: buffer name choisit :%s\n", bufferName[i] ) ;
@@ -244,14 +279,14 @@ matrixLoad( int choice ) {
     
     if (choice >= 0 && choice <= 4) {
         switch (choice) {
-        case 1:case 2:case 3:
+        case 1:case 2:case 3:case 4:
           //currentMatrixOfBoard.pShape = matrixType[choice] ;
           currentMatrixOfBoard.pShape = &xmlMatrix ;
             break ;
-        case 4:
-            //			printf("\n Thank you, Good bye! ;)" );
-            exit( EXIT_SUCCESS ) ;
-            break ;
+        //case 4:
+        //	printf("\n Thank you, Good bye! ;)" );
+        //  exit( EXIT_SUCCESS ) ;
+        //  break ;
         default:
             return 0 ;
         }

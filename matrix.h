@@ -50,5 +50,6 @@ int matrixSelectPeg(int, int);
 int matrixUpdate();
 int matrixCanMovePeg();
 int matrixCountRemainPeg();
+void matrixListMatrix(char **nameShape, int *size);
 
 #endif
