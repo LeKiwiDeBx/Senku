@@ -481,8 +481,12 @@ void
 _g_display_box_menu( gpointer pData ) {
     int k = 0 ;
     gint optK = (GPOINTER_TO_INT( pData )) ? GPOINTER_TO_INT( pData ) : 0 ;
-    char *shapeName[] = {"Shape English", "Shape German", "Shape Diamond"} ;
-    const int sizeShapeName = (int) (sizeof (shapeName) / sizeof (shapeName[0])) ;
+    //char *shapeName[] = {"Shape English", "Shape German", "Shape Diamond", "TEST"} ;
+    char * shapeName[128] ;
+    int * size  ;
+    matrixListMatrix( shapeName, size) ;
+    //const int sizeShapeName = (int) (sizeof (shapeName) / sizeof (shapeName[0])) ;
+    const int sizeShapeName = *size ;
     const int boxMenuWidth = 360 ;
     const int boxMenuHeight = 340 ;
     const int boxMenuOptionSpacing = 20 ;
