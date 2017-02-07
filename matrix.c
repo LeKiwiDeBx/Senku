@@ -183,26 +183,20 @@ __getCoordPegWhereWeGo( int ) ;
 //    return(1) ;
 //}
 /**
- * @brief DRAFT liste les matrices existantes
+ * @brief liste les matrix shape du fichier xml
+ * @param ns tableau pour recueillir les noms des shapes
+ * @param size nombre de shapes trouvées
  */
 void
 matrixListMatrix(char **ns , int *size ){
     const char * rqst = "//matrix/name/text()" ;
     char * bufferNs[128] ;
     void * pXfile ;
-    int i = 0, k = 0 ;
+    int k = 0 ;
     pXfile = xfileNew("matrix.xml") ;
     xfileRead( pXfile, bufferNs, rqst) ;
-    g_print("retour ns OK\n") ;
-    while (bufferNs[i] != NULL) {
-        i++ ;
-    }
-    *size = i ;
-    g_print("retour ns size = %d\n", *size) ;
-    for (k = 0 ; k < i ; k++) {
-       ns[k] = bufferNs[k] ;
-       //g_print("retour ns %s", ns[k]) ;
-    }
+    while (bufferNs[*size]) (*size)++ ;
+    for (k = 0 ; k < *size ; k++) ns[k] = bufferNs[k] ;
 }
 
 /*
@@ -276,20 +270,20 @@ matrixLoad( int choice ) {
    
     //DEBUG XLM char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
     //          Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
-    
-    if (choice >= 0 && choice <= 4) {
-        switch (choice) {
-        case 1:case 2:case 3:case 4:
+    currentMatrixOfBoard.pShape = &xmlMatrix ;
+//    if (choice >= 0 && choice <= 4) {
+//        switch (choice) {
+//        case 1:case 2:case 3:case 4:
           //currentMatrixOfBoard.pShape = matrixType[choice] ;
-          currentMatrixOfBoard.pShape = &xmlMatrix ;
-            break ;
+          
+//            break ;
         //case 4:
         //	printf("\n Thank you, Good bye! ;)" );
         //  exit( EXIT_SUCCESS ) ;
         //  break ;
-        default:
-            return 0 ;
-        }
+//        default:
+//            return 0 ;
+//        }
         
         currentMatrixOfBoard.name = g_strdup( nameShape[choice] ) ;
         //g_print("\nDEBUG +--------> nom choisit %s", currentMatrixOfBoard.name ) ;
@@ -300,8 +294,8 @@ matrixLoad( int choice ) {
         pMatrixLoad = matrixCopy ;
         //		__displayMatrix(matrixCopy) ;
         return 1 ;
-    }
-    return 0 ;
+    //}
+    //return 0 ;
 }
 
 /*
