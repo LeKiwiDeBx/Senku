@@ -18,6 +18,7 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <glib/gprintf.h>
+
 /**
  * headers Senku project
  */
@@ -158,6 +159,7 @@ GtkWidget *pBoxMenu = NULL ;
 GtkWidget *pHbox = NULL ;
 GtkWidget *pButtonNewGame = NULL ;
 GtkWidget *pButtonUndo = NULL ;
+GtkWidget *pButtonRotate = NULL ;
 GtkWidget *pButtonQuit = NULL ;
 GtkWidget *pButtonScore = NULL ;
 GtkWidget *pfrTitle = NULL ;
@@ -174,6 +176,7 @@ GtkWidget *plbValuesValue[MAX_LABEL] ;
 GtkWidget *pDialogBoxQuit = NULL ;
 GtkWidget *pWindowGetName = NULL ;
 GtkWidget *plbLogo = NULL ;
+
 /**
  * @brief Appel selection image avec un clic souris
  * @param pWidget boxEvent qui encapsule l'image
@@ -206,6 +209,15 @@ OnDestroy( GtkWidget *pWidget, gpointer pData ) ;
  */
 void
 OnUndo( GtkWidget *pWidget, gpointer pData ) ;
+
+/**
+ * @brief Rotation de la figure de 90 °
+ * @param pWidget pWidget appele par le bouton Rotate
+ * @param pData NULL
+ */
+void
+OnRotate( GtkWidget *pWidget, gpointer pData ) ;
+
 /**
  * @brief Validation de la boite de nom
  * @param pWidget
@@ -236,6 +248,7 @@ OnNewGame( GtkWidget *pWidget, gpointer pData ) ;
  */
 void
 OnDestroyGetName( GtkWidget *pWidget, gpointer pData ) ;
+
 /**
  * @ Not use (???)
  * @param pWidget
@@ -260,6 +273,7 @@ which_radio_is_selected( GSList *group ) ;
  */
 void
 _g_displayMatrix( Matrix matrix ) ;
+
 /**
  * Met à jour l'affichage de la matrice apres une selection/prise
  * @param action type action et direction
@@ -268,11 +282,13 @@ _g_displayMatrix( Matrix matrix ) ;
  */
 void
 _g_displayUpdateMatrix( actionSelect action, const int x, const int y ) ;
+
 /**
  * affichage du chronometre
  */
 gboolean
 _g_display_time( gpointer pData ) ;
+
 /**
  * @brief reecrit le texte du label
  * @param pWidget le label
@@ -280,6 +296,7 @@ _g_display_time( gpointer pData ) ;
  */
 void
 _g_labelSet( GtkWidget *pWidget, gpointer pData ) ;
+
 /**
  * @brief gestion de la variable booleene firsSelectPeg
  * @param action "get" ou "set" une valeur bool
@@ -288,6 +305,7 @@ _g_labelSet( GtkWidget *pWidget, gpointer pData ) ;
  */
 gboolean
 _firstSelectPeg( char* action, gboolean value ) ;
+
 /**
  * @brief affiche les scores 
  * @param pointeur sur le tableau des scores
@@ -295,6 +313,7 @@ _firstSelectPeg( char* action, gboolean value ) ;
  */
 void
 _g_display_box_score( pScore ps, const int rank ) ;
+
 /**
  *@brief Dialog box Menu 
  *       choix des shapes modale et sans decoration (style screen splash)
@@ -302,28 +321,33 @@ _g_display_box_score( pScore ps, const int rank ) ;
  */
 void
 _g_display_box_menu( gpointer pData ) ;
+
 /**
  * @brief efface l'affichage de la matrice
  */
 void
 _g_erase_displayMatrix( ) ;
+
 /**
  * @brief construit gridMatrix pour contenir la matrice
  */
 void
 _g_new_GridMatrix( ) ;
+
 /**
  * @brief demande le nom pour le score
  * @param rank rang ou est inserer le joueur
  */
 void
 _g_display_get_name( int rank ) ;
+
 /**
  * @brief redessinne les peg et trou sans point rouge ni croix (signe du last undo)
  * @param pm le memento des images à redessiner sans les symboles du Undo
  */
 void
 _setLastMementoUndoRedrawNormal( pMemento ) ;
+
 /**
  * @brief fermeture de BoxScore
  * @param pWidget le button close
@@ -331,6 +355,7 @@ _setLastMementoUndoRedrawNormal( pMemento ) ;
  */
 void
 OnCloseBoxScore( GtkWidget *pWidget, gpointer pData ) ;
+
 /**
  * @brief affiche la fiche de score
  * @param pWidget le button score
@@ -343,6 +368,7 @@ int
 boardInit( ) {
     const char* lbNewGame = "New Game" ;
     const char* lbUndo = "Undo" ;
+    const char* lbRotate = "Rotate" ;
     const char* lbScore = "Score" ;
     const char* lbQuit = "Quit" ;
     // init table des scores
@@ -425,6 +451,8 @@ boardInit( ) {
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonNewGame, FALSE, FALSE, 15 ) ;
     pButtonUndo = gtk_button_new_with_label( lbUndo ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonUndo, FALSE, FALSE, 15 ) ;
+    pButtonRotate = gtk_button_new_with_label( lbRotate ) ;
+    gtk_box_pack_start( GTK_BOX( pHbox ), pButtonRotate, FALSE, FALSE, 15 ) ;
     /* bouton Score caler à droite */
     pButtonScore = gtk_button_new_with_label( lbScore ) ;
     gtk_box_pack_start( GTK_BOX( pHbox ), pButtonScore, FALSE, FALSE, 15 ) ;
@@ -437,6 +465,7 @@ boardInit( ) {
     g_signal_connect( G_OBJECT( pButtonScore ), "clicked", G_CALLBACK( OnDisplayScore ), NULL ) ;
     g_signal_connect( G_OBJECT( pButtonQuit ), "clicked", G_CALLBACK( OnDestroy ), pWindowMain ) ;
     g_signal_connect( G_OBJECT( pButtonUndo ), "clicked", G_CALLBACK( OnUndo ), NULL ) ;
+    g_signal_connect( G_OBJECT( pButtonRotate ), "clicked", G_CALLBACK( OnRotate ), NULL ) ;
     g_signal_connect( G_OBJECT( pButtonNewGame ), "clicked", G_CALLBACK( OnNewGame ), NULL ) ;
     _g_display_box_menu( NULL ) ;
     onlyOneBoard.set = &currentMatrixOfBoard ;
@@ -482,11 +511,11 @@ _g_display_box_menu( gpointer pData ) {
     int k = 0 ;
     gint optK = (GPOINTER_TO_INT( pData )) ? GPOINTER_TO_INT( pData ) : 0 ;
     //char *shapeName[] = {"Shape English", "Shape German", "Shape Diamond", "TEST"} ;
-    char * shapeName[128] ;
-    int * size  ;
-    matrixListMatrix( shapeName, size) ;
+    char * shapeName[128] = {NULL} ;
+    int size = 0 ;
+    matrixListMatrix( shapeName, &size) ;
     //const int sizeShapeName = (int) (sizeof (shapeName) / sizeof (shapeName[0])) ;
-    const int sizeShapeName = *size ;
+    const int sizeShapeName = size ;
     const int boxMenuWidth = 360 ;
     const int boxMenuHeight = 340 ;
     const int boxMenuOptionSpacing = 20 ;
@@ -797,6 +826,11 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
         gtk_widget_set_state_flags( pButtonUndo, GTK_STATE_FLAG_INSENSITIVE, TRUE ) ;
     }
     g_free( pMementoUndo ) ;
+}
+void
+OnRotate( GtkWidget *pWidget, gpointer pData ) {
+    g_print("DEBUG :: appel matrixRotate\n") ;
+    matrixRotate(pMatrixLoad) ;
 }
 
 void

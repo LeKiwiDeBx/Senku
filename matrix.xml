@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <senku xmlns:xml="http://www.w3.org/XML/1998/namespace">
   <matrix index="0">
-      <name>English Shape matrix</name>
+      <name>English board</name>
     <row size="12">
       <column  size="12">22222222222</column>
       <column  size="12">22222222222</column>
@@ -18,7 +18,7 @@
      </row>
   </matrix> 
   <matrix index="1">
-      <name>German Shape matrix</name>
+      <name>German board</name>
     <row size="12">
       <column  size="12">22222222222</column>
       <column  size="12">22221112222</column>
@@ -34,25 +34,90 @@
      </row>
   </matrix> 
   <matrix index="2">
-      <name>Diamond Shape matrix</name>
+      <name>Diamond board</name>
     <row size="12">
       <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
       <column  size="12">22222122222</column>
       <column  size="12">22221112222</column>
       <column  size="12">22211111222</column>
-      <column  size="12">22111111122</column>
-      <column  size="12">21111011112</column>
+      <column  size="12">22111011122</column>
       <column  size="12">22111111122</column>
       <column  size="12">22211111222</column>
       <column  size="12">22221112222</column>
       <column  size="12">22222122222</column>
       <column  size="12">22222222222</column>
-     </row>
+    </row>
   </matrix> 
   <matrix index="3">
-      <name>TEST Shape matrix</name>
+      <name>French board</name>
     <row size="12">
-      <column  size="12">11022222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22211111222</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">22111011122</column>
+      <column  size="12">22111111122</column>
+      <column  size="12">22211111222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+     </row>
+  </matrix> 
+  <matrix index="4">
+      <name>Asymmetrical board</name>
+    <row size="12">
+      <column  size="12">22222222222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22111111112</column>
+      <column  size="12">22111011112</column>
+      <column  size="12">22111111112</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22221112222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+     </row>
+  </matrix> 
+  <matrix index="5">
+      <name>Square 6X6 board</name>
+    <row size="12">
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22211111122</column>
+      <column  size="12">22211111122</column>
+      <column  size="12">22211101122</column>
+      <column  size="12">22211111122</column>
+      <column  size="12">22211111122</column>
+      <column  size="12">22211111122</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+     </row>
+  </matrix> 
+  <matrix index="6">
+      <name>Square 9X9 board</name>
+    <row size="12">
+      <column  size="12">22222222222</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111011112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">21111111112</column>
+      <column  size="12">22222222222</column>
+     </row>
+  </matrix> 
+  <matrix index="7">
+      <name>Continental board</name>
+    <row size="12">
+      <column  size="12">22222222222</column>
       <column  size="12">22222122222</column>
       <column  size="12">22221112222</column>
       <column  size="12">22211111222</column>
@@ -65,4 +130,30 @@
       <column  size="12">22222222222</column>
      </row>
   </matrix> 
+  <matrix index="8">
+      <name>Test1 Shape matrix</name>
+    <row size="12">
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22220102222</column>
+      <column  size="12">22220102222</column>
+      <column  size="12">22001010022</column>
+      <column  size="12">22000110022</column>
+      <column  size="12">22000100022</column>
+      <column  size="12">22220102222</column>
+      <column  size="12">22220002222</column>
+      <column  size="12">22222222222</column>
+      <column  size="12">22222222222</column>
+     </row>
+  </matrix>
 </senku>
+
+
+
+
+
+
+
+
+
+

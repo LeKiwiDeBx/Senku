@@ -22,7 +22,6 @@
 #include <glib/gprintf.h>
 #include <glib-2.0/glib/gprintf.h>
 
-
 /**
  * Header XML
  *
@@ -54,50 +53,50 @@
  *         matrice carrée 11 x 11
  * @Matrix type de tableau 2D de integer (int)
  */
-Matrix matrixEnglish = {
-    //0  1  2  3  4  5  6  7  8  9  10
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //0
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //1
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //2
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //3
-    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //4
-    {-1, -1, 1, 1, 1, 0, 1, 1, 1, -1, -1}, //5
-    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //6
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //7
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //8
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //9
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} //10
-} ;
+//Matrix matrixEnglish = {
+//    //0  1  2  3  4  5  6  7  8  9  10
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //0
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //1
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //2
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //3
+//    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //4
+//    {-1, -1, 1, 1, 1, 0, 1, 1, 1, -1, -1}, //5
+//    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //6
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //7
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //8
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //9
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} //10
+//} ;
 
-Matrix matrixGerman = {
-    //0  1  2  3  4  5  6  7  8  9  10
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //0
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //1
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //2
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //3
-    {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1}, //4
-    {-1, 1, 1, 1, 1, 0, 1, 1, 1, 1, -1}, //5
-    {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1}, //6
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //7
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //8
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //9
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} //10
-} ;
+//Matrix matrixGerman = {
+//    //0  1  2  3  4  5  6  7  8  9  10
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //0
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //1
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //2
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //3
+//    {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1}, //4
+//    {-1, 1, 1, 1, 1, 0, 1, 1, 1, 1, -1}, //5
+//    {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1}, //6
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //7
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //8
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //9
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} //10
+//} ;
 
-Matrix matrixDiamond = {
-    //0  1  2  3  4  5  6  7  8  9  10
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //0
-    {-1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1}, //1
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //2
-    {-1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1}, //3
-    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //4
-    {-1, 1, 1, 1, 1, 0, 1, 1, 1, 1, -1}, //5
-    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //6
-    {-1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1}, //7
-    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //8
-    {-1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1}, //9
-    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} //10
-} ;
+//Matrix matrixDiamond = {
+//    //0  1  2  3  4  5  6  7  8  9  10
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}, //0
+//    {-1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1}, //1
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //2
+//    {-1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1}, //3
+//    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //4
+//    {-1, 1, 1, 1, 1, 0, 1, 1, 1, 1, -1}, //5
+//    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1}, //6
+//    {-1, -1, -1, 1, 1, 1, 1, 1, -1, -1, -1}, //7
+//    {-1, -1, -1, -1, 1, 1, 1, -1, -1, -1, -1}, //8
+//    {-1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1}, //9
+//    {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1} //10
+//} ;
 
 /**
  * structure du noeud matrix selectionné de matrix.xml 
@@ -112,13 +111,14 @@ NodeMatrix currentNodeMatrix ;
 
 // Matrix matrixCopy ;
 
-/*
+
 static void
 __displayMatrix(Matrix) ;
 
 static char
  *__selectItem(int) ;
 
+/*
 static void
 __displayLoadChoice(const char *) ;
 
@@ -183,6 +183,26 @@ __getCoordPegWhereWeGo( int ) ;
 //    return(1) ;
 //}
 /**
+ * @brief rotation de la matrice de 90°
+ */
+void matrixRotate(Matrix pMatrixRotate){
+    int tmp = 0;
+    int n = HOR_MAX , i,j; //matrice carré
+        for(i = 0; i <n/2; i++){
+            for(j = i; j <n-i-1 ; j++){
+            tmp = pMatrixRotate[i][j];
+            pMatrixRotate[i][j] = pMatrixRotate[n - j - 1][i];
+            pMatrixRotate[n - j - 1][i] = pMatrixRotate[n - 1 - i][n - 1 - j];
+            pMatrixRotate[n - 1 - i][n - 1 - j] = pMatrixRotate[j][n - 1 - i];
+            pMatrixRotate[j][n - 1 - i] = tmp;
+            }
+        }
+    //DEBUG ::
+    __displayMatrix(matrixCopy) ;
+    g_print("DEBUG :: fin matrixRotate\n") ;
+    //END OF DEBUG ::
+ }
+/**
  * @brief liste les matrix shape du fichier xml
  * @param ns tableau pour recueillir les noms des shapes
  * @param size nombre de shapes trouvées
@@ -221,15 +241,9 @@ matrixLoad( int choice ) {
      */
     xfileRead( pXfile, bufferNames, "//matrix/name/text()" ) ;
     char * nameShape[128] = {NULL} ;
-    while (bufferNames[i] != NULL) {
-        //g_print( "\ndebug:: buffer name :%s\n", buffer[i] ) ;
-        i++ ;
-    }
+    while (bufferNames[i] != NULL) i++ ;
     nameShape[0] = g_strdup( "Unknown" );
-    for (k = 0 ; k < i ; k++) {
-        nameShape[k + 1] = g_strdup(bufferNames[k] ) ;
-        //g_print( "\ndebug:: nameShape :%s\n", nameShape[k + 1]) ;
-    }
+    for (k = 0 ; k < i ; k++) nameShape[k + 1] = g_strdup(bufferNames[k] ) ;
     /**
      *  
      * on veut les valeurs du matrix choisie
@@ -237,65 +251,47 @@ matrixLoad( int choice ) {
      */
     xfileRead( pXfile, bufferMatrix, g_strdup_printf( "//matrix[%d]/row/column/text()", choice ) ) ;
     i = 0 ;
-    while (bufferMatrix[i] != NULL) {
-        //g_print( "\ndebug:: buffer matrix :%s\n", bufferMatrix[i] ) ;
-        i++ ;
-    }
     char c ;
     int j , value ;
     Matrix  xmlMatrix  ;
+    while (bufferMatrix[i] != NULL) i++ ;
     for (j = 0 ; j < VER_MAX ; j++) {
         for (i = 0 ; i < HOR_MAX ; i++) { //les colonnes de la ligne
             c = *bufferMatrix[j]++ ;
             value = atoi(&c) ;
-            //value = (value == 0 || value == 1)? value: -1 ;
-            //g_print( "%2d ", value ) ;
             xmlMatrix[j][i] = (value == 0 || value == 1)? value: -1 ;
-            //g_print( "%2d \n", xmlMatrix[j][i] ) ;
         }
-        //g_print( "\n" ) ;
     }
-    
     /**
      *  
      * on veut le nom de la matrice
      *      
      */
     xfileRead( pXfile, bufferName, g_strdup_printf( "//matrix[%d]/name/text()", choice ) ) ;
-//    i = 0 ;
-//    while (bufferName[i] != NULL) {
-//        g_print( "\ndebug:: buffer name choisit :%s\n", bufferName[i] ) ;
-//        i++ ;
-//    }
-   
-    //DEBUG XLM char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
-    //          Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
+//DEBUG XLM char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
+//          Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
     currentMatrixOfBoard.pShape = &xmlMatrix ;
 //    if (choice >= 0 && choice <= 4) {
 //        switch (choice) {
 //        case 1:case 2:case 3:case 4:
-          //currentMatrixOfBoard.pShape = matrixType[choice] ;
-          
-//            break ;
-        //case 4:
-        //	printf("\n Thank you, Good bye! ;)" );
-        //  exit( EXIT_SUCCESS ) ;
-        //  break ;
+//          currentMatrixOfBoard.pShape = matrixType[choice] ;
+//          break ;
+//        case 4:
+//          printf("\n Thank you, Good bye! ;)" );
+//          exit( EXIT_SUCCESS ) ;
+//          break ;
 //        default:
-//            return 0 ;
+//          return 0 ;
 //        }
-        
-        currentMatrixOfBoard.name = g_strdup( nameShape[choice] ) ;
-        //g_print("\nDEBUG +--------> nom choisit %s", currentMatrixOfBoard.name ) ;
-        //		__displayLoadChoice(currentMatrixOfBoard.name) ;
-        currentMatrixOfBoard.id = choice ;
-        memcpy( matrixCopy, currentMatrixOfBoard.pShape, HOR_MAX * VER_MAX * sizeof (int) ) ;
-       // memcpy( matrixCopy, xmlMatrix, HOR_MAX * VER_MAX * sizeof (int) ) ;
-        pMatrixLoad = matrixCopy ;
-        //		__displayMatrix(matrixCopy) ;
-        return 1 ;
-    //}
-    //return 0 ;
+    currentMatrixOfBoard.name = g_strdup( nameShape[choice] ) ;
+//		__displayLoadChoice(currentMatrixOfBoard.name) ;
+    currentMatrixOfBoard.id = choice ;
+    memcpy( matrixCopy, currentMatrixOfBoard.pShape, HOR_MAX * VER_MAX * sizeof (int) ) ;
+    pMatrixLoad = matrixCopy ;
+//		__displayMatrix(matrixCopy) ;
+    return 1 ;
+//  }
+//  return 0 ;
 }
 
 /*
@@ -489,7 +485,7 @@ __displayLoadChoice(const char * shapeName){
 }
  */
 
-/*
+
 void
 __displayMatrix(Matrix matrix){
     int row, column;
@@ -508,9 +504,9 @@ __displayMatrix(Matrix matrix){
     printf("\n");
     }
 }
- */
 
-/*
+
+
 char
  *__selectItem(int item){
     char *ret ;
@@ -537,4 +533,4 @@ char
     }
     return ret ;
 }
- */
+ 

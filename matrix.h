@@ -51,5 +51,5 @@ int matrixUpdate();
 int matrixCanMovePeg();
 int matrixCountRemainPeg();
 void matrixListMatrix(char **nameShape, int *size);
-
+void matrixRotate(Matrix pMatrixRotate) ;
 #endif
