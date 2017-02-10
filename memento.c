@@ -53,7 +53,7 @@ caretakerAddMemento( pMemento pmArray ) {
 }
 
 /**
- * @brief renvoi le memento a un indice donné du UNDO
+ * @brief renvoi le dernier memento du UNDO
  * @param un undo cad un retour arriere immediat
  * @return un pointeur sur le memento
  */

@@ -18,10 +18,6 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <glib/gprintf.h>
-//#include <gtk/gtkwidget.h>
-//#include <gtkcontainer.h>
-
-
 
 /**
  * headers Senku project
@@ -181,7 +177,7 @@ GtkWidget *pDialogBoxQuit = NULL ;
 GtkWidget *pWindowGetName = NULL ;
 GtkWidget *plbLogo = NULL ;
 GtkWidget *imgPeg = NULL ;
-GtkWidget *pMatrix_event[HOR_MAX][VER_MAX] = {NULL};
+GtkWidget *pMatrix_event[HOR_MAX][VER_MAX] = {NULL} ;
 /**
  * @brief Appel selection image avec un clic souris
  * @param pWidget boxEvent qui encapsule l'image
@@ -518,7 +514,7 @@ _g_display_box_menu( gpointer pData ) {
     //char *shapeName[] = {"Shape English", "Shape German", "Shape Diamond", "TEST"} ;
     char * shapeName[128] = {NULL} ;
     int size = 0 ;
-    matrixListMatrix( shapeName, &size) ;
+    matrixListMatrix( shapeName, &size ) ;
     //const int sizeShapeName = (int) (sizeof (shapeName) / sizeof (shapeName[0])) ;
     const int sizeShapeName = size ;
     const int boxMenuWidth = 360 ;
@@ -551,9 +547,9 @@ _g_display_box_menu( gpointer pData ) {
     }
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON( pRadio[optK] ), TRUE ) ;
     // boutons <Quit> et <Play> ben oui au moins :)) */
-    pBoxMenuButton  = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
-    pBtnMenuQuit    = gtk_button_new_with_label( labelQuit ) ;
-    pBtnMenuPlay    = gtk_button_new_with_label( labelPlay ) ;
+    pBoxMenuButton = gtk_box_new( GTK_ORIENTATION_HORIZONTAL, boxMenuButtonSpacing ) ;
+    pBtnMenuQuit = gtk_button_new_with_label( labelQuit ) ;
+    pBtnMenuPlay = gtk_button_new_with_label( labelPlay ) ;
     /* on ajoute les boutons */
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuPlay, TRUE, TRUE, boxMenuButtonSpacing ) ;
     gtk_box_pack_start( GTK_BOX( pBoxMenuButton ), pBtnMenuQuit, FALSE, FALSE, boxMenuButtonSpacing ) ;
@@ -832,24 +828,29 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
     }
     g_free( pMementoUndo ) ;
 }
+
 void
 OnRotate( GtkWidget *pWidget, gpointer pData ) {
-    int k , i ;
-    GList *children, *iter;
-    g_print("DEBUG :: appel matrixRotate\n") ;
-    
-    children = gtk_container_get_children(GTK_CONTAINER(pGridMatrix));
-    for(iter = children; iter != NULL; iter = g_list_next(iter))
-        gtk_container_remove(GTK_CONTAINER(pGridMatrix), GTK_WIDGET(iter->data));
-    g_list_free(children);
-    for (i = 0 ; i < VER_MAX ; i++) 
-        for (k = 0 ; k < HOR_MAX ; k++) {
-    //        gtk_container_remove(GTK_CONTAINER(pGridMatrix),imgPeg) ;
-             pMatrix_event[i][k]= NULL ;
-        }
-    matrixRotate(pMatrixLoad) ;
-   // _g_displayMatrix(pMatrixLoad) ;
-    gtk_widget_show_all(pGridMatrix);
+    int k, i ;
+    GList *children, *iter ;
+    g_print( "DEBUG :: appel matrixRotate\n" ) ;
+    children = gtk_container_get_children( GTK_CONTAINER( pGridMatrix ) ) ;
+    for (iter = children ; iter != NULL ; iter = g_list_next( iter ))
+        gtk_container_remove( GTK_CONTAINER( pGridMatrix ), GTK_WIDGET( iter->data ) ) ;
+    g_list_free( children ) ;
+    for (i = 0 ; i < VER_MAX ; i++)
+        for (k = 0 ; k < HOR_MAX ; k++) 
+            pMatrix_event[i][k] = NULL ;
+    matrixRotate( pMatrixLoad ) ;
+    //DEBUG :: on perd le focus du peg pour le moment?? pas sûr que ça change...
+    _firstSelectPeg( "set", TRUE ) ;
+    //END OF DEBUG ::
+    _g_displayMatrix( pMatrixLoad ) ;
+    //DEBUG :: on perd le UNDO pour le moment !
+    caretakerNew( ) ;
+    gtk_widget_set_state_flags( pButtonUndo, GTK_STATE_FLAG_INSENSITIVE, TRUE ) ;
+    //END OF DEBUG ::
+    gtk_widget_show_all( pGridMatrix ) ;
 }
 
 void
@@ -960,10 +961,10 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     p = (Coord *) pData ;
     _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
     //    g_print( "\nDEBUG :: Coord Old X:%d Y:%d", pOld.x, pOld.y ) ;
-    //    g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
+    //        g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
         if (_firstSelectPeg( "get", FALSE )) { //premier clic de selection
-            //            g_print("\nDEBUG :: premier selection clic") ;
+            g_print( "\nDEBUG :: premier selection clic" ) ;
             timerStartClock( ) ;
             if (matrixSelectPeg( p->x, p->y )) {
                 _firstSelectPeg( "set", FALSE ) ;
@@ -1177,15 +1178,15 @@ _g_erase_displayMatrix( ) {
 void
 _g_displayMatrix( Matrix matrix ) {
     gint i, k ;
-//    GtkWidget *imgPeg = NULL ;
-//    GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
+    //    GtkWidget *imgPeg = NULL ;
+    //    GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
     pEventCoord = (Coord *) g_try_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
     if (pEventCoord) pEventCoord = &eventCoord ;
     else {
-        g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
+        // g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
         exit( EXIT_FAILURE ) ;
     }
-        g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
+    // g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
     for (k = 0 ; k < HOR_MAX ; k++) {
         for (i = 0 ; i < VER_MAX ; i++) {
             switch (matrix[k][i]) {

@@ -185,25 +185,27 @@ __getCoordPegWhereWeGo( int ) ;
 
 /**
  * @brief rotation de la matrice de 90°
+ * @param pMatrixRotate le pointeur sur la matrice à faire tourner
+ * @comment merci le web pour ces fucks d'indices :)
  */
 void matrixRotate(Matrix pMatrixRotate){
     int tmp = 0;
-    int n = HOR_MAX , i,j; //matrice carré
+    int n = HOR_MAX , i,j; //matrice carrée
         for(i = 0; i <n/2; i++){
             for(j = i; j <n-i-1 ; j++){
-            tmp = pMatrixRotate[i][j];
-            pMatrixRotate[i][j] = pMatrixRotate[n - j - 1][i];
-            pMatrixRotate[n - j - 1][i] = pMatrixRotate[n - 1 - i][n - 1 - j];
-            pMatrixRotate[n - 1 - i][n - 1 - j] = pMatrixRotate[j][n - 1 - i];
-            pMatrixRotate[j][n - 1 - i] = tmp;
+                tmp = pMatrixRotate[i][j];
+                pMatrixRotate[i][j] = pMatrixRotate[n - j - 1][i];
+                pMatrixRotate[n - j - 1][i] = pMatrixRotate[n - 1 - i][n - 1 - j];
+                pMatrixRotate[n - 1 - i][n - 1 - j] = pMatrixRotate[j][n - 1 - i];
+                pMatrixRotate[j][n - 1 - i] = tmp;
             }
         }
     //DEBUG ::
     __displayMatrix(matrixCopy) ;
-    g_print("DEBUG :: fin matrixRotate\n") ;
+    //g_print("DEBUG :: fin matrixRotate\n") ;
     //END OF DEBUG ::
-    //on doit faire tourner les evenements!
  }
+
 /**
  * @brief liste les matrix shape du fichier xml
  * @param ns tableau pour recueillir les noms des shapes
@@ -256,7 +258,7 @@ matrixLoad( int choice ) {
     char c ;
     int j , value ;
     Matrix  xmlMatrix  ;
-    while (bufferMatrix[i] != NULL) i++ ;
+    //while (bufferMatrix[i] != NULL) i++ ;
     for (j = 0 ; j < VER_MAX ; j++) {
         for (i = 0 ; i < HOR_MAX ; i++) { //les colonnes de la ligne
             c = *bufferMatrix[j]++ ;

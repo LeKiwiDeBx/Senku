@@ -7,12 +7,25 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="34"/>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="36">
+        <file>
+            <url>board.c</url>
+            <bookmark id="35">
+                <name>on rotate</name>
+                <line>836</line>
+                <key/>
+            </bookmark>
+            <bookmark id="36">
+                <name>display matrix</name>
+                <line>1178</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/matrix.c</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/board.c</file>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/matrix.h</file>
         </group>
     </open-files>
     <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">
