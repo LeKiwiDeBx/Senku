@@ -18,6 +18,10 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <glib/gprintf.h>
+//#include <gtk/gtkwidget.h>
+//#include <gtkcontainer.h>
+
+
 
 /**
  * headers Senku project
@@ -176,7 +180,8 @@ GtkWidget *plbValuesValue[MAX_LABEL] ;
 GtkWidget *pDialogBoxQuit = NULL ;
 GtkWidget *pWindowGetName = NULL ;
 GtkWidget *plbLogo = NULL ;
-
+GtkWidget *imgPeg = NULL ;
+GtkWidget *pMatrix_event[HOR_MAX][VER_MAX] = {NULL};
 /**
  * @brief Appel selection image avec un clic souris
  * @param pWidget boxEvent qui encapsule l'image
@@ -829,8 +834,22 @@ OnUndo( GtkWidget *pWidget, gpointer pData ) {
 }
 void
 OnRotate( GtkWidget *pWidget, gpointer pData ) {
+    int k , i ;
+    GList *children, *iter;
     g_print("DEBUG :: appel matrixRotate\n") ;
+    
+    children = gtk_container_get_children(GTK_CONTAINER(pGridMatrix));
+    for(iter = children; iter != NULL; iter = g_list_next(iter))
+        gtk_container_remove(GTK_CONTAINER(pGridMatrix), GTK_WIDGET(iter->data));
+    g_list_free(children);
+    for (i = 0 ; i < VER_MAX ; i++) 
+        for (k = 0 ; k < HOR_MAX ; k++) {
+    //        gtk_container_remove(GTK_CONTAINER(pGridMatrix),imgPeg) ;
+             pMatrix_event[i][k]= NULL ;
+        }
     matrixRotate(pMatrixLoad) ;
+   // _g_displayMatrix(pMatrixLoad) ;
+    gtk_widget_show_all(pGridMatrix);
 }
 
 void
@@ -1158,15 +1177,15 @@ _g_erase_displayMatrix( ) {
 void
 _g_displayMatrix( Matrix matrix ) {
     gint i, k ;
-    GtkWidget *imgPeg = NULL ;
-    GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
+//    GtkWidget *imgPeg = NULL ;
+//    GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
     pEventCoord = (Coord *) g_try_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
     if (pEventCoord) pEventCoord = &eventCoord ;
     else {
-        //        g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
+        g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
         exit( EXIT_FAILURE ) ;
     }
-    //    g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
+        g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
     for (k = 0 ; k < HOR_MAX ; k++) {
         for (i = 0 ; i < VER_MAX ; i++) {
             switch (matrix[k][i]) {

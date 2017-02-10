@@ -182,6 +182,7 @@ __getCoordPegWhereWeGo( int ) ;
 //    xmlCleanupParser();
 //    return(1) ;
 //}
+
 /**
  * @brief rotation de la matrice de 90°
  */
@@ -201,6 +202,7 @@ void matrixRotate(Matrix pMatrixRotate){
     __displayMatrix(matrixCopy) ;
     g_print("DEBUG :: fin matrixRotate\n") ;
     //END OF DEBUG ::
+    //on doit faire tourner les evenements!
  }
 /**
  * @brief liste les matrix shape du fichier xml
