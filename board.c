@@ -839,14 +839,22 @@ OnRotate( GtkWidget *pWidget, gpointer pData ) {
         gtk_container_remove( GTK_CONTAINER( pGridMatrix ), GTK_WIDGET( iter->data ) ) ;
     g_list_free( children ) ;
     for (i = 0 ; i < VER_MAX ; i++)
-        for (k = 0 ; k < HOR_MAX ; k++) 
+        for (k = 0 ; k < HOR_MAX ; k++)
             pMatrix_event[i][k] = NULL ;
     matrixRotate( pMatrixLoad ) ;
     //DEBUG :: on perd le focus du peg pour le moment?? pas sûr que ça change...
     _firstSelectPeg( "set", TRUE ) ;
     //END OF DEBUG ::
     _g_displayMatrix( pMatrixLoad ) ;
+    
     //DEBUG :: on perd le UNDO pour le moment !
+    pMemento pm = caretakerGetMemento(1); 
+    while(pm){
+        g_print("DEBUG :: Last memento start X:%d Y:%d\n", pm->mvtStart.row, pm->mvtStart.column ) ;
+        g_print("DEBUG :: Calculate memento start X:%d Y:%d\n", pm->mvtStart.column, (HOR_MAX-1-pm->mvtStart.row) ) ;
+        pm = caretakerGetMemento(1);
+    }
+    
     caretakerNew( ) ;
     gtk_widget_set_state_flags( pButtonUndo, GTK_STATE_FLAG_INSENSITIVE, TRUE ) ;
     //END OF DEBUG ::
