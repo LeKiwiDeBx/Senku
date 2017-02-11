@@ -188,7 +188,7 @@ __getCoordPegWhereWeGo( int ) ;
  * @param pMatrixRotate le pointeur sur la matrice à faire tourner
  * @comment merci le web pour ces fucks d'indices :)
  */
-void matrixRotate(Matrix pMatrixRotate){
+void matrix:mRotate(Matrix pMatrixRotate){
     int tmp = 0;
     int n = HOR_MAX , i,j; //matrice carrée
         for(i = 0; i <n/2; i++){
