@@ -848,15 +848,72 @@ OnRotate( GtkWidget *pWidget, gpointer pData ) {
     _g_displayMatrix( pMatrixLoad ) ;
     
     //DEBUG :: on perd le UNDO pour le moment !
-    pMemento pm = caretakerGetMemento(1); 
-    while(pm){
-        g_print("DEBUG :: Last memento start X:%d Y:%d\n", pm->mvtStart.row, pm->mvtStart.column ) ;
-        g_print("DEBUG :: Calculate memento start X:%d Y:%d\n", pm->mvtStart.column, (HOR_MAX-1-pm->mvtStart.row) ) ;
-        pm = caretakerGetMemento(1);
-    }
-    
+    pMemento pm = (pMemento)malloc(NB_UNDO * sizeof(memento)) ;
+    int rotMemento[NB_UNDO][3][2] = {0};
+    int N = 0;
+    if(pm){
+        while(pm = caretakerGetMemento(1)){
+//            g_print("DEBUG :: Last memento start X:%d Y:%d\n", pm->mvtStart.row, pm->mvtStart.column ) ;
+//            g_print("DEBUG :: Calculate memento start X:%d Y:%d\n", pm->mvtStart.column, (HOR_MAX-1-pm->mvtStart.row) ) ;
+            rotMemento[N][0][0] = pm->mvtStart.column ;
+            rotMemento[N][0][1] = HOR_MAX-1-pm->mvtStart.row ;
+            rotMemento[N][1][0] = pm->mvtBetween.column ;
+            rotMemento[N][1][1] = HOR_MAX-1-pm->mvtBetween.row ;
+            rotMemento[N][2][0] = pm->mvtEnd.column ;
+            rotMemento[N][2][1] = HOR_MAX-1-pm->mvtEnd.row ;
+            g_print("DEBUG :: rotMemento n %d start X:%d Y:%d\n",N, rotMemento[N][0][0], rotMemento[N][0][1] ) ;
+            pm++ ; N++ ;
+        }
+    } else exit(EXIT_FAILURE) ;
     caretakerNew( ) ;
-    gtk_widget_set_state_flags( pButtonUndo, GTK_STATE_FLAG_INSENSITIVE, TRUE ) ;
+    /*inverse tableau */
+    int j, z = 0 ; 
+    int        temp1,temp2,temp3,temp4,temp5,temp6;
+    Peg_Memento pegMemento ;
+for (k=0, j=N-1; k<j; k++,j--){
+    //for (k=0; k < N; k++) {
+    z++;
+        temp1 = rotMemento[k][0][0] ;
+        temp2 = rotMemento[k][0][1] ;
+        temp3 = rotMemento[k][1][0] ;
+        temp4 = rotMemento[k][1][1] ;
+        temp5 = rotMemento[k][2][0] ;
+        temp6 = rotMemento[k][2][1] ;
+        rotMemento[k][0][0] = rotMemento[j][0][0] ;
+        rotMemento[k][0][1] = rotMemento[j][0][1] ;
+        rotMemento[k][1][0] = rotMemento[j][1][0] ;
+        rotMemento[k][1][1] = rotMemento[j][1][1] ;
+        rotMemento[k][2][0] = rotMemento[j][2][0] ;
+        rotMemento[k][2][1] = rotMemento[j][2][1] ;
+        rotMemento[j][0][0] = temp1;
+        rotMemento[j][0][1] = temp2;
+        rotMemento[j][1][0] = temp3;
+        rotMemento[j][1][1] = temp4;
+        rotMemento[j][2][0] = temp5;
+        rotMemento[j][2][1] = temp6;
+    }
+    for(i = 0; i < N; i++){
+        pegMemento.coordStart.row        = rotMemento[i][0][0] ;
+        pegMemento.coordStart.column     = rotMemento[i][0][1] ;
+        pegMemento.coordBetween.row      = rotMemento[i][1][0] ;
+        pegMemento.coordBetween.column   = rotMemento[i][1][1] ;
+        pegMemento.coordEnd.row          = rotMemento[i][2][0] ;
+        pegMemento.coordEnd.column       = rotMemento[i][2][1] ;
+        originatorSet(pegMemento) ;
+        caretakerAddMemento(originatorSaveToMemento()) ;
+    }
+//    for(j=0;j<N;j++)
+//    {
+//        g_print("rotMemento ind %d start x:%d ",j,rotMemento[j][0][0]) ;
+//        g_print(" y:%d \n",rotMemento[j][0][1]) ;
+//        g_print("rotMemento ind %d x",j,rotMemento[j][1][0]) ;
+//        g_print("rotMemento ind %d y",j,rotMemento[j][1][1]) ;
+//        g_print("rotMemento ind %d x",j,rotMemento[j][2][0]) ;
+//        g_print("rotMemento ind %d y",j,rotMemento[j][2][1]) ;
+//    } 
+        
+    //caretakerNew( ) ;
+    //gtk_widget_set_state_flags( pButtonUndo, GTK_STATE_FLAG_INSENSITIVE, TRUE ) ;
     //END OF DEBUG ::
     gtk_widget_show_all( pGridMatrix ) ;
 }
