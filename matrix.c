@@ -19,8 +19,7 @@
  */
 #include <gtk/gtk.h>
 #include <glib.h>
-#include <glib/gprintf.h>
-#include <glib-2.0/glib/gprintf.h>
+//#include <glib/gprintf.h>
 
 /**
  * Header XML
@@ -105,18 +104,15 @@ typedef struct s_NodeMatrix {
     char * name ;
     Matrix data ;
 } NodeMatrix ;
-
 NodeMatrix *pCurrentNodeMatrix ;
 NodeMatrix currentNodeMatrix ;
-
 // Matrix matrixCopy ;
 
-
 static void
-__displayMatrix(Matrix) ;
+__displayMatrix( Matrix ) ;
 
 static char
- *__selectItem(int) ;
+*__selectItem( int ) ;
 
 /*
 static void
@@ -188,23 +184,23 @@ __getCoordPegWhereWeGo( int ) ;
  * @param pMatrixRotate le pointeur sur la matrice à faire tourner
  * @comment merci le web pour ces fucks d'indices :)
  */
-void matrixRotate(Matrix pMatrixRotate){
-    int tmp = 0;
-    int n = HOR_MAX , i,j; //matrice carrée
-        for(i = 0; i <n/2; i++){
-            for(j = i; j <n-i-1 ; j++){
-                tmp = pMatrixRotate[i][j];
-                pMatrixRotate[i][j] = pMatrixRotate[n - j - 1][i];
-                pMatrixRotate[n - j - 1][i] = pMatrixRotate[n - 1 - i][n - 1 - j];
-                pMatrixRotate[n - 1 - i][n - 1 - j] = pMatrixRotate[j][n - 1 - i];
-                pMatrixRotate[j][n - 1 - i] = tmp;
-            }
+void
+matrixRotate( Matrix pMatrixRotate ) {
+    int tmp = 0 ;
+    int n = HOR_MAX, i, j ; //matrice carrée
+    for (i = 0 ; i < n / 2 ; i++)
+        for (j = i ; j < n - i - 1 ; j++) {
+            tmp = pMatrixRotate[i][j] ;
+            pMatrixRotate[i][j] = pMatrixRotate[n - j - 1][i] ;
+            pMatrixRotate[n - j - 1][i] = pMatrixRotate[n - 1 - i][n - 1 - j] ;
+            pMatrixRotate[n - 1 - i][n - 1 - j] = pMatrixRotate[j][n - 1 - i] ;
+            pMatrixRotate[j][n - 1 - i] = tmp ;
         }
     //DEBUG ::
-    __displayMatrix(matrixCopy) ;
+    // __displayMatrix(matrixCopy) ;
     //g_print("DEBUG :: fin matrixRotate\n") ;
     //END OF DEBUG ::
- }
+}
 
 /**
  * @brief liste les matrix shape du fichier xml
@@ -212,13 +208,13 @@ void matrixRotate(Matrix pMatrixRotate){
  * @param size nombre de shapes trouvées
  */
 void
-matrixListMatrix(char **ns , int *size ){
+matrixListMatrix( char **ns, int *size ) {
     const char * rqst = "//matrix/name/text()" ;
     char * bufferNs[128] ;
     void * pXfile ;
     int k = 0 ;
-    pXfile = xfileNew("matrix.xml") ;
-    xfileRead( pXfile, bufferNs, rqst) ;
+    pXfile = xfileNew( "matrix.xml" ) ;
+    xfileRead( pXfile, bufferNs, rqst ) ;
     while (bufferNs[*size]) (*size)++ ;
     for (k = 0 ; k < *size ; k++) ns[k] = bufferNs[k] ;
 }
@@ -236,7 +232,7 @@ matrixLoad( int choice ) {
     char * bufferNames[128] ;
     char * bufferMatrix[255] ;
     char * bufferName[128] ;
-    pXfile = xfileNew( "matrix.xml" ) ;
+    pXfile = xfileNew( PX_FILE ) ;
     int i = 0, k = 0 ;
     /**
      *  
@@ -246,8 +242,8 @@ matrixLoad( int choice ) {
     xfileRead( pXfile, bufferNames, "//matrix/name/text()" ) ;
     char * nameShape[128] = {NULL} ;
     while (bufferNames[i] != NULL) i++ ;
-    nameShape[0] = g_strdup( "Unknown" );
-    for (k = 0 ; k < i ; k++) nameShape[k + 1] = g_strdup(bufferNames[k] ) ;
+    nameShape[0] = g_strdup( "Unknown" ) ;
+    for (k = 0 ; k < i ; k++) nameShape[k + 1] = g_strdup( bufferNames[k] ) ;
     /**
      *  
      * on veut les valeurs du matrix choisie
@@ -256,14 +252,14 @@ matrixLoad( int choice ) {
     xfileRead( pXfile, bufferMatrix, g_strdup_printf( "//matrix[%d]/row/column/text()", choice ) ) ;
     i = 0 ;
     char c ;
-    int j , value ;
-    Matrix  xmlMatrix  ;
+    int j, value ;
+    Matrix xmlMatrix ;
     //while (bufferMatrix[i] != NULL) i++ ;
     for (j = 0 ; j < VER_MAX ; j++) {
         for (i = 0 ; i < HOR_MAX ; i++) { //les colonnes de la ligne
             c = *bufferMatrix[j]++ ;
-            value = atoi(&c) ;
-            xmlMatrix[j][i] = (value == 0 || value == 1)? value: -1 ;
+            value = atoi( &c ) ;
+            xmlMatrix[j][i] = (value == 0 || value == 1) ? value : -1 ;
         }
     }
     /**
@@ -272,30 +268,30 @@ matrixLoad( int choice ) {
      *      
      */
     xfileRead( pXfile, bufferName, g_strdup_printf( "//matrix[%d]/name/text()", choice ) ) ;
-//DEBUG XLM char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
-//          Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
+    //DEBUG XLM char *nameShape[] = {"Unknown", "Shape English", "Shape German", "Shape Diamond"} ;
+    //          Matrix * matrixType[] = {NULL, matrixEnglish, matrixGerman, matrixDiamond} ;
     currentMatrixOfBoard.pShape = &xmlMatrix ;
-//    if (choice >= 0 && choice <= 4) {
-//        switch (choice) {
-//        case 1:case 2:case 3:case 4:
-//          currentMatrixOfBoard.pShape = matrixType[choice] ;
-//          break ;
-//        case 4:
-//          printf("\n Thank you, Good bye! ;)" );
-//          exit( EXIT_SUCCESS ) ;
-//          break ;
-//        default:
-//          return 0 ;
-//        }
+    //    if (choice >= 0 && choice <= 4) {
+    //        switch (choice) {
+    //        case 1:case 2:case 3:case 4:
+    //          currentMatrixOfBoard.pShape = matrixType[choice] ;
+    //          break ;
+    //        case 4:
+    //          printf("\n Thank you, Good bye! ;)" );
+    //          exit( EXIT_SUCCESS ) ;
+    //          break ;
+    //        default:
+    //          return 0 ;
+    //        }
     currentMatrixOfBoard.name = g_strdup( nameShape[choice] ) ;
-//		__displayLoadChoice(currentMatrixOfBoard.name) ;
+    //		__displayLoadChoice(currentMatrixOfBoard.name) ;
     currentMatrixOfBoard.id = choice ;
-    memcpy( matrixCopy, currentMatrixOfBoard.pShape, HOR_MAX * VER_MAX * sizeof (int) ) ;
-    pMatrixLoad = matrixCopy ;
-//		__displayMatrix(matrixCopy) ;
+    if(memcpy( &matrixCopy, currentMatrixOfBoard.pShape, HOR_MAX * VER_MAX * sizeof (int) ) )
+        pMatrixLoad = matrixCopy ;
+    //		__displayMatrix(matrixCopy) ;
     return 1 ;
-//  }
-//  return 0 ;
+    //  }
+    //  return 0 ;
 }
 
 /*
@@ -491,50 +487,48 @@ __displayLoadChoice(const char * shapeName){
 
 
 void
-__displayMatrix(Matrix matrix){
-    int row, column;
+__displayMatrix( Matrix matrix ) {
+    int row, column ;
     char *sign ;
-    printf("\n%2s", " ");
-    for(column = 0 ; column < VER_MAX ; column++){
-        printf("%- 3d|", column) ;
+    printf( "\n%2s", " " ) ;
+    for (column = 0 ; column < VER_MAX ; column++) {
+        printf( "%- 3d|", column ) ;
     }
-    printf("\n");
-    for(row = 0 ; row < HOR_MAX ; row++){
-    printf("%2d",row);
-        for(column = 0; column <VER_MAX ; column++){
-            sign = __selectItem(matrix[row][column]);
-            printf("%2s|", sign);
-            }
-    printf("\n");
+    printf( "\n" ) ;
+    for (row = 0 ; row < HOR_MAX ; row++) {
+        printf( "%2d", row ) ;
+        for (column = 0 ; column < VER_MAX ; column++) {
+            sign = __selectItem( matrix[row][column] ) ;
+            printf( "%2s|", sign ) ;
+        }
+        printf( "\n" ) ;
     }
 }
 
-
-
 char
- *__selectItem(int item){
+*
+__selectItem( int item ) {
     char *ret ;
-    static int num = 1;
+    static int num = 1 ;
     char buff[255] ;
-    switch (item)
-    {
-        case -1:
-        ret = "   ";
-            break;
-        case 0:
-        ret = " . ";
-            break;
-        case 1:
-        sprintf(buff, "<%2d>", num++);
+    switch (item) {
+    case -1:
+        ret = "   " ;
+        break ;
+    case 0:
+        ret = " . " ;
+        break ;
+    case 1:
+        sprintf( buff, "<%2d>", num++ ) ;
         ret = buff ;
         ret = " O " ;
-            break ;
-        case 2:
+        break ;
+    case 2:
         ret = "<0>" ;
-            break ;
-        default:
-            break ;
+        break ;
+    default:
+        break ;
     }
     return ret ;
 }
- 
+

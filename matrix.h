@@ -16,7 +16,7 @@
  */
 #define HOR_MAX 11 /* nb rows    */
 #define VER_MAX 11 /* nb columns */
-
+#define PX_FILE "matrix.xml" /* file XML des jeux */
 /*
  *	Types & Vars
  */
@@ -34,7 +34,7 @@ Matrix matrixCopy;
 typedef struct s_matrixOfBoard {
     int id;
     char *name;
-    Matrix *pShape;
+    const Matrix *pShape;
 } matrixOfBoard;
 /**
  * @brief structure qui contient la matrice (shape) en cours du jeu
