@@ -343,11 +343,18 @@ void
 _g_display_get_name( int rank ) ;
 
 /**
- * @brief redessinne les peg et trou sans point rouge ni croix (signe du last undo)
+ * @brief redessine les pegs et trou sans point rouge ni croix (signe du last undo)
  * @param pm le memento des images à redessiner sans les symboles du Undo
  */
 void
 _setLastMementoUndoRedrawNormal( pMemento ) ;
+
+/**
+ * @brief calcule  les coordonnées de rotation pour les mementos
+ * @return 0 si rien n'est calculé sinon N le nombre de mementos
+ */
+int
+_rotateMemento() ;
 
 /**
  * @brief fermeture de BoxScore
@@ -844,42 +851,42 @@ OnRotate( GtkWidget *pWidget, gpointer pData ) {
     matrixRotate( pMatrixLoad ) ;
     //DEBUG :: on perd le focus du peg pour le moment?? pas sûr que ça change...
     _firstSelectPeg( "set", TRUE ) ;
-    //END OF DEBUG ::
+    //END OF DEBUG :: 
+    _rotateMemento() ;
     _g_displayMatrix( pMatrixLoad ) ;
-    //DEBUG :: DRAFT le UNDO pour le moment !
+    gtk_widget_show_all( pGridMatrix ) ;
+}
+
+int
+_rotateMemento(){
+    int N = 0 ; /* nombre de memento */
+    int i, j, k, l, m ;
+    int temp = 0 ;
+    Peg_Memento pegMemento ;
+    int rotMemento[NB_UNDO][3][2] = {0} ; /* valeurs calculées de rotation */
     pMemento pm = (pMemento) malloc( NB_UNDO * sizeof (memento) ) ;
-    int rotMemento[NB_UNDO][3][2] = {0} ;
-    int N = 0 ;
     if (pm) {
         while (pm = caretakerGetMemento( 1 )) {
-            //            g_print("DEBUG :: Last memento start X:%d Y:%d\n", pm->mvtStart.row, pm->mvtStart.column ) ;
-            //            g_print("DEBUG :: Calculate memento start X:%d Y:%d\n", pm->mvtStart.column, (HOR_MAX-1-pm->mvtStart.row) ) ;
             rotMemento[N][0][0] = pm->mvtStart.column ;
             rotMemento[N][0][1] = HOR_MAX - 1 - pm->mvtStart.row ;
             rotMemento[N][1][0] = pm->mvtBetween.column ;
             rotMemento[N][1][1] = HOR_MAX - 1 - pm->mvtBetween.row ;
             rotMemento[N][2][0] = pm->mvtEnd.column ;
             rotMemento[N][2][1] = HOR_MAX - 1 - pm->mvtEnd.row ;
-            //            g_print( "DEBUG :: rotMemento n %d start X:%d Y:%d\n", N, rotMemento[N][0][0], rotMemento[N][0][1] ) ;
             pm++ ;
             N++ ;
         }
-    }
-    else exit( EXIT_FAILURE ) ;
+    } else exit( EXIT_FAILURE ) ;
+    if(!N) return 0 ;
     caretakerNew( ) ;
-    /* inverse tableau */
-    int j, l, m ;
-    int temp = 0 ;
-    for (k = 0, j = N - 1 ; k < j ; k++, j--)
+    for (k = 0, j = N - 1 ; k < j ; k++, j--)/* inverse tableau */
         for (l = 0 ; l < 3 ; l++)
             for (m = 0 ; m < 2 ; m++) {
                 temp = rotMemento[k][l][m] ;
                 rotMemento[k][l][m] = rotMemento[j][l][m] ;
                 rotMemento[j][l][m] = temp ;
             }
-    /* creation du memento */
-    Peg_Memento pegMemento ;
-    for (i = 0 ; i < N ; i++) {
+    for (i = 0 ; i < N ; i++) {/* creation du memento */
         pegMemento.coordStart.row = rotMemento[i][0][0] ;
         pegMemento.coordStart.column = rotMemento[i][0][1] ;
         pegMemento.coordBetween.row = rotMemento[i][1][0] ;
@@ -889,20 +896,7 @@ OnRotate( GtkWidget *pWidget, gpointer pData ) {
         originatorSet( pegMemento ) ;
         caretakerAddMemento( originatorSaveToMemento( ) ) ;
     }
-    //    for(j=0;j<N;j++)
-    //    {
-    //        g_print("rotMemento ind %d start x:%d ",j,rotMemento[j][0][0]) ;
-    //        g_print(" y:%d \n",rotMemento[j][0][1]) ;
-    //        g_print("rotMemento ind %d x",j,rotMemento[j][1][0]) ;
-    //        g_print("rotMemento ind %d y",j,rotMemento[j][1][1]) ;
-    //        g_print("rotMemento ind %d x",j,rotMemento[j][2][0]) ;
-    //        g_print("rotMemento ind %d y",j,rotMemento[j][2][1]) ;
-    //    } 
-
-    //caretakerNew( ) ;
-    //gtk_widget_set_state_flags( pButtonUndo, GTK_STATE_FLAG_INSENSITIVE, TRUE ) ;
-    //END OF DEBUG ::
-    gtk_widget_show_all( pGridMatrix ) ;
+return N ;    
 }
 
 void
@@ -1229,10 +1223,8 @@ _g_erase_displayMatrix( ) {
 
 void
 _g_displayMatrix( Matrix matrix ) {
-    gint i, k ;
-    //    GtkWidget *imgPeg = NULL ;
-    //    GtkWidget * pMatrix_event[HOR_MAX][VER_MAX] ;
-    pEventCoord = (Coord *) g_try_malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
+    int i, k ;
+    pEventCoord = (Coord *) malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
     if (pEventCoord) pEventCoord = &eventCoord ;
     else {
         // g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
@@ -1241,24 +1233,23 @@ _g_displayMatrix( Matrix matrix ) {
     // g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
     for (k = 0 ; k < HOR_MAX ; k++)
         for (i = 0 ; i < VER_MAX ; i++) {
+            imgPeg = NULL ;
             switch (matrix[k][i]) {
-            case -1:
-                imgPeg = gtk_image_new_from_file( IMG_PEG_BOARD ) ;
-                break ;
-            case 0:
-                imgPeg = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
-                break ;
-            case 1:
-                imgPeg = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
-                break ;
-            default: ;
+                case -1:
+                    imgPeg = gtk_image_new_from_file( IMG_PEG_BOARD ) ;
+                    break ;
+                case 0:
+                    imgPeg = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
+                    break ;
+                case 1:
+                    imgPeg = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
             }
             pMatrix_event[k][i] = gtk_event_box_new( ) ;
             gtk_grid_attach( GTK_GRID( pGridMatrix ), pMatrix_event[k][i], i, k, 1, 1 ) ;
             gtk_grid_attach( GTK_GRID( pGridMatrix ), imgPeg, i, k, 1, 1 ) ;
             pEventCoord->x = k ;
             pEventCoord->y = i ;
-            g_signal_connect( G_OBJECT( pMatrix_event[k][i] ), "button_press_event", G_CALLBACK( OnSelect ), (gpointer) pEventCoord ) ;
+            g_signal_connect( G_OBJECT( pMatrix_event[k][i] ), "button_press_event", G_CALLBACK( OnSelect ), pEventCoord ) ;
             pEventCoord++ ;
         }
 }
@@ -1355,7 +1346,7 @@ void
 _g_display_box_score( pScore ps, const int rank ) {
     int i, k ;
     char *r = "" ;
-    char *scoreTitle[] = {"RANK", "PLAYER", "PEG", "SCORE", "LAST"} ;
+    char *scoreTitle[] = {"Rank", "Name", "Peg", "Score", ""} ;
     int sizeArray = 0 ;
     gchar *markup ;
     GtkWidget *pButtonOk = NULL ;
@@ -1393,7 +1384,7 @@ _g_display_box_score( pScore ps, const int rank ) {
     for (k = 0 ; k < sizeArray - 1 ; k++)
         gtk_grid_attach_next_to( GTK_GRID( pGridScore ), lbScore[k + 1], lbScore[k], GTK_POS_RIGHT, 1, 1 ) ;
     for (i = 1 ; i <= SCORE_BEST_OF ; i++) {
-        r = (i == rank) ? "<" : "    " ;
+        r = (i == rank) ? "<~~" : "    " ;
         lbScore[0] = gtk_label_new( g_strdup_printf( "%d", i ) ) ;
         markup = g_markup_printf_escaped( SENKU_PANGO_MARKUP_LABEL( LABEL_COLOR_TEXT, d ), i ) ;
         gtk_label_set_markup( GTK_LABEL( lbScore[0] ), markup ) ;
