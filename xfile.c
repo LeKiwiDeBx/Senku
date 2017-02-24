@@ -51,7 +51,7 @@ xfileNew( const char* xfile ) {
 }
 
 void
-xfileRead(xmlXPathContextPtr xpc, char **buffer, const char* xpath){
+xfileRead(xmlXPathContextPtr xpc, char * buffer[], const char* xpath){
     int i = 0;
     xpathObj = xmlXPathEvalExpression( (xmlChar *)xpath, xpc ) ;
     if (xpathObj == NULL) {
