@@ -16,14 +16,14 @@ typedef struct s_Peg_Coord {
 } Peg_Coord;
 
 typedef enum e_Peg_Direction {
-    CENTER, /* 0 Peg central par rapport aux 4 directions */
-    NORTH, /* 1 direction où aller */
-    EAST, /* 2 					*/
-    SOUTH, /* 3 					*/
-    WEST, /* 4 					*/
-    DEFAULT, /* 5 emplacement par defaut */
-    UNDO = 666, /* 666 Devil Number =:> Peg à undo */
-    NO_MOVE = 10 /* on reclique sur le meme Peg (GDK) */
+    CENTER,         /* 0 Peg central par rapport aux 4 directions   */
+    NORTH,          /* 1 direction où aller                         */
+    EAST,           /* 2                                            */
+    SOUTH,          /* 3                                            */
+    WEST,           /* 4                                            */
+    DEFAULT,        /* 5 emplacement par defaut                     */
+    UNDO = 666,     /* 666 Devil Number =:> Peg à undo              */
+    NO_MOVE = 10    /* On reclique sur le meme Peg (GDK)            */
 } Peg_Direction;
 
 typedef struct s_Peg {

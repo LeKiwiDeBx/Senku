@@ -51,9 +51,7 @@ main( int argc, char *argv[] ) {
     gtk_init( &argc, &argv ) ;
     if (boardInit( ))
         exit( EXIT_SUCCESS ) ;
-        //            g_print( "\nGood bye! Thanks for playing this game ;)\n" ) ;
     else
         exit( EXIT_FAILURE ) ;
-    //            g_print( "\nSorry but Init game Senku FAILURE :( \n" ) ;
     return 0 ;
 }

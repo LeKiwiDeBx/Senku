@@ -51,7 +51,7 @@ xfileNew( const char* xfile ) {
 }
 
 void
-xfileRead(xmlXPathContextPtr xpc, char *buffer[], const char* xpath){
+xfileRead(xmlXPathContextPtr xpc, char **buffer, const char* xpath){
     int i = 0;
     xpathObj = xmlXPathEvalExpression( (xmlChar *)xpath, xpc ) ;
     if (xpathObj == NULL) {
@@ -63,7 +63,7 @@ xfileRead(xmlXPathContextPtr xpc, char *buffer[], const char* xpath){
     int size = (nodes) ? nodes->nodeNr : 0;
     for(i = 0; i < size; ++i) {
         cur = nodes->nodeTab[i]; 
-        buffer[i] = (char *)cur->content ;
+        buffer[i] = (char *) cur->content ;
     }
     buffer[i] = '\0' ;
 }

@@ -43,7 +43,7 @@
 #define SENKU_PANGO_MARKUP_LABEL(color,type) SENKU_PANGO_CONCAT_STR(color,type)
 #define SENKU_ABS(x) ((x))?(x):(-x)
 
-#define TITLE_MAIN          "  Senku GTK \u03B2 2.0\n\n[°} Le KiWi (c) 2016"
+#define TITLE_MAIN          "  Senku GTK \u03B2 2.0b\n\n[°} Le KiWi (c) 2016"
 #define TITLE_MENU          "Shapes choice"
 #define TIMER_DELAY         1000
 #define IMG_PEG_MOVE        "image/circle_gold32.png"
@@ -57,7 +57,7 @@
 #define ACTION_UNDO         "[Undo] last move"
 #define BLANK               ""
 #define BOX_SCORE_TITLE     " Score "
-#define APPLICATION_TITLE   "Senku 'GTK' \u03B2 2.0a"
+#define APPLICATION_TITLE   "Senku 'GTK' \u03B2 2.0b"
 #define APPLICATION_SIZE_WIDTH 360
 #define APPLICATION_SIZE_HEIGHT 340
 #define APPLICATION_BORDER_WIDTH 10
@@ -354,7 +354,7 @@ _setLastMementoUndoRedrawNormal( pMemento ) ;
  * @return 0 si rien n'est calculé sinon N le nombre de mementos
  */
 int
-_rotateMemento() ;
+_rotateMemento( ) ;
 
 /**
  * @brief fermeture de BoxScore
@@ -379,14 +379,8 @@ boardInit( ) {
     const char* lbRotate = "Rotate" ;
     const char* lbScore = "Score" ;
     const char* lbQuit = "Quit" ;
-    // init table des scores
-    scoreInit( ) ;
 
-    //do {
-    //	#ifdef _LINUX_
-    //		system("clear");
-    //        
-    //    #endif
+    scoreInit( ) ;
     /***********************************************************************
      * __displayHeader() ;
      * function console
@@ -482,30 +476,6 @@ boardInit( ) {
     if (pMementoLastUndo == NULL) exit( EXIT_FAILURE ) ;
     gtk_main( ) ;
     EXIT_SUCCESS ;
-    /***************************************************************************
-     * __displayMenu()  ;
-     * function console
-     **************************************************************************/
-    /*********************************************************************
-     * __getMenuChoice() ;
-     * function console
-     * while (!matrixLoad( num = __getMenuChoice( ) )) ;
-     */
-
-    /**
-     * adresse de la matrice courante (globale)
-     * @return 
-     */
-    /*
-     * onlyOneBoard.set = &currentMatrixOfBoard ;
-     */
-    /* TODO: code a adapter en GTK
-     * boardPlay( ) ;
-     * scoreNew( ) ;
-     * */
-
-    //            } while (__displayPlayAgain( )) ;
-
     return 1 ;
 }
 
@@ -518,11 +488,9 @@ void
 _g_display_box_menu( gpointer pData ) {
     int k = 0 ;
     gint optK = (GPOINTER_TO_INT( pData )) ? GPOINTER_TO_INT( pData ) : 0 ;
-    //char *shapeName[] = {"Shape English", "Shape German", "Shape Diamond", "TEST"} ;
     char * shapeName[128] = {NULL} ;
     int size = 0 ;
     matrixListMatrix( shapeName, &size ) ;
-    //const int sizeShapeName = (int) (sizeof (shapeName) / sizeof (shapeName[0])) ;
     const int sizeShapeName = size ;
     const int boxMenuWidth = 360 ;
     const int boxMenuHeight = 340 ;
@@ -570,214 +538,6 @@ _g_display_box_menu( gpointer pData ) {
     // on se la montre...
     gtk_widget_show_all( pBoxMenu ) ;
 }
-/*
-int
-boardPlay( ) {
-    int row = 0, column = 0, nbMove = 0, remainingPeg = 0 ;
-            int *pRow = &row, *pColumn = &column ;
-            int canDisplayBonusTimeScore = 0 ;
-            double elapseTimer, totalTimer ;
-            timerSetStartTimer( ) ;
-            timerSetElapseTimer( ) ;
-            scoreResetBonusTimeScore( ) ;
-            caretakerNew( ) ;
-    while (matrixCanMovePeg( )) {
-        timerSetElapseTimer( ) ;
-//        __displaySetCoordToSelect( pRow, pColumn ) ;
-        if (*pRow == -1 || *pColumn == -1) {// Appel de UNDO pour dernier mouvement 
-            timerSetElapseTimer( ) ;
-            if (originatorRestoreFromMemento( caretakerGetMemento( 1 ) )) {
-//                printf( "You ask [UNDO] the last move!\n" ) ;
-                matrixUpdate( UNDO ) ;
-            }
-//            else printf( "There is no action to [UNDO] :( \n" ) ;
-            canDisplayBonusTimeScore = 0 ;
-            }
-        else {// selection normale 
-            timerSetElapseTimer( ) ;
-                    nbMove = matrixSelectPeg( *pRow, *pColumn ) ;
-            if (nbMove) {
-                if (matrixUpdate( __displaySetCoordToMove( ) ))
-                    canDisplayBonusTimeScore = 1 ;
-                }
-        }
-        elapseTimer = timerGetElapseTimer( ) ;
-        totalTimer = timerGetTotalTimer( ) ;
-//        __displayTimer( elapseTimer, totalTimer ) ;
-        if (canDisplayBonusTimeScore) {
-            scoreSetCalculateBonusElapseTimer( elapseTimer ) ;
-            __displayBonusTimeScore( ) ;
-        }
-        canDisplayBonusTimeScore = 0 ;
-    }// while() 
-    timerSetStopTimer( ) ;
-    remainingPeg = matrixCountRemainPeg( ) ;
-    scoreSetRemainingPeg( remainingPeg ) ;
-    __displayResult( remainingPeg ) ;
-    return 1 ;
-}
- */
-
-/*
-void
-__displayHeader( ) {
-
-    printf( "\t       __         __ ___ _      ___\n" ) ;
-            printf( "\t      / /  ___   / //_(_) | /| / (_)\n" ) ;
-            printf( "\t     / /__/ -_) / ,< / /| |/ |/ / /\n" ) ;
-            printf( "\t    /____/\\__/ /_/|_/_/ |__/|__/_/   présente\n" ) ;
-            printf( "\t\n" ) ;
-            printf( "\t       _____            __\n" ) ;
-            printf( "\t      / ___/___  ____  / /____  __\n" ) ;
-            printf( "\t      \\__ \\/ _ \\/ __ \\/ //_/ / / /\n" ) ;
-            printf( "\t     ___/ /  __/ / / / ,< / /_/ /\n" ) ;
-            printf( "\t    /____/\\___/_/ /_/_/|_|\\__,_/     (c) 2016\n" ) ;
-            printf( "\t\n" ) ;
-            printf( "!==  Senku ver Beta 1.3   	    (c) 2016   Le KiWi  ==!\n\n" ) ;
-            printf( "\n" ) ;
-
-}
- */
-
-/*
-void
-__displayMenu( ) {
-
-    printf( "!==\t\t\t\t       \t\t\t\t==!\n" ) ;
-            printf( "!==\t\t\t\tM E N U\t\t\t\t==!\n" ) ;
-            printf( "!==\t\t\t\t       \t\t\t\t==!\n" ) ;
-            printf( "!==\t\t\t# [1] Shape English       \t\t==!\n" ) ;
-            printf( "!==\t\t\t# [2] Shape German        \t\t==!\n" ) ;
-            printf( "!==\t\t\t# [3] Shape Diamond       \t\t==!\n" ) ;
-            printf( "!==\t\t\t# [4] Quit                \t\t==!\n" ) ;
-            printf( "!==\t\t\t\t       \t\t\t\t==!\n" ) ;
-}
- */
-
-/*
-int
-__getMenuChoice( ) {
-    int num = 0, c ;
-            printf( "Enter a number between 1 and 4\n" ) ;
-            printf( "Type your choice: " ) ;
-    if (!scanf( " %2d[1-4]", &num )) {
-        while (((c = getchar( )) != '\n') && c != EOF) ;
-        }
-    scanf( "%*[^\n]" ) ;
-            getchar( ) ; // enleve '\n' restant
-
-    return num ;
-}
- */
-
-/*
-void
-__displaySetCoordToSelect( int *numX, int *numY ) {
-    int c ;
-            printf( "\nSelect a peg's row and column number format like Xrow Ycol or -1 -1 to UNDO: " ) ;
-    while (scanf( " %2i %2i", numX, numY ) != 2 || *numX > 9 || *numY > 9) {
-
-        while (((c = getchar( )) != '\n') && c != EOF) ;
- *numX = 0 ;
- *numY = 0 ;
-                printf( "Erreur de saisie ! try again\n" ) ;
-                printf( "Select a peg's row and column number format like Xrow Ycol: " ) ;
-        }
-    scanf( "%*[^\n]" ) ;
-            getchar( ) ; // enleve '\n' restant
-}
- */
-/**
- * 
- * @return retourne le texte de la direction
- */
-/*
-int
-__displaySetCoordToMove( ) {
-    char *sDir[] = {"", "NORTH", "EAST", "SOUTH", "WEST", "the first BY DEFAULT", "unknown!"} ;
-    char dir ;
-            int i = 0 ;
-            printf( "\nType the first letter for the direction: " ) ;
-    if (!scanf( "%1c", &dir )) {
-        int c ;
-                printf( "Erreur de saisie !\n" ) ;
-        while (((c = getchar( )) != '\n') && c != EOF) ; //vide buffer
-                exit( EXIT_FAILURE ) ;
-        }
-    switch (toupper( dir )) {
-    case 'N':
-        i = 1 ;
-        break ;
-    case 'E':
-        i = 2 ;
-        break ;
-    case 'S':
-        i = 3 ;
-        break ;
-    case 'W':
-        i = 4 ;
-        break ;
-    case '\n':
-        i = 5 ;
-        break ;
-    default:
-        i = 6 ;
-    }
-    printf( "You choose direction %s\n", sDir[i] ) ;
-    return i ;
-}
- */
-
-/*
-void
-__displayTimer( double elapseTimer, double totalTimer ) {
-    printf( "  _\n" ) ;
-            printf( " \\ /  Elapsed Time of Reflexion: %2.f sec.\n", elapseTimer ) ;
-            printf( " /_\\  Total Time: %2.fmin %02.fsec\n", timerGetMktime( totalTimer )->mkt_min, timerGetMktime( totalTimer )->mkt_sec ) ;
-}
- */
-
-/*
-void
-__displayBonusTimeScore( ) {
-    printf( "\n" ) ;
-            printf( "  ~~~\n" ) ;
-            printf( " |@ @| Extra Bonus Time: %d\n", scoreGetBonusTimeScore( ) ) ;
-            printf( "  (o)\n" ) ;
-}
- */
-
-/*
-void
-__displayResult( int remainingPegs ) {
-    printf( "|-------------------------------------------------|\n" ) ;
-    if (remainingPegs > 2)
-            printf( "  /!\\ NO MORE MOVE Try again... /!\\\n" ) ;
-    else if (remainingPegs == 2)
-            printf( "  /!\\ NO MORE MOVE The victory is imminent! /!\\\n" ) ;
-
-    else
-        printf( "  Oo. Oh Yeaah! You WIN, you are a real Senku .oO\n" ) ;
-            printf( "  Remaining Pegs: %d\n", remainingPegs ) ;
-            printf( "|-------------------------------------------------|\n" ) ;
-    }
- */
-
-/*
-int
-__displayPlayAgain( ) {
-    char buffer[] = {'\0'} ;
-    printf( "\n|-------------------------------------------------|\n" ) ;
-            printf( "| Play again [Yes|No]? : " ) ;
-    if (!scanf( "%s", buffer )) {
-        int c ;
-                printf( "Erreur de saisie !  Press Enter\n" ) ;
-        while (((c = getchar( )) != '\n') && c != EOF) ;
-        }
-    getchar( ) ;
-    return ( !strncmp( buffer, "Y", 1 ) || !strncmp( buffer, "y", 1 )) ? 1 : 0 ;
-}
- */
 
 void
 OnDestroy( GtkWidget *pWidget, gpointer pData ) {
@@ -840,7 +600,6 @@ void
 OnRotate( GtkWidget *pWidget, gpointer pData ) {
     int k, i ;
     GList *children, *iter ;
-    //    g_print( "DEBUG :: appel matrixRotate\n" ) ;
     children = gtk_container_get_children( GTK_CONTAINER( pGridMatrix ) ) ;
     for (iter = children ; iter != NULL ; iter = g_list_next( iter ))
         gtk_container_remove( GTK_CONTAINER( pGridMatrix ), GTK_WIDGET( iter->data ) ) ;
@@ -852,13 +611,13 @@ OnRotate( GtkWidget *pWidget, gpointer pData ) {
     //DEBUG :: on perd le focus du peg pour le moment?? pas sûr que ça change...
     _firstSelectPeg( "set", TRUE ) ;
     //END OF DEBUG :: 
-    _rotateMemento() ;
+    _rotateMemento( ) ;
     _g_displayMatrix( pMatrixLoad ) ;
     gtk_widget_show_all( pGridMatrix ) ;
 }
 
 int
-_rotateMemento(){
+_rotateMemento( ) {
     int N = 0 ; /* nombre de memento */
     int i, j, k, l, m ;
     int temp = 0 ;
@@ -876,8 +635,9 @@ _rotateMemento(){
             pm++ ;
             N++ ;
         }
-    } else exit( EXIT_FAILURE ) ;
-    if(!N) return 0 ;
+    }
+    else exit( EXIT_FAILURE ) ;
+    if (!N) return 0 ;
     caretakerNew( ) ;
     for (k = 0, j = N - 1 ; k < j ; k++, j--)/* inverse tableau */
         for (l = 0 ; l < 3 ; l++)
@@ -896,7 +656,7 @@ _rotateMemento(){
         originatorSet( pegMemento ) ;
         caretakerAddMemento( originatorSaveToMemento( ) ) ;
     }
-return N ;    
+    return N ;
 }
 
 void
@@ -1007,7 +767,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
     p = (Coord *) pData ;
     _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
     //    g_print( "\nDEBUG :: Coord Old X:%d Y:%d", pOld.x, pOld.y ) ;
-    //        g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
+    //    g_print( "\nDEBUG :: Coord New X:%d Y:%d", p->x, p->y ) ;
     if (matrixCanMovePeg( )) {
         if (_firstSelectPeg( "get", FALSE )) { //premier clic de selection
             //            g_print( "\nDEBUG :: premier selection clic" ) ;
@@ -1092,9 +852,7 @@ OnSelect( GtkWidget *pWidget, GdkEvent *event, gpointer pData ) {
                         pOld.y = p->y ;
                     }
                 }
-            }
-            //        else 
-            //            g_print( "\nDEBUG :: prise impossible " ) ;
+            }//else g_print( "\nDEBUG :: prise impossible " ) ;
         }
         gtk_widget_show_all( GTK_WIDGET( pGridMain ) ) ;
     }
@@ -1158,13 +916,12 @@ OnPlay( GtkWidget* pWidget, gpointer pData ) {
     pWindow = gtk_widget_get_toplevel( GTK_WIDGET( pData ) ) ;
     GtkRadioButton *radio = NULL ;
     radio = GTK_RADIO_BUTTON( pData ) ;
-    // equivalent while (!matrixLoad( num = __getMenuChoice( ) )) ;
     gtk_widget_set_state_flags( pButtonUndo, GTK_STATE_FLAG_INSENSITIVE, TRUE ) ;
     if (matrixLoad( which_radio_is_selected( gtk_radio_button_get_group( GTK_RADIO_BUTTON( radio ) ) ) )) {
         _g_displayMatrix( pMatrixLoad ) ;
         gtk_widget_show_all( pWindowMain ) ;
         onlyOneBoard.set = &currentMatrixOfBoard ;
-        caretakerNew( ) ; //pattern memento du mecanisme pour le Undo
+        caretakerNew( ) ; //pattern memento du Undo
         scoreResetBonusTimeScore( ) ;
         timerStartClock( ) ;
         _g_labelSet( plbValuesValue[LABEL_PEG], GINT_TO_POINTER( matrixCountRemainPeg( ) ) ) ;
@@ -1227,7 +984,7 @@ _g_displayMatrix( Matrix matrix ) {
     pEventCoord = (Coord *) malloc( HOR_MAX * VER_MAX * sizeof (Coord) ) ;
     if (pEventCoord) pEventCoord = &eventCoord ;
     else {
-        // g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
+        //  g_print( "\nDEBUG :: fonction: _g_displayMatrix allocation failure" ) ;
         exit( EXIT_FAILURE ) ;
     }
     // g_print( "\nDEBUG :: fonction: _g_displayMatrix [ok]\n" ) ;
@@ -1235,14 +992,14 @@ _g_displayMatrix( Matrix matrix ) {
         for (i = 0 ; i < VER_MAX ; i++) {
             imgPeg = NULL ;
             switch (matrix[k][i]) {
-                case -1:
-                    imgPeg = gtk_image_new_from_file( IMG_PEG_BOARD ) ;
-                    break ;
-                case 0:
-                    imgPeg = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
-                    break ;
-                case 1:
-                    imgPeg = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
+            case -1:
+                imgPeg = gtk_image_new_from_file( IMG_PEG_BOARD ) ;
+                break ;
+            case 0:
+                imgPeg = gtk_image_new_from_file( IMG_PEG_DELETE ) ;
+                break ;
+            case 1:
+                imgPeg = gtk_image_new_from_file( IMG_PEG_MOVE ) ;
             }
             pMatrix_event[k][i] = gtk_event_box_new( ) ;
             gtk_grid_attach( GTK_GRID( pGridMatrix ), pMatrix_event[k][i], i, k, 1, 1 ) ;
@@ -1346,7 +1103,7 @@ void
 _g_display_box_score( pScore ps, const int rank ) {
     int i, k ;
     char *r = "" ;
-    char *scoreTitle[] = {"Rank", "Name", "Peg", "Score", ""} ;
+    const char *scoreTitle[] = {"Rank", "Name", "Peg", "Score", ""} ;
     int sizeArray = 0 ;
     gchar *markup ;
     GtkWidget *pButtonOk = NULL ;

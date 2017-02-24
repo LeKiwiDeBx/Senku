@@ -66,9 +66,8 @@ pegBuildPeg( int row, int column, Peg_Direction direction ) {
 int
 pegReturnDefaultPeg( ) {
     int i ;
-    for (i = 0 ; i < MAX_STRUCT_PEG ; i++) {
+    for (i = 0 ; i < MAX_STRUCT_PEG ; i++)
         if (tab_Peg[i].bydefault) return i ;
-    }
     return 0 ;
 }
 

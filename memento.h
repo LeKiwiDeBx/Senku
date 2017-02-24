@@ -19,10 +19,10 @@ typedef struct s_mvt {
 } mvt;
 
 typedef struct s_memento {
-    int idRollback; // identifiant du mouvement
-    mvt mvtStart; // coord depart du mouvement
-    mvt mvtBetween; // coord intermediaire du mouvement
-    mvt mvtEnd; // coord arrivée du mouvement
+    int idRollback;         // identifiant du mouvement
+    mvt mvtStart;           // coord depart du mouvement
+    mvt mvtBetween;         // coord intermediaire du mouvement
+    mvt mvtEnd;             // coord arrivée du mouvement
 } memento;
 
 typedef memento* pMemento;
