@@ -12,23 +12,18 @@
             <url>board.c</url>
             <bookmark id="35">
                 <name>on rotate</name>
-                <line>843</line>
-                <key/>
-            </bookmark>
-            <bookmark id="36">
-                <name>display matrix</name>
-                <line>1224</line>
+                <line>602</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/peg.h</file>
+            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/xfile.c</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/matrix.c</file>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/memento.h</file>
             <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/board.c</file>
-            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/score.h</file>
+            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/main.c</file>
+            <file>file:/C:/Users/Administrateur/Documents/NetBeansProjects/Senku%20Windows/Senku/matrix.h</file>
         </group>
     </open-files>
     <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">

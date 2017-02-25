@@ -3,7 +3,7 @@ PROG = senku
 
 CC = gcc 
 
-CFLAGS = -g3 -gdwarf-2 -Wall -Wextra -o
+CFLAGS = -O3 -Wall -Wextra -o
 
 LDFLAGS = -mwindows
 

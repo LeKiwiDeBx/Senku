@@ -57,7 +57,7 @@ xfileRead(xmlXPathContextPtr xpc, char * buffer[], const char* xpath){
     if (xpathObj == NULL) {
         printf( "Erreur: ne peut evaluer l'expression xpath\n" ) ;
         xmlXPathFreeContext( xpc ) ;
-        return (EXIT_FAILURE) ;
+        exit(EXIT_FAILURE) ;
     }
     xmlNodeSetPtr nodes = xpathObj->nodesetval ;
     int size = (nodes) ? nodes->nodeNr : 0;
