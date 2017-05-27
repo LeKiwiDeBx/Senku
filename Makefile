@@ -1,4 +1,4 @@
-# makefile de senku
+# makefile de senku // Le Kiwi
 PROG = senku
 
 CC = gcc 
